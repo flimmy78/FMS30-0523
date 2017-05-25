@@ -1,0 +1,9 @@
+
+*.pdb
+*.lastbuildstate
+*.log
+*.tlog
+*.pch
+*.obj
+main/build/.vs/Famous3 Server/v14/.suo
+main/build/Famous3 Server.VC.db
