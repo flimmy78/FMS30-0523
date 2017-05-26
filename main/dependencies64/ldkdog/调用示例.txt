@@ -1,0 +1,10 @@
+1.将LoginLDKDog.h导入工程 
+ 
+可直接动态加载	
+
+
+	if (!LoginLDKDogEx(100))
+	{
+		MessageBox("登录LDK狗失败！！！");
+		return ;
+	}
