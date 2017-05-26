@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 *.pdb
 *.lastbuildstate
 *.log
@@ -7,3 +8,8 @@
 *.obj
 main/build/.vs/Famous3 Server/v14/.suo
 main/build/Famous3 Server.VC.db
+=======
+*.opendb
+*.db
+main/build/.vs/Famous3 Server/v14/.suo
+>>>>>>> d1babae78af27edff2dd2a4b595a172e7087286a
