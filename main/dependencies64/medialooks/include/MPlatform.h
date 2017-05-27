@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0555 */
-/* at Thu Apr 16 11:28:39 2015
+/* at Mon Oct 03 09:53:33 2016
  */
 /* Compiler settings for ..\..\Include\IDL\MPlatform.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 7.00.0555 
@@ -45,6 +45,18 @@
 
 /* Forward Declarations */ 
 
+#ifndef __IMFFrame_FWD_DEFINED__
+#define __IMFFrame_FWD_DEFINED__
+typedef interface IMFFrame IMFFrame;
+#endif 	/* __IMFFrame_FWD_DEFINED__ */
+
+
+#ifndef __IMFFactory_FWD_DEFINED__
+#define __IMFFactory_FWD_DEFINED__
+typedef interface IMFFactory IMFFactory;
+#endif 	/* __IMFFactory_FWD_DEFINED__ */
+
+
 #ifndef __IMAttributes_FWD_DEFINED__
 #define __IMAttributes_FWD_DEFINED__
 typedef interface IMAttributes IMAttributes;
@@ -67,6 +79,30 @@ typedef interface IMCallback IMCallback;
 #define __IMPreview_FWD_DEFINED__
 typedef interface IMPreview IMPreview;
 #endif 	/* __IMPreview_FWD_DEFINED__ */
+
+
+#ifndef __IMWebRTC_FWD_DEFINED__
+#define __IMWebRTC_FWD_DEFINED__
+typedef interface IMWebRTC IMWebRTC;
+#endif 	/* __IMWebRTC_FWD_DEFINED__ */
+
+
+#ifndef __IMDTMF_FWD_DEFINED__
+#define __IMDTMF_FWD_DEFINED__
+typedef interface IMDTMF IMDTMF;
+#endif 	/* __IMDTMF_FWD_DEFINED__ */
+
+
+#ifndef __IMStorage_FWD_DEFINED__
+#define __IMStorage_FWD_DEFINED__
+typedef interface IMStorage IMStorage;
+#endif 	/* __IMStorage_FWD_DEFINED__ */
+
+
+#ifndef __IMFPacket_FWD_DEFINED__
+#define __IMFPacket_FWD_DEFINED__
+typedef interface IMFPacket IMFPacket;
+#endif 	/* __IMFPacket_FWD_DEFINED__ */
 
 
 #ifndef __IMFrame_FWD_DEFINED__
@@ -285,6 +321,18 @@ typedef interface IMEvents IMEvents;
 #endif 	/* __IMEvents_FWD_DEFINED__ */
 
 
+#ifndef __IMEventsEvent_FWD_DEFINED__
+#define __IMEventsEvent_FWD_DEFINED__
+typedef interface IMEventsEvent IMEventsEvent;
+#endif 	/* __IMEventsEvent_FWD_DEFINED__ */
+
+
+#ifndef __IMEventsFrame_FWD_DEFINED__
+#define __IMEventsFrame_FWD_DEFINED__
+typedef interface IMEventsFrame IMEventsFrame;
+#endif 	/* __IMEventsFrame_FWD_DEFINED__ */
+
+
 #ifndef __MFactory_FWD_DEFINED__
 #define __MFactory_FWD_DEFINED__
 
@@ -501,9 +549,34 @@ typedef struct MWriter MWriter;
 #endif 	/* __MWriter_FWD_DEFINED__ */
 
 
+#ifndef __MWebRTC_FWD_DEFINED__
+#define __MWebRTC_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class MWebRTC MWebRTC;
+#else
+typedef struct MWebRTC MWebRTC;
+#endif /* __cplusplus */
+
+#endif 	/* __MWebRTC_FWD_DEFINED__ */
+
+
+#ifndef __MDTMF_FWD_DEFINED__
+#define __MDTMF_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class MDTMF MDTMF;
+#else
+typedef struct MDTMF MDTMF;
+#endif /* __cplusplus */
+
+#endif 	/* __MDTMF_FWD_DEFINED__ */
+
+
 /* header files for imported files */
 #include "basetsd.h"
 #include "unknwn.h"
+#include "Objidl.h"
 
 #ifdef __cplusplus
 extern "C"{
@@ -561,12 +634,18 @@ enum eMTimecodeFlags
 	eMTCF_Rate	= 0xff0,
 	eMTCF_Progressive_Even_Frame	= 0x100,
 	eMTCF_Progressive_Odd_Frame	= 0x200,
+	eMTCF_Progressive_3th_Frame	= 0x300,
+	eMTCF_Progressive_4th_Frame	= 0x400,
+	eMTCF_Progressive_5th_Frame	= 0x500,
+	eMTCF_Progressive_6th_Frame	= 0x600,
+	eMTCF_Progressive_7th_Frame	= 0x700,
+	eMTCF_Progressive_8th_Frame	= 0x800,
 	eMTCF_Rate_50	= 0x120,
 	eMTCF_Rate_60_DF	= 0x141,
 	eMTCF_Rate_60	= 0x140,
-	eMTCF_Rate_50_Even	= 0x220,
-	eMTCF_Rate_60_DF_Even	= 0x241,
-	eMTCF_Rate_60_Even	= 0x240,
+	eMTCF_Rate_50_Odd	= 0x220,
+	eMTCF_Rate_60_DF_Odd	= 0x241,
+	eMTCF_Rate_60_Odd	= 0x240,
 	eMTCF_SrcTC	= 0x1000,
 	eMTCF_SrcTC_DropFrame	= 0x1001,
 	eMTCF_SrcTC_Rate_24	= 0x1010,
@@ -578,9 +657,9 @@ enum eMTimecodeFlags
 	eMTCF_SrcTC_Rate_50	= 0x1120,
 	eMTCF_SrcTC_Rate_60_DF	= 0x1141,
 	eMTCF_SrcTC_Rate_60	= 0x1140,
-	eMTCF_SrcTC_Rate_50_Even	= 0x1220,
-	eMTCF_SrcTC_Rate_60_DF_Even	= 0x1241,
-	eMTCF_SrcTC_Rate_60_Even	= 0x1240,
+	eMTCF_SrcTC_Rate_50_Odd	= 0x1220,
+	eMTCF_SrcTC_Rate_60_DF_Odd	= 0x1241,
+	eMTCF_SrcTC_Rate_60_Odd	= 0x1240,
 	eMTCF_UserTC	= 0x2000,
 	eMTCF_UserTC_DropFrame	= 0x2001,
 	eMTCF_UserTC_Rate_24	= 0x2010,
@@ -592,9 +671,10 @@ enum eMTimecodeFlags
 	eMTCF_UserTC_Rate_50	= 0x2120,
 	eMTCF_UserTC_Rate_60_DF	= 0x2141,
 	eMTCF_UserTC_Rate_60	= 0x2140,
-	eMTCF_UserTC_Rate_50_Even	= 0x2220,
-	eMTCF_UserTC_Rate_60_DF_Even	= 0x2241,
-	eMTCF_UserTC_Rate_60_Even	= 0x2240,
+	eMTCF_UserTC_Rate_50_Odd	= 0x2220,
+	eMTCF_UserTC_Rate_60_DF_Odd	= 0x2241,
+	eMTCF_UserTC_Rate_60_Odd	= 0x2240,
+	eMTCF_LocalTimeTC	= 0x10000,
 	eMTCF_Invalid	= 0x80000000
     } 	eMTimecodeFlags;
 
@@ -611,7 +691,6 @@ typedef struct M_TIMECODE
 typedef /* [v1_enum] */ 
 enum eMFCC
     {	eMFCC_Default	= 0,
-	eMFCC_r210	= 0x30313272,
 	eMFCC_v210	= 0x30313276,
 	eMFCC_I420	= 0x30323449,
 	eMFCC_YV12	= 0x32315659,
@@ -623,16 +702,14 @@ enum eMFCC
 	eMFCC_RGB24	= 0xe436eb7d,
 	eMFCC_RGB32	= 0xe436eb7e,
 	eMFCC_ARGB32	= 0x773c9ac0,
-	eMFCC_RGB8	= 0xe436eb7a,
-	eMFCC_GPU_YUV422	= 0x65ffaf79,
-	eMFCC_GPU_RGB444	= 0x65ffaf80
+	eMFCC_RGB8	= 0xe436eb7a
     } 	eMFCC;
 
 typedef /* [v1_enum] */ 
 enum eMScaleType
     {	eMST_Default	= 0,
-	eMST_None	= ( eMST_Default + 1 ) ,
-	eMST_LetterBox	= ( eMST_None + 1 ) ,
+	eMST_IgnoreAR	= ( eMST_Default + 1 ) ,
+	eMST_LetterBox	= ( eMST_IgnoreAR + 1 ) ,
 	eMST_Crop	= ( eMST_LetterBox + 1 ) ,
 	eMST_NoScale	= ( eMST_Crop + 1 ) 
     } 	eMScaleType;
@@ -683,7 +760,13 @@ enum eMVideoFormat
 	eMVF_HD1080_50p	= ( eMVF_HD1080_60i + 1 ) ,
 	eMVF_HD1080_5994p	= ( eMVF_HD1080_50p + 1 ) ,
 	eMVF_HD1080_60p	= ( eMVF_HD1080_5994p + 1 ) ,
-	eMVF_2K_2398p	= ( eMVF_HD1080_60p + 1 ) ,
+	eMVF_2K_DCI_2398p	= ( eMVF_HD1080_60p + 1 ) ,
+	eMVF_2K_DCI_24p	= ( eMVF_2K_DCI_2398p + 1 ) ,
+	eMVF_2K_DCI_25p	= ( eMVF_2K_DCI_24p + 1 ) ,
+	eMVF_2K_DCI_50p	= ( eMVF_2K_DCI_25p + 1 ) ,
+	eMVF_2K_DCI_5994p	= ( eMVF_2K_DCI_50p + 1 ) ,
+	eMVF_2K_DCI_60p	= ( eMVF_2K_DCI_5994p + 1 ) ,
+	eMVF_2K_2398p	= ( eMVF_2K_DCI_60p + 1 ) ,
 	eMVF_2K_24p	= ( eMVF_2K_2398p + 1 ) ,
 	eMVF_2K_25p	= ( eMVF_2K_24p + 1 ) ,
 	eMVF_4K_UHD_50i	= ( eMVF_2K_25p + 1 ) ,
@@ -697,7 +780,13 @@ enum eMVideoFormat
 	eMVF_4K_DCI_2398p	= ( eMVF_4K_UHD_30p + 1 ) ,
 	eMVF_4K_DCI_24p	= ( eMVF_4K_DCI_2398p + 1 ) ,
 	eMVF_4K_DCI_25p	= ( eMVF_4K_DCI_24p + 1 ) ,
-	eMVF_Disabled	= ( eMVF_4K_DCI_25p + 1 ) ,
+	eMVF_4K_UHD_50p	= ( eMVF_4K_DCI_25p + 1 ) ,
+	eMVF_4K_UHD_5994p	= ( eMVF_4K_UHD_50p + 1 ) ,
+	eMVF_4K_UHD_60p	= ( eMVF_4K_UHD_5994p + 1 ) ,
+	eMVF_4K_DCI_50p	= ( eMVF_4K_UHD_60p + 1 ) ,
+	eMVF_4K_DCI_5994p	= ( eMVF_4K_DCI_50p + 1 ) ,
+	eMVF_4K_DCI_60p	= ( eMVF_4K_DCI_5994p + 1 ) ,
+	eMVF_Disabled	= ( eMVF_4K_DCI_60p + 1 ) ,
 	eMVF_3D_SbS_720_50p	= ( eMVF_HD720_50p + 0x200 ) ,
 	eMVF_3D_SbS_720_5994p	= ( eMVF_HD720_5994p + 0x200 ) ,
 	eMVF_3D_SbS_720_60p	= ( eMVF_HD720_60p + 0x200 ) ,
@@ -762,24 +851,6 @@ typedef struct M_VID_PROPS
     eM3DFormat e3DFormat;
     } 	M_VID_PROPS;
 
-typedef struct M_VID_PROPS_EX
-    {
-    eMVideoFormat eVideoFormat;
-    eMFCC fccType;
-    int nWidth;
-    int nHeight;
-    int nRowBytes;
-    eMInterlace eInterlace;
-    short nAspectX;
-    short nAspectY;
-    double dblRate;
-    eMScaleType eScaleType;
-    eM3DFormat e3DFormat;
-    LONGLONG m_llAudioSamples;
-    long m_arrPlanesRowBytes[ 4 ];
-    long m_arrPlanesOffset[ 4 ];
-    } 	M_VID_PROPS_EX;
-
 typedef struct M_AUD_PROPS
     {
     int nChannels;
@@ -803,8 +874,6 @@ enum eMFrameFlags
 	eMFF_Last	= 2,
 	eMFF_Dup	= 0x11,
 	eMFF_Pause	= 0x21,
-	eMFF_Last_Dup	= 0x13,
-	eMFF_Last_Pause	= 0x23,
 	eMFF_Live	= 0x100,
 	eMFF_Net	= 0x200,
 	eMFF_Reverse	= 0x1000,
@@ -817,13 +886,18 @@ enum eMFrameFlags
 	eMFF_Switching_Predicted	= 0x60000,
 	eMFF_BI	= 0x70000,
 	eMFF_Type_Mask	= 0xf0000,
-	eMFF_Break_Last	= 3,
+	eMFF_Reverse_Break	= 0x1001,
+	eMFF_Reverse_Last	= 0x1002,
+	eMFF_Reverse_Pause	= 0x1021,
+	eMFF_Last_Break	= 0x3,
+	eMFF_Last_Dup	= 0x13,
+	eMFF_Last_Pause	= 0x23,
 	eMFF_Live_Break	= 0x101,
 	eMFF_Live_Last	= 0x102,
-	eMFF_Live_Break_Last	= 0x103,
+	eMFF_Live_Last_Break	= 0x103,
 	eMFF_Net_Break	= 0x201,
 	eMFF_Net_Last	= 0x202,
-	eMFF_Net_Break_Last	= 0x203,
+	eMFF_Net_Last_Break	= 0x203,
 	eMFF_Break_Intra	= 0x10001,
 	eMFF_Break_Predicted	= 0x20001,
 	eMFF_Break_Bidir_Predicted	= 0x30001,
@@ -831,6 +905,20 @@ enum eMFrameFlags
 	eMFF_Break_Switching_Intra	= 0x50001,
 	eMFF_Break_Switching_Predicted	= 0x60001,
 	eMFF_Break_BI	= 0x70001,
+	eMFF_Reverse_Intra	= 0x11000,
+	eMFF_Reverse_Predicted	= 0x21000,
+	eMFF_Reverse_Bidir_Predicted	= 0x31000,
+	eMFF_Reverse_S_GMC_VOP_MPEG4	= 0x41000,
+	eMFF_Reverse_Switching_Intra	= 0x51000,
+	eMFF_Reverse_Switching_Predicted	= 0x61000,
+	eMFF_Reverse_BI	= 0x71000,
+	eMFF_Reverse_Break_Intra	= 0x11001,
+	eMFF_Reverse_Break_Predicted	= 0x21001,
+	eMFF_Reverse_Break_Bidir_Predicted	= 0x31001,
+	eMFF_Reverse_Break_S_GMC_VOP_MPEG4	= 0x41001,
+	eMFF_Reverse_Break_Switching_Intra	= 0x51001,
+	eMFF_Reverse_Break_Switching_Predicted	= 0x61001,
+	eMFF_Reverse_Break_BI	= 0x71001,
 	eMFF_Net_Intra	= 0x10200,
 	eMFF_Net_Predicted	= 0x20200,
 	eMFF_Net_Bidir_Predicted	= 0x30200,
@@ -891,14 +979,6 @@ typedef struct M_AV_PROPS
     BOOL bLocked;
     } 	M_AV_PROPS;
 
-typedef struct M_AV_PROPS_EX
-    {
-    M_VID_PROPS_EX vidProps;
-    M_AUD_PROPS audProps;
-    M_ANC_DATA ancData;
-    BOOL bLocked;
-    } 	M_AV_PROPS_EX;
-
 typedef struct M_AUDIO_TRACK_LOUDNESS
     {
     float arrVUMeter[ 32 ];
@@ -953,7 +1033,8 @@ enum eMCursorType
 	eMCT_SIZEALL	= 32646,
 	eMCT_NO	= 32648,
 	eMCT_HAND	= 32649,
-	eMCT_APPSTARTING	= 32650
+	eMCT_APPSTARTING	= 32650,
+	eMCT_NOCURSOR	= 0
     } 	eMCursorType;
 
 typedef /* [v1_enum] */ 
@@ -984,7 +1065,7 @@ enum eMInfoType
 	eMIT_Values	= ( eMIT_Default + 1 ) ,
 	eMIT_Min	= ( eMIT_Values + 1 ) ,
 	eMIT_Max	= ( eMIT_Min + 1 ) ,
-	eMIT_Node	= ( eMIT_Max + 1 ) 
+	eMIT_Dynamic	= ( eMIT_Max + 1 ) 
     } 	eMInfoType;
 
 typedef /* [v1_enum] */ 
@@ -1052,11 +1133,1080 @@ enum eMBMDDeckControlEvent
 	eMDCE_CaptureCompleteEvent	= 0x63636576
     } 	eMBMDDeckControlEvent;
 
+typedef 
+enum eStorageFlags
+    {	eSF_NoWait	= 0x1,
+	eSF_IgnoreTime	= 0x2,
+	eSF_SyncPoint	= 0x4
+    } 	eStorageFlags;
+
+typedef 
+enum eStorageUnits
+    {	eSU_TimeSec	= 0x1,
+	eSU_Bytes	= 0x2
+    } 	eStorageUnits;
+
+typedef 
+enum eStorageInitType
+    {	eSIT_CreateNew	= 0x1,
+	eSIT_ReadExisting	= 0x2,
+	eSIT_Append	= 0x3
+    } 	eStorageInitType;
+
+typedef 
+enum eMFMediaType
+    {	eMFMT_Empty	= 0,
+	eMFMT_Video	= 1,
+	eMFMT_Audio	= ( eMFMT_Video + 1 ) ,
+	eMFMT_Subtitles	= ( eMFMT_Audio + 1 ) ,
+	eMFMT_Data	= ( eMFMT_Subtitles + 1 ) 
+    } 	eMFMediaType;
+
+typedef 
+enum eMFPacketFlags
+    {	eMFPF_None	= 0,
+	eMFPF_KeyFrame	= 1,
+	eMFPF_FlushDecoder	= 0x10,
+	eMFPF_Preroll	= 0x20
+    } 	eMFPacketFlags;
+
+typedef 
+enum eMFSaveFlags
+    {	eMFPF_RawData	= 0,
+	eMFPF_Full	= ( eMFPF_RawData + 1 ) 
+    } 	eMFSaveFlags;
+
+typedef struct M_RATIONAL
+    {
+    int nNum;
+    int nDen;
+    } 	M_RATIONAL;
+
+typedef struct M_STREAM_INFO
+    {
+    eMFMediaType eMediaType;
+    LONG cbCodecData;
+    LONGLONG lpCodecData;
+    M_RATIONAL raTimeBase;
+    int nWidth;
+    int nHeight;
+    int nAspectX;
+    int nAspectY;
+    double dblRate;
+    int nSampleRate;
+    int nChannels;
+    int nBlockAlign;
+    int nBitsPerCodedSample;
+    int nBitrate;
+    BSTR bsCodecNameOrTag;
+    } 	M_STREAM_INFO;
+
+typedef struct M_PACKET_INFO
+    {
+    eMFPacketFlags eFlags;
+    LONG cbPacketData;
+    LONGLONG lpPacketData;
+    REFERENCE_TIME rtDts;
+    REFERENCE_TIME rtPts;
+    REFERENCE_TIME rtDuration;
+    REFERENCE_TIME rtSegmentStart;
+    int nIndexInSegment;
+    int nOrderInSegment;
+    int nKeyDistance;
+    int nStreamIndex;
+    LONGLONG llFilePos;
+    } 	M_PACKET_INFO;
+
 #endif // M_DEFINES_INCLUDED
+#ifndef MFFRAME_DEFINED
+#define MFFRAME_DEFINED
+typedef struct MF_FRAME_INFO
+    {
+    LONGLONG llVideoID;
+    M_TIME mTime;
+    M_AV_PROPS avProps;
+    DWORD cbAudio;
+    DWORD cbVideo;
+    LONGLONG lpVideo;
+    LONGLONG lpAudio;
+    LONG lAudioSamples;
+    DWORD dwProcessID;
+    LONG nDataCount;
+    LONG nObjCount;
+    LONG nStrCount;
+    } 	MF_FRAME_INFO;
+
+typedef 
+enum eMFRectType
+    {	eMFRT_Absolute	= 0,
+	eMFRT_Relative	= 1,
+	eMFRT_FixedCC_15x32	= 2,
+	eMFRT_Fixed14	= 14,
+	eMFRT_Fixed20	= 20,
+	eMFRT_Fixed24	= 24,
+	eMFRT_Fixed32	= 32,
+	eMFRT_Fixed40	= 40
+    } 	eMFRectType;
+
+typedef struct MF_RECT
+    {
+    double dblPosX;
+    double dblPosY;
+    double dblWidth;
+    double dblHeight;
+    eMFRectType eRectType;
+    } 	MF_RECT;
+
+typedef struct MF_VID_PTR
+    {
+    LONGLONG lpVideoPlanes[ 4 ];
+    SIZE szVideoPlanes[ 4 ];
+    int cbVideoRowBytes[ 4 ];
+    } 	MF_VID_PTR;
+
+typedef /* [v1_enum] */ 
+enum eMFTextFlags
+    {	eMFTF_TopLeft	= 0,
+	eMFTF_TopCenter	= 0x1,
+	eMFTF_TopRight	= 0x2,
+	eMFTF_TopJustify	= 0x3,
+	eMFTF_CenterLeft	= 0x10,
+	eMFTF_Center	= 0x11,
+	eMFTF_CenterRight	= 0x12,
+	eMFTF_CenterJustify	= 0x12,
+	eMFTF_BottomLeft	= 0x20,
+	eMFTF_BottomCenter	= 0x21,
+	eMFTF_BottomRight	= 0x22,
+	eMFTF_BottomJustify	= 0x22,
+	eMFTF_HPos_Mask	= 0x3,
+	eMFTF_VPos_Mask	= 0x30,
+	eMFT_WordBreaks	= 0x100,
+	eMFT_RightToLeft	= 0x200,
+	eMFT_Vertical	= 0x400,
+	eMFTF_WB_TopLeft	= 0x100,
+	eMFTF_WB_TopCenter	= 0x101,
+	eMFTF_WB_TopRight	= 0x102,
+	eMFTF_WB_TopJustify	= 0x103,
+	eMFTF_WB_CenterLeft	= 0x110,
+	eMFTF_WB_Center	= 0x111,
+	eMFTF_WB_CenterRight	= 0x112,
+	eMFTF_WB_CenterJustify	= 0x112,
+	eMFTF_WB_BottomLeft	= 0x120,
+	eMFTF_WB_BottomCenter	= 0x121,
+	eMFTF_WB_BottomRight	= 0x122,
+	eMFTF_WB_BottomJustify	= 0x122,
+	eMFTF_FirstField	= 0x1000,
+	eMFTF_SecondField	= 0x2000
+    } 	eMFTextFlags;
+
+typedef /* [v1_enum] */ 
+enum eMFOverlayFlags
+    {	eMFOF_NoScale	= 0,
+	eMFOF_LetterBox	= 0x1,
+	eMFOF_Crop	= 0x2,
+	eMFOF_NoAR	= 0x4,
+	eMFOF_ScaleMask	= 0xf,
+	eMFOF_FirstField	= 0x1000,
+	eMFOF_SecondField	= 0x2000
+    } 	eMFOverlayFlags;
+
 
 
 extern RPC_IF_HANDLE __MIDL_itf_MPlatform_0000_0000_v0_0_c_ifspec;
 extern RPC_IF_HANDLE __MIDL_itf_MPlatform_0000_0000_v0_0_s_ifspec;
+
+#ifndef __IMFFrame_INTERFACE_DEFINED__
+#define __IMFFrame_INTERFACE_DEFINED__
+
+/* interface IMFFrame */
+/* [unique][helpstring][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IMFFrame;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("4F377000-473F-4ad5-A5C2-428FE0C8E03E")
+    IMFFrame : public IUnknown
+    {
+    public:
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFGetProcessID( 
+            /* [out] */ DWORD *_pdwProcessID) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAVPropsGet( 
+            /* [out] */ M_AV_PROPS *_pProps,
+            /* [out] */ long *_plAudioSamples) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAVPropsSet( 
+            /* [in] */ M_AV_PROPS *_pProps,
+            /* [in] */ BSTR _bsChannelsRemap) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFTimeGet( 
+            /* [out] */ M_TIME *_pTime) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFTimeSet( 
+            /* [in] */ M_TIME *_pTime) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFFlagCheck( 
+            /* [in] */ eMFrameFlags _eFlagCheck,
+            /* [out] */ int *_pnRes) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAllGet( 
+            /* [out] */ MF_FRAME_INFO *_pFrameInfo) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAudioGetBytes( 
+            /* [out] */ LONG *_pcbSize,
+            /* [out] */ LONGLONG *_ppbAudio) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAudioChannelGetBytes( 
+            /* [in] */ int _nChannel,
+            /* [in] */ BOOL _bCreateNewChannels,
+            /* [out] */ LONG *_pcbSize,
+            /* [out] */ LONGLONG *_ppbAudio) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAudioChannelsUpdate( void) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAudioAlloc( 
+            /* [in] */ M_AUD_PROPS *_pAudProps,
+            /* [in] */ LONG _lSamples) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAudioSet( 
+            /* [in] */ M_AUD_PROPS *_pAudProps,
+            /* [in] */ LONG _cbSize,
+            /* [in] */ LONGLONG _pbAudio) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAudioMixDirect( 
+            /* [out][in] */ LONG *_plAudioOffsetSrc,
+            /* [in] */ IMFFrame *_pFrameMixFrom,
+            /* [out][in] */ LONG *_plAudioOffsetMix,
+            /* [in] */ LONG _lSamplesMixMax,
+            /* [in] */ double _dblGainStartDb,
+            /* [in] */ double _dblGainEndDb,
+            /* [in] */ BOOL _bSymmetricGain) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAudioMix( 
+            /* [in] */ IMFFrame *_pFrameMixFrom,
+            /* [in] */ double _dblGainStartDb,
+            /* [in] */ double _dblGainEndDb,
+            /* [in] */ BOOL _bSymmetricGain,
+            /* [in] */ BSTR _bsAudioBufferID) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAudioCopyTo( 
+            /* [in] */ BSTR _bsChannelsList,
+            /* [in] */ IMFFrame *_pFrameTo) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAudioSaveToFile( 
+            /* [in] */ BSTR _bsFileName,
+            /* [in] */ BOOL _bAppend) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAudioLoadFromFile( 
+            /* [in] */ BSTR _bsFileName,
+            /* [in] */ LONGLONG _llSamplesOffset,
+            /* [in] */ LONG _lSamplesLoad) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAudioGain( 
+            /* [in] */ BSTR _bsChannelsList,
+            /* [in] */ double _dblGainStartDb,
+            /* [in] */ double _dblGainEndDb) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFVideoGetBytes( 
+            /* [out] */ LONG *_pcbSize,
+            /* [out] */ LONGLONG *_ppbVideo) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFVideoGetHbitmap( 
+            /* [out] */ LONGLONG *_pllHBitmap) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFVideoSaveToFile( 
+            /* [in] */ BSTR _bsFileName) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFCut( 
+            /* [in] */ int _nField,
+            /* [in] */ RECT *_pRect,
+            /* [out] */ IMFFrame **_ppFrameRes) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFClone( 
+            /* [out] */ IMFFrame **_ppCloneFrame,
+            /* [in] */ eMFrameClone _eCloneType,
+            /* [in] */ eMFCC _fccPixelFormat) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFOverlay( 
+            /* [in] */ IMFFrame *_pFrameOverlay,
+            /* [in] */ IMFFrame *_pFrameMask,
+            /* [in] */ int _nPosX,
+            /* [in] */ int _nPosY,
+            /* [in] */ double _dblAlpha,
+            /* [in] */ BSTR _bsPropsList,
+            /* [in] */ BSTR _bsAudioBufferID) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFConvert( 
+            /* [in] */ M_AV_PROPS *_pPropsDest,
+            /* [out] */ IMFFrame **_ppFrameRes,
+            /* [out] */ int *_pnFrameRest,
+            /* [in] */ BSTR _bsPropsList,
+            /* [in] */ BSTR _bsConverterID) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFResize( 
+            /* [in] */ eMFCC _fccOutput,
+            /* [in] */ int _nWidth,
+            /* [in] */ int _nHeight,
+            /* [in] */ int _nResizeField,
+            /* [out] */ IMFFrame **_ppFrameRes,
+            /* [in] */ BSTR _bsPropsList,
+            /* [in] */ BSTR _bsConverterID) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFTransition( 
+            /* [in] */ IMFFrame *_pFrameFrom,
+            /* [out] */ IMFFrame **_ppFrameRes,
+            /* [in] */ double _dblPos,
+            /* [in] */ BSTR _bsTransition,
+            /* [in] */ BSTR _bsPropsList,
+            /* [in] */ BSTR _bsConverterID) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFDataGetByIndex( 
+            /* [in] */ int _nIndex,
+            /* [out] */ BSTR *_pbsDataID,
+            /* [out] */ LONG *_pcbANCData,
+            /* [out] */ LONGLONG *_ppbANCData) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFDataGet( 
+            /* [in] */ BSTR _bsDataID,
+            /* [out] */ LONG *_pcbANCData,
+            /* [out] */ LONGLONG *_ppbANCData) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFDataSet( 
+            /* [in] */ BSTR _bsDataID,
+            /* [in] */ LONG _cbANCData,
+            /* [in] */ LONGLONG _pbANCData) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFObjGetByIndex( 
+            /* [in] */ int _nIndex,
+            /* [out] */ BSTR *_pbsObjID,
+            /* [out] */ IUnknown **_ppObj,
+            /* [in] */ BOOL _bMakeFrameLocal) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFObjGet( 
+            /* [in] */ BSTR _bsObjID,
+            /* [out] */ IUnknown **_ppObj,
+            /* [in] */ BOOL _bMakeFrameLocal) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFObjSet( 
+            /* [in] */ BSTR _bsObjID,
+            /* [in] */ IUnknown *_pObj) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFStrGetByIndex( 
+            /* [in] */ int _nIndex,
+            /* [out] */ BSTR *_pbsStrID,
+            /* [out] */ BSTR *_pbsString) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFStrGet( 
+            /* [in] */ BSTR _bsStrID,
+            /* [out] */ BSTR *_pbsString) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFStrSet( 
+            /* [in] */ BSTR _bsStrID,
+            /* [in] */ BSTR _bsString) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFSave( 
+            /* [out] */ DWORD *_pcbData,
+            /* [size_is][size_is][out] */ BYTE **_ppData,
+            /* [in] */ eMFrameClone _eSaveType) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFLoad( 
+            /* [in] */ DWORD _cbData,
+            /* [size_is][in] */ BYTE *_pbData,
+            /* [in] */ eMFrameClone _eLoadType) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFWaitAsync( void) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFPrint( 
+            /* [in] */ BSTR _bsText,
+            /* [in] */ double _dblTextSize,
+            /* [in] */ MF_RECT *_pRect,
+            /* [in] */ eMFTextFlags _eMFTextFlags,
+            /* [in] */ BSTR _bsExtraParam) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFOverlayRect( 
+            /* [in] */ IMFFrame *_pFrameOverlay,
+            /* [in] */ IMFFrame *_pFrameMask,
+            /* [in] */ MF_RECT *_pRect,
+            /* [in] */ eMFOverlayFlags _eMFOverlayFlags,
+            /* [in] */ double _dblAlpha,
+            /* [in] */ BSTR _bsPropsList,
+            /* [in] */ BSTR _bsAudioBufferID) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFVideoGetBytesEx( 
+            /* [out] */ MF_VID_PTR *_pVideoPtr) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFSaveToStream( 
+            /* [out] */ IStream **_ppStream,
+            /* [in] */ eMFrameClone _eSaveType) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFAddToStream( 
+            /* [in] */ IStream *_pStream,
+            /* [in] */ eMFrameClone _eSaveType) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFLoadFromStream( 
+            /* [in] */ IStream *_pStream,
+            /* [in] */ eMFrameClone _eLoadType) = 0;
+        
+    };
+    
+#else 	/* C style interface */
+
+    typedef struct IMFFrameVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IMFFrame * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IMFFrame * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IMFFrame * This);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFGetProcessID )( 
+            IMFFrame * This,
+            /* [out] */ DWORD *_pdwProcessID);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAVPropsGet )( 
+            IMFFrame * This,
+            /* [out] */ M_AV_PROPS *_pProps,
+            /* [out] */ long *_plAudioSamples);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAVPropsSet )( 
+            IMFFrame * This,
+            /* [in] */ M_AV_PROPS *_pProps,
+            /* [in] */ BSTR _bsChannelsRemap);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFTimeGet )( 
+            IMFFrame * This,
+            /* [out] */ M_TIME *_pTime);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFTimeSet )( 
+            IMFFrame * This,
+            /* [in] */ M_TIME *_pTime);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFFlagCheck )( 
+            IMFFrame * This,
+            /* [in] */ eMFrameFlags _eFlagCheck,
+            /* [out] */ int *_pnRes);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAllGet )( 
+            IMFFrame * This,
+            /* [out] */ MF_FRAME_INFO *_pFrameInfo);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAudioGetBytes )( 
+            IMFFrame * This,
+            /* [out] */ LONG *_pcbSize,
+            /* [out] */ LONGLONG *_ppbAudio);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAudioChannelGetBytes )( 
+            IMFFrame * This,
+            /* [in] */ int _nChannel,
+            /* [in] */ BOOL _bCreateNewChannels,
+            /* [out] */ LONG *_pcbSize,
+            /* [out] */ LONGLONG *_ppbAudio);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAudioChannelsUpdate )( 
+            IMFFrame * This);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAudioAlloc )( 
+            IMFFrame * This,
+            /* [in] */ M_AUD_PROPS *_pAudProps,
+            /* [in] */ LONG _lSamples);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAudioSet )( 
+            IMFFrame * This,
+            /* [in] */ M_AUD_PROPS *_pAudProps,
+            /* [in] */ LONG _cbSize,
+            /* [in] */ LONGLONG _pbAudio);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAudioMixDirect )( 
+            IMFFrame * This,
+            /* [out][in] */ LONG *_plAudioOffsetSrc,
+            /* [in] */ IMFFrame *_pFrameMixFrom,
+            /* [out][in] */ LONG *_plAudioOffsetMix,
+            /* [in] */ LONG _lSamplesMixMax,
+            /* [in] */ double _dblGainStartDb,
+            /* [in] */ double _dblGainEndDb,
+            /* [in] */ BOOL _bSymmetricGain);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAudioMix )( 
+            IMFFrame * This,
+            /* [in] */ IMFFrame *_pFrameMixFrom,
+            /* [in] */ double _dblGainStartDb,
+            /* [in] */ double _dblGainEndDb,
+            /* [in] */ BOOL _bSymmetricGain,
+            /* [in] */ BSTR _bsAudioBufferID);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAudioCopyTo )( 
+            IMFFrame * This,
+            /* [in] */ BSTR _bsChannelsList,
+            /* [in] */ IMFFrame *_pFrameTo);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAudioSaveToFile )( 
+            IMFFrame * This,
+            /* [in] */ BSTR _bsFileName,
+            /* [in] */ BOOL _bAppend);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAudioLoadFromFile )( 
+            IMFFrame * This,
+            /* [in] */ BSTR _bsFileName,
+            /* [in] */ LONGLONG _llSamplesOffset,
+            /* [in] */ LONG _lSamplesLoad);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAudioGain )( 
+            IMFFrame * This,
+            /* [in] */ BSTR _bsChannelsList,
+            /* [in] */ double _dblGainStartDb,
+            /* [in] */ double _dblGainEndDb);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFVideoGetBytes )( 
+            IMFFrame * This,
+            /* [out] */ LONG *_pcbSize,
+            /* [out] */ LONGLONG *_ppbVideo);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFVideoGetHbitmap )( 
+            IMFFrame * This,
+            /* [out] */ LONGLONG *_pllHBitmap);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFVideoSaveToFile )( 
+            IMFFrame * This,
+            /* [in] */ BSTR _bsFileName);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFCut )( 
+            IMFFrame * This,
+            /* [in] */ int _nField,
+            /* [in] */ RECT *_pRect,
+            /* [out] */ IMFFrame **_ppFrameRes);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFClone )( 
+            IMFFrame * This,
+            /* [out] */ IMFFrame **_ppCloneFrame,
+            /* [in] */ eMFrameClone _eCloneType,
+            /* [in] */ eMFCC _fccPixelFormat);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFOverlay )( 
+            IMFFrame * This,
+            /* [in] */ IMFFrame *_pFrameOverlay,
+            /* [in] */ IMFFrame *_pFrameMask,
+            /* [in] */ int _nPosX,
+            /* [in] */ int _nPosY,
+            /* [in] */ double _dblAlpha,
+            /* [in] */ BSTR _bsPropsList,
+            /* [in] */ BSTR _bsAudioBufferID);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFConvert )( 
+            IMFFrame * This,
+            /* [in] */ M_AV_PROPS *_pPropsDest,
+            /* [out] */ IMFFrame **_ppFrameRes,
+            /* [out] */ int *_pnFrameRest,
+            /* [in] */ BSTR _bsPropsList,
+            /* [in] */ BSTR _bsConverterID);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFResize )( 
+            IMFFrame * This,
+            /* [in] */ eMFCC _fccOutput,
+            /* [in] */ int _nWidth,
+            /* [in] */ int _nHeight,
+            /* [in] */ int _nResizeField,
+            /* [out] */ IMFFrame **_ppFrameRes,
+            /* [in] */ BSTR _bsPropsList,
+            /* [in] */ BSTR _bsConverterID);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFTransition )( 
+            IMFFrame * This,
+            /* [in] */ IMFFrame *_pFrameFrom,
+            /* [out] */ IMFFrame **_ppFrameRes,
+            /* [in] */ double _dblPos,
+            /* [in] */ BSTR _bsTransition,
+            /* [in] */ BSTR _bsPropsList,
+            /* [in] */ BSTR _bsConverterID);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFDataGetByIndex )( 
+            IMFFrame * This,
+            /* [in] */ int _nIndex,
+            /* [out] */ BSTR *_pbsDataID,
+            /* [out] */ LONG *_pcbANCData,
+            /* [out] */ LONGLONG *_ppbANCData);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFDataGet )( 
+            IMFFrame * This,
+            /* [in] */ BSTR _bsDataID,
+            /* [out] */ LONG *_pcbANCData,
+            /* [out] */ LONGLONG *_ppbANCData);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFDataSet )( 
+            IMFFrame * This,
+            /* [in] */ BSTR _bsDataID,
+            /* [in] */ LONG _cbANCData,
+            /* [in] */ LONGLONG _pbANCData);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFObjGetByIndex )( 
+            IMFFrame * This,
+            /* [in] */ int _nIndex,
+            /* [out] */ BSTR *_pbsObjID,
+            /* [out] */ IUnknown **_ppObj,
+            /* [in] */ BOOL _bMakeFrameLocal);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFObjGet )( 
+            IMFFrame * This,
+            /* [in] */ BSTR _bsObjID,
+            /* [out] */ IUnknown **_ppObj,
+            /* [in] */ BOOL _bMakeFrameLocal);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFObjSet )( 
+            IMFFrame * This,
+            /* [in] */ BSTR _bsObjID,
+            /* [in] */ IUnknown *_pObj);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFStrGetByIndex )( 
+            IMFFrame * This,
+            /* [in] */ int _nIndex,
+            /* [out] */ BSTR *_pbsStrID,
+            /* [out] */ BSTR *_pbsString);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFStrGet )( 
+            IMFFrame * This,
+            /* [in] */ BSTR _bsStrID,
+            /* [out] */ BSTR *_pbsString);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFStrSet )( 
+            IMFFrame * This,
+            /* [in] */ BSTR _bsStrID,
+            /* [in] */ BSTR _bsString);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFSave )( 
+            IMFFrame * This,
+            /* [out] */ DWORD *_pcbData,
+            /* [size_is][size_is][out] */ BYTE **_ppData,
+            /* [in] */ eMFrameClone _eSaveType);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFLoad )( 
+            IMFFrame * This,
+            /* [in] */ DWORD _cbData,
+            /* [size_is][in] */ BYTE *_pbData,
+            /* [in] */ eMFrameClone _eLoadType);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFWaitAsync )( 
+            IMFFrame * This);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFPrint )( 
+            IMFFrame * This,
+            /* [in] */ BSTR _bsText,
+            /* [in] */ double _dblTextSize,
+            /* [in] */ MF_RECT *_pRect,
+            /* [in] */ eMFTextFlags _eMFTextFlags,
+            /* [in] */ BSTR _bsExtraParam);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFOverlayRect )( 
+            IMFFrame * This,
+            /* [in] */ IMFFrame *_pFrameOverlay,
+            /* [in] */ IMFFrame *_pFrameMask,
+            /* [in] */ MF_RECT *_pRect,
+            /* [in] */ eMFOverlayFlags _eMFOverlayFlags,
+            /* [in] */ double _dblAlpha,
+            /* [in] */ BSTR _bsPropsList,
+            /* [in] */ BSTR _bsAudioBufferID);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFVideoGetBytesEx )( 
+            IMFFrame * This,
+            /* [out] */ MF_VID_PTR *_pVideoPtr);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFSaveToStream )( 
+            IMFFrame * This,
+            /* [out] */ IStream **_ppStream,
+            /* [in] */ eMFrameClone _eSaveType);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFAddToStream )( 
+            IMFFrame * This,
+            /* [in] */ IStream *_pStream,
+            /* [in] */ eMFrameClone _eSaveType);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFLoadFromStream )( 
+            IMFFrame * This,
+            /* [in] */ IStream *_pStream,
+            /* [in] */ eMFrameClone _eLoadType);
+        
+        END_INTERFACE
+    } IMFFrameVtbl;
+
+    interface IMFFrame
+    {
+        CONST_VTBL struct IMFFrameVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IMFFrame_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IMFFrame_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IMFFrame_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IMFFrame_MFGetProcessID(This,_pdwProcessID)	\
+    ( (This)->lpVtbl -> MFGetProcessID(This,_pdwProcessID) ) 
+
+#define IMFFrame_MFAVPropsGet(This,_pProps,_plAudioSamples)	\
+    ( (This)->lpVtbl -> MFAVPropsGet(This,_pProps,_plAudioSamples) ) 
+
+#define IMFFrame_MFAVPropsSet(This,_pProps,_bsChannelsRemap)	\
+    ( (This)->lpVtbl -> MFAVPropsSet(This,_pProps,_bsChannelsRemap) ) 
+
+#define IMFFrame_MFTimeGet(This,_pTime)	\
+    ( (This)->lpVtbl -> MFTimeGet(This,_pTime) ) 
+
+#define IMFFrame_MFTimeSet(This,_pTime)	\
+    ( (This)->lpVtbl -> MFTimeSet(This,_pTime) ) 
+
+#define IMFFrame_MFFlagCheck(This,_eFlagCheck,_pnRes)	\
+    ( (This)->lpVtbl -> MFFlagCheck(This,_eFlagCheck,_pnRes) ) 
+
+#define IMFFrame_MFAllGet(This,_pFrameInfo)	\
+    ( (This)->lpVtbl -> MFAllGet(This,_pFrameInfo) ) 
+
+#define IMFFrame_MFAudioGetBytes(This,_pcbSize,_ppbAudio)	\
+    ( (This)->lpVtbl -> MFAudioGetBytes(This,_pcbSize,_ppbAudio) ) 
+
+#define IMFFrame_MFAudioChannelGetBytes(This,_nChannel,_bCreateNewChannels,_pcbSize,_ppbAudio)	\
+    ( (This)->lpVtbl -> MFAudioChannelGetBytes(This,_nChannel,_bCreateNewChannels,_pcbSize,_ppbAudio) ) 
+
+#define IMFFrame_MFAudioChannelsUpdate(This)	\
+    ( (This)->lpVtbl -> MFAudioChannelsUpdate(This) ) 
+
+#define IMFFrame_MFAudioAlloc(This,_pAudProps,_lSamples)	\
+    ( (This)->lpVtbl -> MFAudioAlloc(This,_pAudProps,_lSamples) ) 
+
+#define IMFFrame_MFAudioSet(This,_pAudProps,_cbSize,_pbAudio)	\
+    ( (This)->lpVtbl -> MFAudioSet(This,_pAudProps,_cbSize,_pbAudio) ) 
+
+#define IMFFrame_MFAudioMixDirect(This,_plAudioOffsetSrc,_pFrameMixFrom,_plAudioOffsetMix,_lSamplesMixMax,_dblGainStartDb,_dblGainEndDb,_bSymmetricGain)	\
+    ( (This)->lpVtbl -> MFAudioMixDirect(This,_plAudioOffsetSrc,_pFrameMixFrom,_plAudioOffsetMix,_lSamplesMixMax,_dblGainStartDb,_dblGainEndDb,_bSymmetricGain) ) 
+
+#define IMFFrame_MFAudioMix(This,_pFrameMixFrom,_dblGainStartDb,_dblGainEndDb,_bSymmetricGain,_bsAudioBufferID)	\
+    ( (This)->lpVtbl -> MFAudioMix(This,_pFrameMixFrom,_dblGainStartDb,_dblGainEndDb,_bSymmetricGain,_bsAudioBufferID) ) 
+
+#define IMFFrame_MFAudioCopyTo(This,_bsChannelsList,_pFrameTo)	\
+    ( (This)->lpVtbl -> MFAudioCopyTo(This,_bsChannelsList,_pFrameTo) ) 
+
+#define IMFFrame_MFAudioSaveToFile(This,_bsFileName,_bAppend)	\
+    ( (This)->lpVtbl -> MFAudioSaveToFile(This,_bsFileName,_bAppend) ) 
+
+#define IMFFrame_MFAudioLoadFromFile(This,_bsFileName,_llSamplesOffset,_lSamplesLoad)	\
+    ( (This)->lpVtbl -> MFAudioLoadFromFile(This,_bsFileName,_llSamplesOffset,_lSamplesLoad) ) 
+
+#define IMFFrame_MFAudioGain(This,_bsChannelsList,_dblGainStartDb,_dblGainEndDb)	\
+    ( (This)->lpVtbl -> MFAudioGain(This,_bsChannelsList,_dblGainStartDb,_dblGainEndDb) ) 
+
+#define IMFFrame_MFVideoGetBytes(This,_pcbSize,_ppbVideo)	\
+    ( (This)->lpVtbl -> MFVideoGetBytes(This,_pcbSize,_ppbVideo) ) 
+
+#define IMFFrame_MFVideoGetHbitmap(This,_pllHBitmap)	\
+    ( (This)->lpVtbl -> MFVideoGetHbitmap(This,_pllHBitmap) ) 
+
+#define IMFFrame_MFVideoSaveToFile(This,_bsFileName)	\
+    ( (This)->lpVtbl -> MFVideoSaveToFile(This,_bsFileName) ) 
+
+#define IMFFrame_MFCut(This,_nField,_pRect,_ppFrameRes)	\
+    ( (This)->lpVtbl -> MFCut(This,_nField,_pRect,_ppFrameRes) ) 
+
+#define IMFFrame_MFClone(This,_ppCloneFrame,_eCloneType,_fccPixelFormat)	\
+    ( (This)->lpVtbl -> MFClone(This,_ppCloneFrame,_eCloneType,_fccPixelFormat) ) 
+
+#define IMFFrame_MFOverlay(This,_pFrameOverlay,_pFrameMask,_nPosX,_nPosY,_dblAlpha,_bsPropsList,_bsAudioBufferID)	\
+    ( (This)->lpVtbl -> MFOverlay(This,_pFrameOverlay,_pFrameMask,_nPosX,_nPosY,_dblAlpha,_bsPropsList,_bsAudioBufferID) ) 
+
+#define IMFFrame_MFConvert(This,_pPropsDest,_ppFrameRes,_pnFrameRest,_bsPropsList,_bsConverterID)	\
+    ( (This)->lpVtbl -> MFConvert(This,_pPropsDest,_ppFrameRes,_pnFrameRest,_bsPropsList,_bsConverterID) ) 
+
+#define IMFFrame_MFResize(This,_fccOutput,_nWidth,_nHeight,_nResizeField,_ppFrameRes,_bsPropsList,_bsConverterID)	\
+    ( (This)->lpVtbl -> MFResize(This,_fccOutput,_nWidth,_nHeight,_nResizeField,_ppFrameRes,_bsPropsList,_bsConverterID) ) 
+
+#define IMFFrame_MFTransition(This,_pFrameFrom,_ppFrameRes,_dblPos,_bsTransition,_bsPropsList,_bsConverterID)	\
+    ( (This)->lpVtbl -> MFTransition(This,_pFrameFrom,_ppFrameRes,_dblPos,_bsTransition,_bsPropsList,_bsConverterID) ) 
+
+#define IMFFrame_MFDataGetByIndex(This,_nIndex,_pbsDataID,_pcbANCData,_ppbANCData)	\
+    ( (This)->lpVtbl -> MFDataGetByIndex(This,_nIndex,_pbsDataID,_pcbANCData,_ppbANCData) ) 
+
+#define IMFFrame_MFDataGet(This,_bsDataID,_pcbANCData,_ppbANCData)	\
+    ( (This)->lpVtbl -> MFDataGet(This,_bsDataID,_pcbANCData,_ppbANCData) ) 
+
+#define IMFFrame_MFDataSet(This,_bsDataID,_cbANCData,_pbANCData)	\
+    ( (This)->lpVtbl -> MFDataSet(This,_bsDataID,_cbANCData,_pbANCData) ) 
+
+#define IMFFrame_MFObjGetByIndex(This,_nIndex,_pbsObjID,_ppObj,_bMakeFrameLocal)	\
+    ( (This)->lpVtbl -> MFObjGetByIndex(This,_nIndex,_pbsObjID,_ppObj,_bMakeFrameLocal) ) 
+
+#define IMFFrame_MFObjGet(This,_bsObjID,_ppObj,_bMakeFrameLocal)	\
+    ( (This)->lpVtbl -> MFObjGet(This,_bsObjID,_ppObj,_bMakeFrameLocal) ) 
+
+#define IMFFrame_MFObjSet(This,_bsObjID,_pObj)	\
+    ( (This)->lpVtbl -> MFObjSet(This,_bsObjID,_pObj) ) 
+
+#define IMFFrame_MFStrGetByIndex(This,_nIndex,_pbsStrID,_pbsString)	\
+    ( (This)->lpVtbl -> MFStrGetByIndex(This,_nIndex,_pbsStrID,_pbsString) ) 
+
+#define IMFFrame_MFStrGet(This,_bsStrID,_pbsString)	\
+    ( (This)->lpVtbl -> MFStrGet(This,_bsStrID,_pbsString) ) 
+
+#define IMFFrame_MFStrSet(This,_bsStrID,_bsString)	\
+    ( (This)->lpVtbl -> MFStrSet(This,_bsStrID,_bsString) ) 
+
+#define IMFFrame_MFSave(This,_pcbData,_ppData,_eSaveType)	\
+    ( (This)->lpVtbl -> MFSave(This,_pcbData,_ppData,_eSaveType) ) 
+
+#define IMFFrame_MFLoad(This,_cbData,_pbData,_eLoadType)	\
+    ( (This)->lpVtbl -> MFLoad(This,_cbData,_pbData,_eLoadType) ) 
+
+#define IMFFrame_MFWaitAsync(This)	\
+    ( (This)->lpVtbl -> MFWaitAsync(This) ) 
+
+#define IMFFrame_MFPrint(This,_bsText,_dblTextSize,_pRect,_eMFTextFlags,_bsExtraParam)	\
+    ( (This)->lpVtbl -> MFPrint(This,_bsText,_dblTextSize,_pRect,_eMFTextFlags,_bsExtraParam) ) 
+
+#define IMFFrame_MFOverlayRect(This,_pFrameOverlay,_pFrameMask,_pRect,_eMFOverlayFlags,_dblAlpha,_bsPropsList,_bsAudioBufferID)	\
+    ( (This)->lpVtbl -> MFOverlayRect(This,_pFrameOverlay,_pFrameMask,_pRect,_eMFOverlayFlags,_dblAlpha,_bsPropsList,_bsAudioBufferID) ) 
+
+#define IMFFrame_MFVideoGetBytesEx(This,_pVideoPtr)	\
+    ( (This)->lpVtbl -> MFVideoGetBytesEx(This,_pVideoPtr) ) 
+
+#define IMFFrame_MFSaveToStream(This,_ppStream,_eSaveType)	\
+    ( (This)->lpVtbl -> MFSaveToStream(This,_ppStream,_eSaveType) ) 
+
+#define IMFFrame_MFAddToStream(This,_pStream,_eSaveType)	\
+    ( (This)->lpVtbl -> MFAddToStream(This,_pStream,_eSaveType) ) 
+
+#define IMFFrame_MFLoadFromStream(This,_pStream,_eLoadType)	\
+    ( (This)->lpVtbl -> MFLoadFromStream(This,_pStream,_eLoadType) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IMFFrame_INTERFACE_DEFINED__ */
+
+
+/* interface __MIDL_itf_MPlatform_0000_0001 */
+/* [local] */ 
+
+#endif // MFFRAME_DEFINED
+
+
+extern RPC_IF_HANDLE __MIDL_itf_MPlatform_0000_0001_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_MPlatform_0000_0001_v0_0_s_ifspec;
+
+#ifndef __IMFFactory_INTERFACE_DEFINED__
+#define __IMFFactory_INTERFACE_DEFINED__
+
+/* interface IMFFactory */
+/* [unique][helpstring][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IMFFactory;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("4F365010-473F-4ad5-A5C2-428FE0C8E03E")
+    IMFFactory : public IUnknown
+    {
+    public:
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFFrameMakeLocal( 
+            /* [in] */ IUnknown *_pMFFrame,
+            /* [out] */ IMFFrame **_ppFrameLocal,
+            /* [in] */ BOOL _bAlwaysClone) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFFrameClone( 
+            /* [in] */ IUnknown *_pMFFrame,
+            /* [out] */ IMFFrame **_ppFrameClone,
+            /* [in] */ eMFrameClone _eCloneType,
+            /* [in] */ eMFCC _fccPixelFormat) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFFrameCreateFromMem( 
+            /* [in] */ M_AV_PROPS *_pAVProps,
+            /* [in] */ LONGLONG _lpVideo,
+            /* [in] */ long _lAudioSamples,
+            /* [in] */ LONGLONG _lpAudio,
+            /* [out] */ IMFFrame **_ppFrame,
+            /* [in] */ BSTR _bsPropsList) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFFrameCreateFromFile( 
+            /* [in] */ BSTR _bsFileName,
+            /* [out] */ IMFFrame **_ppFrame,
+            /* [in] */ BSTR _bsPropsList) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFFrameCreateFromHBITMAP( 
+            /* [in] */ LONGLONG _hBitmap,
+            /* [out] */ IMFFrame **_ppFrame,
+            /* [in] */ BSTR _bsPropsList) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFFrameCreateWrapper( 
+            /* [in] */ M_VID_PROPS *_pVidProps,
+            /* [in] */ DWORD _cbVideo,
+            /* [in] */ LONGLONG _lpVideo,
+            /* [in] */ IUnknown *_pObject,
+            /* [out] */ IMFFrame **_ppFrame) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFFrameCreatePlain( 
+            /* [in] */ LONG _cbVideoSize,
+            /* [out] */ IMFFrame **_ppFrame) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE MFFrameCreateFromMemEx( 
+            /* [in] */ M_AV_PROPS *_pAVProps,
+            /* [in] */ MF_VID_PTR *_pVideoPtr,
+            /* [in] */ long _lAudioSamples,
+            /* [in] */ LONGLONG _lpAudio,
+            /* [out] */ IMFFrame **_ppFrame,
+            /* [in] */ BSTR _bsPropsList) = 0;
+        
+    };
+    
+#else 	/* C style interface */
+
+    typedef struct IMFFactoryVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IMFFactory * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IMFFactory * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IMFFactory * This);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFFrameMakeLocal )( 
+            IMFFactory * This,
+            /* [in] */ IUnknown *_pMFFrame,
+            /* [out] */ IMFFrame **_ppFrameLocal,
+            /* [in] */ BOOL _bAlwaysClone);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFFrameClone )( 
+            IMFFactory * This,
+            /* [in] */ IUnknown *_pMFFrame,
+            /* [out] */ IMFFrame **_ppFrameClone,
+            /* [in] */ eMFrameClone _eCloneType,
+            /* [in] */ eMFCC _fccPixelFormat);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFFrameCreateFromMem )( 
+            IMFFactory * This,
+            /* [in] */ M_AV_PROPS *_pAVProps,
+            /* [in] */ LONGLONG _lpVideo,
+            /* [in] */ long _lAudioSamples,
+            /* [in] */ LONGLONG _lpAudio,
+            /* [out] */ IMFFrame **_ppFrame,
+            /* [in] */ BSTR _bsPropsList);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFFrameCreateFromFile )( 
+            IMFFactory * This,
+            /* [in] */ BSTR _bsFileName,
+            /* [out] */ IMFFrame **_ppFrame,
+            /* [in] */ BSTR _bsPropsList);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFFrameCreateFromHBITMAP )( 
+            IMFFactory * This,
+            /* [in] */ LONGLONG _hBitmap,
+            /* [out] */ IMFFrame **_ppFrame,
+            /* [in] */ BSTR _bsPropsList);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFFrameCreateWrapper )( 
+            IMFFactory * This,
+            /* [in] */ M_VID_PROPS *_pVidProps,
+            /* [in] */ DWORD _cbVideo,
+            /* [in] */ LONGLONG _lpVideo,
+            /* [in] */ IUnknown *_pObject,
+            /* [out] */ IMFFrame **_ppFrame);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFFrameCreatePlain )( 
+            IMFFactory * This,
+            /* [in] */ LONG _cbVideoSize,
+            /* [out] */ IMFFrame **_ppFrame);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *MFFrameCreateFromMemEx )( 
+            IMFFactory * This,
+            /* [in] */ M_AV_PROPS *_pAVProps,
+            /* [in] */ MF_VID_PTR *_pVideoPtr,
+            /* [in] */ long _lAudioSamples,
+            /* [in] */ LONGLONG _lpAudio,
+            /* [out] */ IMFFrame **_ppFrame,
+            /* [in] */ BSTR _bsPropsList);
+        
+        END_INTERFACE
+    } IMFFactoryVtbl;
+
+    interface IMFFactory
+    {
+        CONST_VTBL struct IMFFactoryVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IMFFactory_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IMFFactory_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IMFFactory_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IMFFactory_MFFrameMakeLocal(This,_pMFFrame,_ppFrameLocal,_bAlwaysClone)	\
+    ( (This)->lpVtbl -> MFFrameMakeLocal(This,_pMFFrame,_ppFrameLocal,_bAlwaysClone) ) 
+
+#define IMFFactory_MFFrameClone(This,_pMFFrame,_ppFrameClone,_eCloneType,_fccPixelFormat)	\
+    ( (This)->lpVtbl -> MFFrameClone(This,_pMFFrame,_ppFrameClone,_eCloneType,_fccPixelFormat) ) 
+
+#define IMFFactory_MFFrameCreateFromMem(This,_pAVProps,_lpVideo,_lAudioSamples,_lpAudio,_ppFrame,_bsPropsList)	\
+    ( (This)->lpVtbl -> MFFrameCreateFromMem(This,_pAVProps,_lpVideo,_lAudioSamples,_lpAudio,_ppFrame,_bsPropsList) ) 
+
+#define IMFFactory_MFFrameCreateFromFile(This,_bsFileName,_ppFrame,_bsPropsList)	\
+    ( (This)->lpVtbl -> MFFrameCreateFromFile(This,_bsFileName,_ppFrame,_bsPropsList) ) 
+
+#define IMFFactory_MFFrameCreateFromHBITMAP(This,_hBitmap,_ppFrame,_bsPropsList)	\
+    ( (This)->lpVtbl -> MFFrameCreateFromHBITMAP(This,_hBitmap,_ppFrame,_bsPropsList) ) 
+
+#define IMFFactory_MFFrameCreateWrapper(This,_pVidProps,_cbVideo,_lpVideo,_pObject,_ppFrame)	\
+    ( (This)->lpVtbl -> MFFrameCreateWrapper(This,_pVidProps,_cbVideo,_lpVideo,_pObject,_ppFrame) ) 
+
+#define IMFFactory_MFFrameCreatePlain(This,_cbVideoSize,_ppFrame)	\
+    ( (This)->lpVtbl -> MFFrameCreatePlain(This,_cbVideoSize,_ppFrame) ) 
+
+#define IMFFactory_MFFrameCreateFromMemEx(This,_pAVProps,_pVideoPtr,_lAudioSamples,_lpAudio,_ppFrame,_bsPropsList)	\
+    ( (This)->lpVtbl -> MFFrameCreateFromMemEx(This,_pAVProps,_pVideoPtr,_lAudioSamples,_lpAudio,_ppFrame,_bsPropsList) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IMFFactory_INTERFACE_DEFINED__ */
+
 
 #ifndef __IMAttributes_INTERFACE_DEFINED__
 #define __IMAttributes_INTERFACE_DEFINED__
@@ -1167,7 +2317,7 @@ EXTERN_C const IID IID_IMAttributes;
             IMAttributes * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMAttributes * This);
@@ -1465,7 +2615,7 @@ EXTERN_C const IID IID_IMNode;
             IMNode * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMNode * This);
@@ -1848,7 +2998,7 @@ EXTERN_C const IID IID_IMCallback;
             IMCallback * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMCallback * This);
@@ -1910,15 +3060,15 @@ EXTERN_C const IID IID_IMCallback;
 #endif 	/* __IMCallback_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_MPlatform_0000_0003 */
+/* interface __MIDL_itf_MPlatform_0000_0005 */
 /* [local] */ 
 
 typedef HRESULT (WINAPI *PFOnEvent)(LONGLONG llCallbackUserData, BSTR bsChannelID, BSTR bsEventName, BSTR bsEventParam, IUnknown* pEventObject );
 typedef HRESULT (WINAPI *PFOnFrame)(LONGLONG llCallbackUserData, BSTR bsChannelID, IUnknown* pMFrame );
 
 
-extern RPC_IF_HANDLE __MIDL_itf_MPlatform_0000_0003_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_MPlatform_0000_0003_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_MPlatform_0000_0005_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_MPlatform_0000_0005_v0_0_s_ifspec;
 
 #ifndef __IMPreview_INTERFACE_DEFINED__
 #define __IMPreview_INTERFACE_DEFINED__
@@ -1989,7 +3139,7 @@ EXTERN_C const IID IID_IMPreview;
             IMPreview * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMPreview * This);
@@ -2109,6 +3259,726 @@ EXTERN_C const IID IID_IMPreview;
 #endif 	/* __IMPreview_INTERFACE_DEFINED__ */
 
 
+#ifndef __IMWebRTC_INTERFACE_DEFINED__
+#define __IMWebRTC_INTERFACE_DEFINED__
+
+/* interface IMWebRTC */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IMWebRTC;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("59CDAE09-351A-4711-B088-7C7963300FE7")
+    IMWebRTC : public IUnknown
+    {
+    public:
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE Login( 
+            /* [in] */ BSTR _bsSigServerURL,
+            /* [in] */ BSTR _bsAccessName,
+            /* [out] */ BSTR *_pbsPeerID) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE Logout( void) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetPeersCount( 
+            /* [out] */ int *_pnCount) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetPeerByIndex( 
+            /* [in] */ int _nIndex,
+            /* [out] */ BSTR *_pbsAccessName,
+            /* [out] */ BSTR *_pbsPeerID) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE ConnectToPeer( 
+            /* [in] */ BSTR _bsPeerID) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE DisconnectPeer( 
+            /* [in] */ BSTR _bsPeerID) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE SendMessageToPeer( 
+            /* [in] */ BSTR _bsPeerID,
+            /* [in] */ BSTR _bsMessage) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE ObjectCallbackSet( 
+            /* [in] */ IMCallback *_pCallback,
+            /* [in] */ LONGLONG _llCallbackUserData) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE ObjectCallbackSetFunc( 
+            /* [in] */ LONGLONG _lpPFOnEvent,
+            /* [in] */ LONGLONG _lpPFOnFrame,
+            /* [in] */ LONGLONG _llCallbackUserData) = 0;
+        
+    };
+    
+#else 	/* C style interface */
+
+    typedef struct IMWebRTCVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IMWebRTC * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IMWebRTC * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IMWebRTC * This);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *Login )( 
+            IMWebRTC * This,
+            /* [in] */ BSTR _bsSigServerURL,
+            /* [in] */ BSTR _bsAccessName,
+            /* [out] */ BSTR *_pbsPeerID);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *Logout )( 
+            IMWebRTC * This);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetPeersCount )( 
+            IMWebRTC * This,
+            /* [out] */ int *_pnCount);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetPeerByIndex )( 
+            IMWebRTC * This,
+            /* [in] */ int _nIndex,
+            /* [out] */ BSTR *_pbsAccessName,
+            /* [out] */ BSTR *_pbsPeerID);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *ConnectToPeer )( 
+            IMWebRTC * This,
+            /* [in] */ BSTR _bsPeerID);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *DisconnectPeer )( 
+            IMWebRTC * This,
+            /* [in] */ BSTR _bsPeerID);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *SendMessageToPeer )( 
+            IMWebRTC * This,
+            /* [in] */ BSTR _bsPeerID,
+            /* [in] */ BSTR _bsMessage);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *ObjectCallbackSet )( 
+            IMWebRTC * This,
+            /* [in] */ IMCallback *_pCallback,
+            /* [in] */ LONGLONG _llCallbackUserData);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *ObjectCallbackSetFunc )( 
+            IMWebRTC * This,
+            /* [in] */ LONGLONG _lpPFOnEvent,
+            /* [in] */ LONGLONG _lpPFOnFrame,
+            /* [in] */ LONGLONG _llCallbackUserData);
+        
+        END_INTERFACE
+    } IMWebRTCVtbl;
+
+    interface IMWebRTC
+    {
+        CONST_VTBL struct IMWebRTCVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IMWebRTC_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IMWebRTC_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IMWebRTC_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IMWebRTC_Login(This,_bsSigServerURL,_bsAccessName,_pbsPeerID)	\
+    ( (This)->lpVtbl -> Login(This,_bsSigServerURL,_bsAccessName,_pbsPeerID) ) 
+
+#define IMWebRTC_Logout(This)	\
+    ( (This)->lpVtbl -> Logout(This) ) 
+
+#define IMWebRTC_GetPeersCount(This,_pnCount)	\
+    ( (This)->lpVtbl -> GetPeersCount(This,_pnCount) ) 
+
+#define IMWebRTC_GetPeerByIndex(This,_nIndex,_pbsAccessName,_pbsPeerID)	\
+    ( (This)->lpVtbl -> GetPeerByIndex(This,_nIndex,_pbsAccessName,_pbsPeerID) ) 
+
+#define IMWebRTC_ConnectToPeer(This,_bsPeerID)	\
+    ( (This)->lpVtbl -> ConnectToPeer(This,_bsPeerID) ) 
+
+#define IMWebRTC_DisconnectPeer(This,_bsPeerID)	\
+    ( (This)->lpVtbl -> DisconnectPeer(This,_bsPeerID) ) 
+
+#define IMWebRTC_SendMessageToPeer(This,_bsPeerID,_bsMessage)	\
+    ( (This)->lpVtbl -> SendMessageToPeer(This,_bsPeerID,_bsMessage) ) 
+
+#define IMWebRTC_ObjectCallbackSet(This,_pCallback,_llCallbackUserData)	\
+    ( (This)->lpVtbl -> ObjectCallbackSet(This,_pCallback,_llCallbackUserData) ) 
+
+#define IMWebRTC_ObjectCallbackSetFunc(This,_lpPFOnEvent,_lpPFOnFrame,_llCallbackUserData)	\
+    ( (This)->lpVtbl -> ObjectCallbackSetFunc(This,_lpPFOnEvent,_lpPFOnFrame,_llCallbackUserData) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IMWebRTC_INTERFACE_DEFINED__ */
+
+
+#ifndef __IMDTMF_INTERFACE_DEFINED__
+#define __IMDTMF_INTERFACE_DEFINED__
+
+/* interface IMDTMF */
+/* [unique][helpstring][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IMDTMF;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("6EC50BAF-7252-48B1-B8FE-ABAF44B027D6")
+    IMDTMF : public IUnknown
+    {
+    public:
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE AddTone( 
+            /* [in] */ BSTR _str,
+            /* [in] */ BOOL _bReplace) = 0;
+        
+    };
+    
+#else 	/* C style interface */
+
+    typedef struct IMDTMFVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IMDTMF * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IMDTMF * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IMDTMF * This);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *AddTone )( 
+            IMDTMF * This,
+            /* [in] */ BSTR _str,
+            /* [in] */ BOOL _bReplace);
+        
+        END_INTERFACE
+    } IMDTMFVtbl;
+
+    interface IMDTMF
+    {
+        CONST_VTBL struct IMDTMFVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IMDTMF_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IMDTMF_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IMDTMF_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IMDTMF_AddTone(This,_str,_bReplace)	\
+    ( (This)->lpVtbl -> AddTone(This,_str,_bReplace) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IMDTMF_INTERFACE_DEFINED__ */
+
+
+#ifndef __IMStorage_INTERFACE_DEFINED__
+#define __IMStorage_INTERFACE_DEFINED__
+
+/* interface IMStorage */
+/* [unique][helpstring][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IMStorage;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("8A3FFE4F-51C3-4056-B407-B3BD7FF62342")
+    IMStorage : public IUnknown
+    {
+    public:
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE SetStorageParam( 
+            /* [in] */ LONGLONG _llMaxSize,
+            /* [in] */ LONGLONG _llMaxGrowSize,
+            /* [in] */ eStorageUnits _eUnits) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetStorageParam( 
+            /* [out] */ LONGLONG *_pllMaxSize,
+            /* [out] */ LONGLONG *_pllMaxGrowSize,
+            /* [out] */ eStorageUnits *_peUnits) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE SetMemoryBufferSize( 
+            /* [in] */ LONG _lBufferSize) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetMemoryBufferSize( 
+            /* [out] */ LONG *_plBufferSize) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE Init( 
+            /* [in] */ BSTR _bsFileName,
+            /* [in] */ eStorageInitType _eInitType,
+            /* [out] */ REFERENCE_TIME *_prtAppendStartTime) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetFileName( 
+            /* [out] */ BSTR *_pbsFileName) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE RegisterStorage( 
+            /* [in] */ BOOL _bRegister) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE Close( void) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE ReceiveData( 
+            /* [in] */ DWORD _cbData,
+            /* [size_is][in] */ BYTE *_pbData,
+            /* [in] */ REFERENCE_TIME *_prtTime,
+            /* [in] */ DWORD _dwFlags) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetPos( 
+            /* [out] */ LONGLONG *_pllStart,
+            /* [out] */ LONGLONG *_pllEnd) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetTime( 
+            /* [out] */ LONGLONG *_prtStart,
+            /* [out] */ LONGLONG *_prtEnd) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetPosForTime( 
+            /* [in] */ LONGLONG _rtTime,
+            /* [out] */ LONGLONG *_pllPos,
+            /* [out] */ LONGLONG *_prtRealTime,
+            /* [out] */ LONG *_pcbData) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetTimeForPos( 
+            /* [in] */ LONGLONG _llPos,
+            /* [out] */ LONGLONG *_prtTime) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetSyncPosForTime( 
+            /* [in] */ LONGLONG _rtTime,
+            /* [out] */ LONGLONG *_pllPos,
+            /* [out] */ LONGLONG *_prtRealTime,
+            /* [out] */ LONG *_pcbData) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE AddReader( 
+            /* [out] */ LONG *_pnCookie) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE ReadData( 
+            /* [in] */ LONG _nCookie,
+            /* [in] */ LONGLONG _llPos,
+            /* [out][in] */ LONG *_pcbData,
+            /* [size_is][out] */ BYTE *_pbData) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE RemoveReader( 
+            /* [in] */ LONG _nCookie) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE LockPos( 
+            /* [in] */ LONG _nCookie,
+            /* [in] */ LONGLONG _llPos,
+            /* [out] */ LONGLONG *_pllLockedPos) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetLockPos( 
+            /* [in] */ LONG _nCookie,
+            /* [out] */ LONGLONG *_pllLockedPos) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE Reset( void) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE SetAuxData( 
+            /* [in] */ BSTR _bsDataName,
+            /* [in] */ LONG _cbAuxData,
+            /* [size_is][in] */ BYTE *_pbAuxData) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetAuxData( 
+            /* [in] */ BSTR _bsDataName,
+            /* [out] */ LONG *_pcbAuxData,
+            /* [size_is][size_is][out] */ BYTE **_ppbAuxData) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetAuxDataCount( 
+            /* [out] */ int *_pnCount) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE GetAuxDataName( 
+            /* [in] */ int _nIndex,
+            /* [out] */ BSTR *_pbsName) = 0;
+        
+    };
+    
+#else 	/* C style interface */
+
+    typedef struct IMStorageVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IMStorage * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IMStorage * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IMStorage * This);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *SetStorageParam )( 
+            IMStorage * This,
+            /* [in] */ LONGLONG _llMaxSize,
+            /* [in] */ LONGLONG _llMaxGrowSize,
+            /* [in] */ eStorageUnits _eUnits);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetStorageParam )( 
+            IMStorage * This,
+            /* [out] */ LONGLONG *_pllMaxSize,
+            /* [out] */ LONGLONG *_pllMaxGrowSize,
+            /* [out] */ eStorageUnits *_peUnits);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *SetMemoryBufferSize )( 
+            IMStorage * This,
+            /* [in] */ LONG _lBufferSize);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetMemoryBufferSize )( 
+            IMStorage * This,
+            /* [out] */ LONG *_plBufferSize);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *Init )( 
+            IMStorage * This,
+            /* [in] */ BSTR _bsFileName,
+            /* [in] */ eStorageInitType _eInitType,
+            /* [out] */ REFERENCE_TIME *_prtAppendStartTime);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetFileName )( 
+            IMStorage * This,
+            /* [out] */ BSTR *_pbsFileName);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *RegisterStorage )( 
+            IMStorage * This,
+            /* [in] */ BOOL _bRegister);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *Close )( 
+            IMStorage * This);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *ReceiveData )( 
+            IMStorage * This,
+            /* [in] */ DWORD _cbData,
+            /* [size_is][in] */ BYTE *_pbData,
+            /* [in] */ REFERENCE_TIME *_prtTime,
+            /* [in] */ DWORD _dwFlags);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetPos )( 
+            IMStorage * This,
+            /* [out] */ LONGLONG *_pllStart,
+            /* [out] */ LONGLONG *_pllEnd);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetTime )( 
+            IMStorage * This,
+            /* [out] */ LONGLONG *_prtStart,
+            /* [out] */ LONGLONG *_prtEnd);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetPosForTime )( 
+            IMStorage * This,
+            /* [in] */ LONGLONG _rtTime,
+            /* [out] */ LONGLONG *_pllPos,
+            /* [out] */ LONGLONG *_prtRealTime,
+            /* [out] */ LONG *_pcbData);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetTimeForPos )( 
+            IMStorage * This,
+            /* [in] */ LONGLONG _llPos,
+            /* [out] */ LONGLONG *_prtTime);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetSyncPosForTime )( 
+            IMStorage * This,
+            /* [in] */ LONGLONG _rtTime,
+            /* [out] */ LONGLONG *_pllPos,
+            /* [out] */ LONGLONG *_prtRealTime,
+            /* [out] */ LONG *_pcbData);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *AddReader )( 
+            IMStorage * This,
+            /* [out] */ LONG *_pnCookie);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *ReadData )( 
+            IMStorage * This,
+            /* [in] */ LONG _nCookie,
+            /* [in] */ LONGLONG _llPos,
+            /* [out][in] */ LONG *_pcbData,
+            /* [size_is][out] */ BYTE *_pbData);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *RemoveReader )( 
+            IMStorage * This,
+            /* [in] */ LONG _nCookie);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *LockPos )( 
+            IMStorage * This,
+            /* [in] */ LONG _nCookie,
+            /* [in] */ LONGLONG _llPos,
+            /* [out] */ LONGLONG *_pllLockedPos);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetLockPos )( 
+            IMStorage * This,
+            /* [in] */ LONG _nCookie,
+            /* [out] */ LONGLONG *_pllLockedPos);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *Reset )( 
+            IMStorage * This);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *SetAuxData )( 
+            IMStorage * This,
+            /* [in] */ BSTR _bsDataName,
+            /* [in] */ LONG _cbAuxData,
+            /* [size_is][in] */ BYTE *_pbAuxData);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetAuxData )( 
+            IMStorage * This,
+            /* [in] */ BSTR _bsDataName,
+            /* [out] */ LONG *_pcbAuxData,
+            /* [size_is][size_is][out] */ BYTE **_ppbAuxData);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetAuxDataCount )( 
+            IMStorage * This,
+            /* [out] */ int *_pnCount);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *GetAuxDataName )( 
+            IMStorage * This,
+            /* [in] */ int _nIndex,
+            /* [out] */ BSTR *_pbsName);
+        
+        END_INTERFACE
+    } IMStorageVtbl;
+
+    interface IMStorage
+    {
+        CONST_VTBL struct IMStorageVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IMStorage_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IMStorage_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IMStorage_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IMStorage_SetStorageParam(This,_llMaxSize,_llMaxGrowSize,_eUnits)	\
+    ( (This)->lpVtbl -> SetStorageParam(This,_llMaxSize,_llMaxGrowSize,_eUnits) ) 
+
+#define IMStorage_GetStorageParam(This,_pllMaxSize,_pllMaxGrowSize,_peUnits)	\
+    ( (This)->lpVtbl -> GetStorageParam(This,_pllMaxSize,_pllMaxGrowSize,_peUnits) ) 
+
+#define IMStorage_SetMemoryBufferSize(This,_lBufferSize)	\
+    ( (This)->lpVtbl -> SetMemoryBufferSize(This,_lBufferSize) ) 
+
+#define IMStorage_GetMemoryBufferSize(This,_plBufferSize)	\
+    ( (This)->lpVtbl -> GetMemoryBufferSize(This,_plBufferSize) ) 
+
+#define IMStorage_Init(This,_bsFileName,_eInitType,_prtAppendStartTime)	\
+    ( (This)->lpVtbl -> Init(This,_bsFileName,_eInitType,_prtAppendStartTime) ) 
+
+#define IMStorage_GetFileName(This,_pbsFileName)	\
+    ( (This)->lpVtbl -> GetFileName(This,_pbsFileName) ) 
+
+#define IMStorage_RegisterStorage(This,_bRegister)	\
+    ( (This)->lpVtbl -> RegisterStorage(This,_bRegister) ) 
+
+#define IMStorage_Close(This)	\
+    ( (This)->lpVtbl -> Close(This) ) 
+
+#define IMStorage_ReceiveData(This,_cbData,_pbData,_prtTime,_dwFlags)	\
+    ( (This)->lpVtbl -> ReceiveData(This,_cbData,_pbData,_prtTime,_dwFlags) ) 
+
+#define IMStorage_GetPos(This,_pllStart,_pllEnd)	\
+    ( (This)->lpVtbl -> GetPos(This,_pllStart,_pllEnd) ) 
+
+#define IMStorage_GetTime(This,_prtStart,_prtEnd)	\
+    ( (This)->lpVtbl -> GetTime(This,_prtStart,_prtEnd) ) 
+
+#define IMStorage_GetPosForTime(This,_rtTime,_pllPos,_prtRealTime,_pcbData)	\
+    ( (This)->lpVtbl -> GetPosForTime(This,_rtTime,_pllPos,_prtRealTime,_pcbData) ) 
+
+#define IMStorage_GetTimeForPos(This,_llPos,_prtTime)	\
+    ( (This)->lpVtbl -> GetTimeForPos(This,_llPos,_prtTime) ) 
+
+#define IMStorage_GetSyncPosForTime(This,_rtTime,_pllPos,_prtRealTime,_pcbData)	\
+    ( (This)->lpVtbl -> GetSyncPosForTime(This,_rtTime,_pllPos,_prtRealTime,_pcbData) ) 
+
+#define IMStorage_AddReader(This,_pnCookie)	\
+    ( (This)->lpVtbl -> AddReader(This,_pnCookie) ) 
+
+#define IMStorage_ReadData(This,_nCookie,_llPos,_pcbData,_pbData)	\
+    ( (This)->lpVtbl -> ReadData(This,_nCookie,_llPos,_pcbData,_pbData) ) 
+
+#define IMStorage_RemoveReader(This,_nCookie)	\
+    ( (This)->lpVtbl -> RemoveReader(This,_nCookie) ) 
+
+#define IMStorage_LockPos(This,_nCookie,_llPos,_pllLockedPos)	\
+    ( (This)->lpVtbl -> LockPos(This,_nCookie,_llPos,_pllLockedPos) ) 
+
+#define IMStorage_GetLockPos(This,_nCookie,_pllLockedPos)	\
+    ( (This)->lpVtbl -> GetLockPos(This,_nCookie,_pllLockedPos) ) 
+
+#define IMStorage_Reset(This)	\
+    ( (This)->lpVtbl -> Reset(This) ) 
+
+#define IMStorage_SetAuxData(This,_bsDataName,_cbAuxData,_pbAuxData)	\
+    ( (This)->lpVtbl -> SetAuxData(This,_bsDataName,_cbAuxData,_pbAuxData) ) 
+
+#define IMStorage_GetAuxData(This,_bsDataName,_pcbAuxData,_ppbAuxData)	\
+    ( (This)->lpVtbl -> GetAuxData(This,_bsDataName,_pcbAuxData,_ppbAuxData) ) 
+
+#define IMStorage_GetAuxDataCount(This,_pnCount)	\
+    ( (This)->lpVtbl -> GetAuxDataCount(This,_pnCount) ) 
+
+#define IMStorage_GetAuxDataName(This,_nIndex,_pbsName)	\
+    ( (This)->lpVtbl -> GetAuxDataName(This,_nIndex,_pbsName) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IMStorage_INTERFACE_DEFINED__ */
+
+
+#ifndef __IMFPacket_INTERFACE_DEFINED__
+#define __IMFPacket_INTERFACE_DEFINED__
+
+/* interface IMFPacket */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IMFPacket;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("04FBCF64-887B-4AEB-B30C-408E98E6B397")
+    IMFPacket : public IUnknown
+    {
+    public:
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE PacketInfoGet( 
+            /* [out] */ M_PACKET_INFO *_pPacketInfo) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE PacketStreamInfoGet( 
+            /* [out] */ M_STREAM_INFO *_pStreamInfo) = 0;
+        
+        virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE PacketSaveToFile( 
+            /* [in] */ BSTR _bsFileName,
+            /* [in] */ BOOL _bCreateNew,
+            /* [in] */ eMFSaveFlags _eSaveFlags) = 0;
+        
+    };
+    
+#else 	/* C style interface */
+
+    typedef struct IMFPacketVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IMFPacket * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IMFPacket * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IMFPacket * This);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *PacketInfoGet )( 
+            IMFPacket * This,
+            /* [out] */ M_PACKET_INFO *_pPacketInfo);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *PacketStreamInfoGet )( 
+            IMFPacket * This,
+            /* [out] */ M_STREAM_INFO *_pStreamInfo);
+        
+        /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *PacketSaveToFile )( 
+            IMFPacket * This,
+            /* [in] */ BSTR _bsFileName,
+            /* [in] */ BOOL _bCreateNew,
+            /* [in] */ eMFSaveFlags _eSaveFlags);
+        
+        END_INTERFACE
+    } IMFPacketVtbl;
+
+    interface IMFPacket
+    {
+        CONST_VTBL struct IMFPacketVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IMFPacket_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IMFPacket_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IMFPacket_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IMFPacket_PacketInfoGet(This,_pPacketInfo)	\
+    ( (This)->lpVtbl -> PacketInfoGet(This,_pPacketInfo) ) 
+
+#define IMFPacket_PacketStreamInfoGet(This,_pStreamInfo)	\
+    ( (This)->lpVtbl -> PacketStreamInfoGet(This,_pStreamInfo) ) 
+
+#define IMFPacket_PacketSaveToFile(This,_bsFileName,_bCreateNew,_eSaveFlags)	\
+    ( (This)->lpVtbl -> PacketSaveToFile(This,_bsFileName,_bCreateNew,_eSaveFlags) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IMFPacket_INTERFACE_DEFINED__ */
+
+
 #ifndef __IMFrame_INTERFACE_DEFINED__
 #define __IMFrame_INTERFACE_DEFINED__
 
@@ -2206,7 +4076,7 @@ EXTERN_C const IID IID_IMFrame;
             IMFrame * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMFrame * This);
@@ -2444,7 +4314,7 @@ EXTERN_C const IID IID_IMFrames;
             IMFrames * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMFrames * This);
@@ -2615,7 +4485,7 @@ EXTERN_C const IID IID_IMProps;
             IMProps * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMProps * This);
@@ -2786,7 +4656,7 @@ EXTERN_C const IID IID_IMPersist;
             IMPersist * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMPersist * This);
@@ -2924,7 +4794,7 @@ EXTERN_C const IID IID_IMObject;
             IMObject * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMObject * This);
@@ -3119,7 +4989,7 @@ EXTERN_C const IID IID_IMFormat;
             IMFormat * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMFormat * This);
@@ -3321,7 +5191,7 @@ EXTERN_C const IID IID_IMAudioTrack;
             IMAudioTrack * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMAudioTrack * This);
@@ -3540,7 +5410,7 @@ EXTERN_C const IID IID_IMAudio;
             IMAudio * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMAudio * This);
@@ -3712,7 +5582,7 @@ EXTERN_C const IID IID_IMReceiver;
             IMReceiver * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMReceiver * This);
@@ -3860,7 +5730,7 @@ EXTERN_C const IID IID_IMSenders;
             IMSenders * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMSenders * This);
@@ -4019,7 +5889,7 @@ EXTERN_C const IID IID_IMFile;
             IMFile * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMFile * This);
@@ -4260,7 +6130,7 @@ EXTERN_C const IID IID_IMItem;
             IMItem * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMItem * This);
@@ -4601,7 +6471,7 @@ EXTERN_C const IID IID_IMPlaylist;
             IMPlaylist * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMPlaylist * This);
@@ -4816,7 +6686,7 @@ EXTERN_C const IID IID_IMBreaks;
             IMBreaks * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMBreaks * This);
@@ -4996,7 +6866,7 @@ EXTERN_C const IID IID_IMScheduler;
             IMScheduler * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMScheduler * This);
@@ -5177,7 +7047,7 @@ EXTERN_C const IID IID_IMDevice;
             IMDevice * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMDevice * This);
@@ -5287,7 +7157,7 @@ EXTERN_C const IID IID_IMPlugins;
         
         virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE PluginsGetByIndex( 
             /* [in] */ int _nIndex,
-            /* [out] */ IUnknown **_pPlugin,
+            /* [out] */ IUnknown **_ppPlugin,
             /* [out] */ LONGLONG *_pllCallbackUserData) = 0;
         
         virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE PluginsAdd( 
@@ -5303,7 +7173,7 @@ EXTERN_C const IID IID_IMPlugins;
         
         virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE PluginsGetByIndexVB6( 
             /* [in] */ int _nIndex,
-            /* [out] */ IUnknown **_pPlugin,
+            /* [out] */ IUnknown **_ppPlugin,
             /* [out] */ LONG *_pllCallbackUserData) = 0;
         
         virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE PluginsReorder( 
@@ -5322,7 +7192,7 @@ EXTERN_C const IID IID_IMPlugins;
             IMPlugins * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMPlugins * This);
@@ -5337,7 +7207,7 @@ EXTERN_C const IID IID_IMPlugins;
         /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *PluginsGetByIndex )( 
             IMPlugins * This,
             /* [in] */ int _nIndex,
-            /* [out] */ IUnknown **_pPlugin,
+            /* [out] */ IUnknown **_ppPlugin,
             /* [out] */ LONGLONG *_pllCallbackUserData);
         
         /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *PluginsAdd )( 
@@ -5357,7 +7227,7 @@ EXTERN_C const IID IID_IMPlugins;
         /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *PluginsGetByIndexVB6 )( 
             IMPlugins * This,
             /* [in] */ int _nIndex,
-            /* [out] */ IUnknown **_pPlugin,
+            /* [out] */ IUnknown **_ppPlugin,
             /* [out] */ LONG *_pllCallbackUserData);
         
         /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *PluginsReorder )( 
@@ -5391,8 +7261,8 @@ EXTERN_C const IID IID_IMPlugins;
 #define IMPlugins_PluginsGetCount(This,_pnCount)	\
     ( (This)->lpVtbl -> PluginsGetCount(This,_pnCount) ) 
 
-#define IMPlugins_PluginsGetByIndex(This,_nIndex,_pPlugin,_pllCallbackUserData)	\
-    ( (This)->lpVtbl -> PluginsGetByIndex(This,_nIndex,_pPlugin,_pllCallbackUserData) ) 
+#define IMPlugins_PluginsGetByIndex(This,_nIndex,_ppPlugin,_pllCallbackUserData)	\
+    ( (This)->lpVtbl -> PluginsGetByIndex(This,_nIndex,_ppPlugin,_pllCallbackUserData) ) 
 
 #define IMPlugins_PluginsAdd(This,_pPlugin,_llCallbackUserData)	\
     ( (This)->lpVtbl -> PluginsAdd(This,_pPlugin,_llCallbackUserData) ) 
@@ -5403,8 +7273,8 @@ EXTERN_C const IID IID_IMPlugins;
 #define IMPlugins_PluginsAddVB6(This,_pPlugin,_lCallbackUserData)	\
     ( (This)->lpVtbl -> PluginsAddVB6(This,_pPlugin,_lCallbackUserData) ) 
 
-#define IMPlugins_PluginsGetByIndexVB6(This,_nIndex,_pPlugin,_pllCallbackUserData)	\
-    ( (This)->lpVtbl -> PluginsGetByIndexVB6(This,_nIndex,_pPlugin,_pllCallbackUserData) ) 
+#define IMPlugins_PluginsGetByIndexVB6(This,_nIndex,_ppPlugin,_pllCallbackUserData)	\
+    ( (This)->lpVtbl -> PluginsGetByIndexVB6(This,_nIndex,_ppPlugin,_pllCallbackUserData) ) 
 
 #define IMPlugins_PluginsReorder(This,_pPlugin,_nOrderChange)	\
     ( (This)->lpVtbl -> PluginsReorder(This,_pPlugin,_nOrderChange) ) 
@@ -5463,7 +7333,7 @@ EXTERN_C const IID IID_IMPlugin;
             IMPlugin * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMPlugin * This);
@@ -5630,7 +7500,7 @@ EXTERN_C const IID IID_IMElement;
             IMElement * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMElement * This);
@@ -6026,7 +7896,7 @@ EXTERN_C const IID IID_IMElements;
             IMElements * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMElements * This);
@@ -6176,7 +8046,7 @@ EXTERN_C const IID IID_IMScenes;
             IMScenes * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMScenes * This);
@@ -6358,7 +8228,7 @@ EXTERN_C const IID IID_IMStreams;
             IMStreams * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMStreams * This);
@@ -6519,7 +8389,7 @@ EXTERN_C const IID IID_IMWriter;
             IMWriter * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMWriter * This);
@@ -6732,7 +8602,7 @@ EXTERN_C const IID IID_IMDeckControl;
             IMDeckControl * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMDeckControl * This);
@@ -7089,7 +8959,7 @@ EXTERN_C const IID IID_IMConfig;
             IMConfig * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMConfig * This);
@@ -7439,7 +9309,7 @@ EXTERN_C const IID IID_IMFactory;
             IMFactory * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMFactory * This);
@@ -7603,7 +9473,7 @@ EXTERN_C const IID IID_IMSync;
             IMSync * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMSync * This);
@@ -7701,7 +9571,7 @@ EXTERN_C const IID IID_IMSource;
             /* [in] */ int _nFlags) = 0;
         
         virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE SourceFrameGetEx( 
-            /* [out][in] */ LONGLONG *_plUserData,
+            /* [out][in] */ LONGLONG *_pllReaderID,
             /* [in] */ REFERENCE_TIME _rtMaxWait,
             /* [out] */ IMFrame **_ppFrame,
             /* [in] */ int _nFlags) = 0;
@@ -7718,7 +9588,7 @@ EXTERN_C const IID IID_IMSource;
             IMSource * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMSource * This);
@@ -7734,7 +9604,7 @@ EXTERN_C const IID IID_IMSource;
         
         /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *SourceFrameGetEx )( 
             IMSource * This,
-            /* [out][in] */ LONGLONG *_plUserData,
+            /* [out][in] */ LONGLONG *_pllReaderID,
             /* [in] */ REFERENCE_TIME _rtMaxWait,
             /* [out] */ IMFrame **_ppFrame,
             /* [in] */ int _nFlags);
@@ -7765,8 +9635,8 @@ EXTERN_C const IID IID_IMSource;
 #define IMSource_SourceFrameGet(This,_rtMaxWait,_ppFrame,_nFlags)	\
     ( (This)->lpVtbl -> SourceFrameGet(This,_rtMaxWait,_ppFrame,_nFlags) ) 
 
-#define IMSource_SourceFrameGetEx(This,_plUserData,_rtMaxWait,_ppFrame,_nFlags)	\
-    ( (This)->lpVtbl -> SourceFrameGetEx(This,_plUserData,_rtMaxWait,_ppFrame,_nFlags) ) 
+#define IMSource_SourceFrameGetEx(This,_pllReaderID,_rtMaxWait,_ppFrame,_nFlags)	\
+    ( (This)->lpVtbl -> SourceFrameGetEx(This,_pllReaderID,_rtMaxWait,_ppFrame,_nFlags) ) 
 
 #endif /* COBJMACROS */
 
@@ -7821,7 +9691,7 @@ EXTERN_C const IID IID_IMSource_I;
             IMSource_I * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMSource_I * This);
@@ -7837,7 +9707,7 @@ EXTERN_C const IID IID_IMSource_I;
         
         /* [helpstring] */ HRESULT ( STDMETHODCALLTYPE *SourceFrameGetEx )( 
             IMSource_I * This,
-            /* [out][in] */ LONGLONG *_plUserData,
+            /* [out][in] */ LONGLONG *_pllReaderID,
             /* [in] */ REFERENCE_TIME _rtMaxWait,
             /* [out] */ IMFrame **_ppFrame,
             /* [in] */ int _nFlags);
@@ -7888,8 +9758,8 @@ EXTERN_C const IID IID_IMSource_I;
 #define IMSource_I_SourceFrameGet(This,_rtMaxWait,_ppFrame,_nFlags)	\
     ( (This)->lpVtbl -> SourceFrameGet(This,_rtMaxWait,_ppFrame,_nFlags) ) 
 
-#define IMSource_I_SourceFrameGetEx(This,_plUserData,_rtMaxWait,_ppFrame,_nFlags)	\
-    ( (This)->lpVtbl -> SourceFrameGetEx(This,_plUserData,_rtMaxWait,_ppFrame,_nFlags) ) 
+#define IMSource_I_SourceFrameGetEx(This,_pllReaderID,_rtMaxWait,_ppFrame,_nFlags)	\
+    ( (This)->lpVtbl -> SourceFrameGetEx(This,_pllReaderID,_rtMaxWait,_ppFrame,_nFlags) ) 
 
 
 #define IMSource_I_SourceInit(This,_plUserData)	\
@@ -7989,7 +9859,7 @@ EXTERN_C const IID IID_IMFrame_I;
             IMFrame_I * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMFrame_I * This);
@@ -8307,7 +10177,7 @@ EXTERN_C const IID IID_IMFrames_I;
             IMFrames_I * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMFrames_I * This);
@@ -8497,7 +10367,7 @@ EXTERN_C const IID IID_IMDevice_I;
             IMDevice_I * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMDevice_I * This);
@@ -8622,7 +10492,7 @@ EXTERN_C const IID IID_IMObject_I;
             IMObject_I * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMObject_I * This);
@@ -8767,7 +10637,7 @@ EXTERN_C const IID IID_IMSender_I;
             IMSender_I * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMSender_I * This);
@@ -8914,7 +10784,7 @@ EXTERN_C const IID IID_IMReceiver_I;
             IMReceiver_I * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMReceiver_I * This);
@@ -9019,7 +10889,7 @@ EXTERN_C const IID DIID_IMEvents;
             IMEvents * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IMEvents * This);
@@ -9047,14 +10917,22 @@ EXTERN_C const IID DIID_IMEvents;
         
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IMEvents * This,
-            /* [in] */ DISPID dispIdMember,
-            /* [in] */ REFIID riid,
-            /* [in] */ LCID lcid,
-            /* [in] */ WORD wFlags,
-            /* [out][in] */ DISPPARAMS *pDispParams,
-            /* [out] */ VARIANT *pVarResult,
-            /* [out] */ EXCEPINFO *pExcepInfo,
-            /* [out] */ UINT *puArgErr);
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
         
         END_INTERFACE
     } IMEventsVtbl;
@@ -9098,6 +10976,236 @@ EXTERN_C const IID DIID_IMEvents;
 
 
 #endif 	/* __IMEvents_DISPINTERFACE_DEFINED__ */
+
+
+#ifndef __IMEventsEvent_DISPINTERFACE_DEFINED__
+#define __IMEventsEvent_DISPINTERFACE_DEFINED__
+
+/* dispinterface IMEventsEvent */
+/* [helpstring][uuid] */ 
+
+
+EXTERN_C const IID DIID_IMEventsEvent;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+
+    MIDL_INTERFACE("4F365171-473F-4ad5-A5C2-428FE0C8E03E")
+    IMEventsEvent : public IDispatch
+    {
+    };
+    
+#else 	/* C style interface */
+
+    typedef struct IMEventsEventVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IMEventsEvent * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IMEventsEvent * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IMEventsEvent * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IMEventsEvent * This,
+            /* [out] */ UINT *pctinfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IMEventsEvent * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IMEventsEvent * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IMEventsEvent * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        END_INTERFACE
+    } IMEventsEventVtbl;
+
+    interface IMEventsEvent
+    {
+        CONST_VTBL struct IMEventsEventVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IMEventsEvent_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IMEventsEvent_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IMEventsEvent_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IMEventsEvent_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IMEventsEvent_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IMEventsEvent_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IMEventsEvent_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+#endif 	/* __IMEventsEvent_DISPINTERFACE_DEFINED__ */
+
+
+#ifndef __IMEventsFrame_DISPINTERFACE_DEFINED__
+#define __IMEventsFrame_DISPINTERFACE_DEFINED__
+
+/* dispinterface IMEventsFrame */
+/* [helpstring][uuid] */ 
+
+
+EXTERN_C const IID DIID_IMEventsFrame;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+
+    MIDL_INTERFACE("4F365172-473F-4ad5-A5C2-428FE0C8E03E")
+    IMEventsFrame : public IDispatch
+    {
+    };
+    
+#else 	/* C style interface */
+
+    typedef struct IMEventsFrameVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IMEventsFrame * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IMEventsFrame * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IMEventsFrame * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IMEventsFrame * This,
+            /* [out] */ UINT *pctinfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IMEventsFrame * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IMEventsFrame * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IMEventsFrame * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        END_INTERFACE
+    } IMEventsFrameVtbl;
+
+    interface IMEventsFrame
+    {
+        CONST_VTBL struct IMEventsFrameVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IMEventsFrame_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IMEventsFrame_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IMEventsFrame_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IMEventsFrame_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IMEventsFrame_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IMEventsFrame_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IMEventsFrame_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+#endif 	/* __IMEventsFrame_DISPINTERFACE_DEFINED__ */
 
 
 EXTERN_C const CLSID CLSID_MFactory;
@@ -9242,6 +11350,22 @@ EXTERN_C const CLSID CLSID_MWriter;
 
 class DECLSPEC_UUID("C691860F-9C67-4D10-A275-2061E94F3B39")
 MWriter;
+#endif
+
+EXTERN_C const CLSID CLSID_MWebRTC;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("B9E821B5-D77D-4B28-B13E-62C0235F8C5C")
+MWebRTC;
+#endif
+
+EXTERN_C const CLSID CLSID_MDTMF;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("E09BF84E-9028-4448-AD34-8CF08BB45565")
+MDTMF;
 #endif
 #endif /* __MPLATFORMLib_LIBRARY_DEFINED__ */
 

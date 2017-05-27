@@ -124,7 +124,7 @@ namespace caspar {
 
 			std::future<bool> send(core::const_frame frame)
 			{
-				bool b = frame_buffer_.try_push(frame);
+				frame_buffer_.try_push(frame);
 				return make_ready_future(is_running_.load());
 			}
 			std::wstring print() const
@@ -260,9 +260,9 @@ namespace caspar {
 						// The audio data
 						(float*)malloc(Samples * frame.audio_channel_layout().num_channels * sizeof(float)),
 						// The audio channel stride
-						Samples * sizeof(float)
+						Samples * (int)sizeof(float)
 					};
-					int audio_frame_size = ((boost::iterator_range<const int32_t*>)frame.audio_data()).size() * sizeof(int32_t);
+					//int audio_frame_size = ((boost::iterator_range<const int32_t*>)frame.audio_data()).size() * sizeof(int32_t);
 
 
 					void * source = (char *)malloc(frame.audio_data().size() * 4);

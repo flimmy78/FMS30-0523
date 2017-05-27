@@ -66,6 +66,9 @@ if (MSVC)
 		LDKDogLicens.lib
 	)
 else ()
+	target_link_libraries(FamousServer
+		hasp_cpp_linux_x86_64 hasp_linux_x86_64_demo -lpthread
+	)
 endif ()
 
 target_link_libraries(FamousServer
@@ -75,7 +78,7 @@ target_link_libraries(FamousServer
 		protocol
 
 		"${CASPARCG_MODULE_PROJECTS}"
-		hasp_cpp_linux_x86_64 hasp_linux_x86_64_demo -lpthread
+
 		reroute
 )
 

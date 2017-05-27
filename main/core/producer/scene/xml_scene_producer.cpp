@@ -38,6 +38,7 @@
 #include <core/help/help_sink.h>
 
 #include <future>
+#include <vector>
 
 #include "scene_producer.h"
 #include "scene_cg_proxy.h"
@@ -88,9 +89,10 @@ spl::shared_ptr<core::frame_producer> create_xml_scene_producer(
 	if (!found)
 		return core::frame_producer::empty();
 
-	std::wstring filename = *found;
+	auto filename = *found;
+	auto template_name = get_relative(filename, env::template_folder()).wstring();
 
-	CASPAR_SCOPED_CONTEXT_MSG(get_relative(filename, env::template_folder()).string() + ": ");
+	CASPAR_SCOPED_CONTEXT_MSG(template_name + L": ");
 
 	boost::property_tree::wptree root;
 	boost::filesystem::wifstream file(filename);
@@ -103,7 +105,7 @@ spl::shared_ptr<core::frame_producer> create_xml_scene_producer(
 	int width = ptree_get<int>(root, L"scene.<xmlattr>.width");
 	int height = ptree_get<int>(root, L"scene.<xmlattr>.height");
 
-	auto scene = spl::make_shared<scene_producer>(L"scene", width, height, dependencies.format_desc);
+	auto scene = spl::make_shared<scene_producer>(L"scene", template_name, width, height, dependencies.format_desc);
 
 	for (auto elem : root | witerate_children(L"scene.variables") | welement_context_iteration)
 	{
@@ -147,6 +149,18 @@ spl::shared_ptr<core::frame_producer> create_xml_scene_producer(
 		auto& layer						= scene->create_layer(producer, 0, 0, id);
 		auto variable_prefix			= L"layer." + id + L".";
 
+		auto overridden_width = elem.second.get<std::wstring>(L"width", L"");
+		if (!overridden_width.empty())
+			layer.producer.get()->pixel_constraints().width = scene->create_variable<double>(variable_prefix + L"width", false, overridden_width);
+		else
+			scene->create_variable<double>(variable_prefix + L"width", false) = layer.producer.get()->pixel_constraints().width;
+
+		auto overridden_height = elem.second.get<std::wstring>(L"height", L"");
+		if (!overridden_height.empty())
+			layer.producer.get()->pixel_constraints().height = scene->create_variable<double>(variable_prefix + L"height", false, overridden_height);
+		else
+			scene->create_variable<double>(variable_prefix + L"height", false) = layer.producer.get()->pixel_constraints().height;
+
 		layer.hidden					= scene->create_variable<bool>(variable_prefix + L"hidden", false, elem.second.get(L"hidden", L"false"));
 		layer.position.x				= scene->create_variable<double>(variable_prefix + L"x", false, ptree_get<std::wstring>(elem.second, L"x"));
 		layer.position.y				= scene->create_variable<double>(variable_prefix + L"y", false, ptree_get<std::wstring>(elem.second, L"y"));
@@ -155,16 +169,16 @@ spl::shared_ptr<core::frame_producer> create_xml_scene_producer(
 		layer.rotation					= scene->create_variable<double>(variable_prefix + L"rotation", false, elem.second.get<std::wstring>(L"rotation", L"0.0"));
 		layer.crop.upper_left.x			= scene->create_variable<double>(variable_prefix + L"crop_upper_left_x", false, elem.second.get<std::wstring>(L"crop_upper_left_x", L"0.0"));
 		layer.crop.upper_left.y			= scene->create_variable<double>(variable_prefix + L"crop_upper_left_y", false, elem.second.get<std::wstring>(L"crop_upper_left_y", L"0.0"));
-		layer.crop.lower_right.x		= scene->create_variable<double>(variable_prefix + L"crop_lower_right_x", false, elem.second.get<std::wstring>(L"crop_lower_right_x", layer.producer.get()->pixel_constraints().width.as<std::wstring>().get()));
-		layer.crop.lower_right.y		= scene->create_variable<double>(variable_prefix + L"crop_lower_right_y", false, elem.second.get<std::wstring>(L"crop_lower_right_y", layer.producer.get()->pixel_constraints().height.as<std::wstring>().get()));
-		layer.perspective.upper_left.x	= scene->create_variable<double>(variable_prefix + L"perspective_upper_left_x", false, elem.second.get<std::wstring>(L"perspective_upper_left_x", L"0.0"));
-		layer.perspective.upper_left.y	= scene->create_variable<double>(variable_prefix + L"perspective_upper_left_y", false, elem.second.get<std::wstring>(L"perspective_upper_left_y", L"0.0"));
-		layer.perspective.upper_right.x	= scene->create_variable<double>(variable_prefix + L"perspective_upper_right_x", false, elem.second.get<std::wstring>(L"perspective_upper_right_x", layer.producer.get()->pixel_constraints().width.as<std::wstring>().get()));
-		layer.perspective.upper_right.y	= scene->create_variable<double>(variable_prefix + L"perspective_upper_right_y", false, elem.second.get<std::wstring>(L"perspective_upper_right_y", L"0.0"));
-		layer.perspective.lower_right.x	= scene->create_variable<double>(variable_prefix + L"perspective_lower_right_x", false, elem.second.get<std::wstring>(L"perspective_lower_right_x", layer.producer.get()->pixel_constraints().width.as<std::wstring>().get()));
-		layer.perspective.lower_right.y	= scene->create_variable<double>(variable_prefix + L"perspective_lower_right_y", false, elem.second.get<std::wstring>(L"perspective_lower_right_y", layer.producer.get()->pixel_constraints().height.as<std::wstring>().get()));
-		layer.perspective.lower_left.x	= scene->create_variable<double>(variable_prefix + L"perspective_lower_left_x", false, elem.second.get<std::wstring>(L"perspective_lower_left_x", L"0.0"));
-		layer.perspective.lower_left.y	= scene->create_variable<double>(variable_prefix + L"perspective_lower_left_y", false, elem.second.get<std::wstring>(L"perspective_lower_left_y", layer.producer.get()->pixel_constraints().height.as<std::wstring>().get()));
+		layer.crop.lower_right.x = scene->create_variable<double>(variable_prefix + L"crop_lower_right_x", false, elem.second.get<std::wstring>(L"crop_lower_right_x", L"${" + variable_prefix + L"width}"));
+		layer.crop.lower_right.y = scene->create_variable<double>(variable_prefix + L"crop_lower_right_y", false, elem.second.get<std::wstring>(L"crop_lower_right_y", L"${" + variable_prefix + L"height}"));
+		layer.perspective.upper_left.x = scene->create_variable<double>(variable_prefix + L"perspective_upper_left_x", false, elem.second.get<std::wstring>(L"perspective_upper_left_x", L"0.0"));
+		layer.perspective.upper_left.y = scene->create_variable<double>(variable_prefix + L"perspective_upper_left_y", false, elem.second.get<std::wstring>(L"perspective_upper_left_y", L"0.0"));
+		layer.perspective.upper_right.x = scene->create_variable<double>(variable_prefix + L"perspective_upper_right_x", false, elem.second.get<std::wstring>(L"perspective_upper_right_x", L"${" + variable_prefix + L"width}"));
+		layer.perspective.upper_right.y = scene->create_variable<double>(variable_prefix + L"perspective_upper_right_y", false, elem.second.get<std::wstring>(L"perspective_upper_right_y", L"0.0"));
+		layer.perspective.lower_right.x = scene->create_variable<double>(variable_prefix + L"perspective_lower_right_x", false, elem.second.get<std::wstring>(L"perspective_lower_right_x", L"${" + variable_prefix + L"width}"));
+		layer.perspective.lower_right.y = scene->create_variable<double>(variable_prefix + L"perspective_lower_right_y", false, elem.second.get<std::wstring>(L"perspective_lower_right_y", L"${" + variable_prefix + L"height}"));
+		layer.perspective.lower_left.x = scene->create_variable<double>(variable_prefix + L"perspective_lower_left_x", false, elem.second.get<std::wstring>(L"perspective_lower_left_x", L"0.0"));
+		layer.perspective.lower_left.y = scene->create_variable<double>(variable_prefix + L"perspective_lower_left_y", false, elem.second.get<std::wstring>(L"perspective_lower_left_y", L"${" + variable_prefix + L"height}"));
 
 		layer.adjustments.opacity		= scene->create_variable<double>(variable_prefix + L"adjustment.opacity", false, elem.second.get(L"adjustments.opacity", L"1.0"));
 		layer.is_key					= scene->create_variable<bool>(variable_prefix + L"is_key", false, elem.second.get(L"is_key", L"false"));
@@ -178,9 +192,6 @@ spl::shared_ptr<core::frame_producer> create_xml_scene_producer(
 		layer.chroma_key.softness = scene->create_variable<double>(variable_prefix + L"chroma_key.softness", false, elem.second.get(L"chroma_key.softness", L"0.0"));
 		layer.chroma_key.spill = scene->create_variable<double>(variable_prefix + L"chroma_key.spill", false, elem.second.get(L"chroma_key.spill", L"1.0"));
 		layer.chroma_key.spill_darken = scene->create_variable<double>(variable_prefix + L"chroma_key.spill_darken", false, elem.second.get(L"chroma_key.spill_darken", L"2.0"));
-
-		scene->create_variable<double>(variable_prefix + L"width", false) = layer.producer.get()->pixel_constraints().width;
-		scene->create_variable<double>(variable_prefix + L"height", false) = layer.producer.get()->pixel_constraints().height;
 
 		for (auto& var_name : producer->get_variables())
 		{
@@ -216,7 +227,8 @@ spl::shared_ptr<core::frame_producer> create_xml_scene_producer(
 		{
 			ptree_verify_element_name(elem, L"timeline");
 
-			auto& variable = scene->get_variable(ptree_get<std::wstring>(elem.second, L"<xmlattr>.variable"));
+			auto variable_name = ptree_get<std::wstring>(elem.second, L"<xmlattr>.variable");
+			auto& variable = scene->get_variable(variable_name);
 
 			for (auto& k : elem.second)
 			{
@@ -226,12 +238,14 @@ spl::shared_ptr<core::frame_producer> create_xml_scene_producer(
 				ptree_verify_element_name(k, L"keyframe");
 
 				auto easing = k.second.get(L"<xmlattr>.easing", L"");
-				auto at = ptree_get<int64_t>(k.second, L"<xmlattr>.at");
+				auto at		= ptree_get<int64_t>(k.second, L"<xmlattr>.at");
+
+				auto keyframe_variable_name = L"timeline." + variable_name + L"." + boost::lexical_cast<std::wstring>(at);
 
 				if (variable.is<double>())
-					scene->add_keyframe(variable.as<double>(), ptree_get_value<double>(k.second), at, easing);
+					scene->add_keyframe(variable.as<double>(), scene->create_variable<double>(keyframe_variable_name, false, ptree_get_value<std::wstring>(k.second)), at, easing);
 				else if (variable.is<int>())
-					scene->add_keyframe(variable.as<int>(), ptree_get_value<int>(k.second), at, easing);
+					scene->add_keyframe(variable.as<int>(), scene->create_variable<int>(keyframe_variable_name, false, ptree_get_value<std::wstring>(k.second)), at, easing);
 			}
 		}
 	}
@@ -240,6 +254,85 @@ spl::shared_ptr<core::frame_producer> create_xml_scene_producer(
 	{
 		return scene->get_variable(name); 
 	};
+
+	int task_id = 0;
+	if (root.get_child_optional(L"scene.tasks"))
+	{
+		for (auto& task : root | witerate_children(L"scene.tasks") | welement_context_iteration)
+		{
+			auto at_frame = task.second.get_optional<int64_t>(L"<xmlattr>.at");
+			auto when = task.second.get_optional<std::wstring>(L"<xmlattr>.when");
+
+			binding<bool> condition;
+
+			if (at_frame)
+				condition = scene->timeline_frame() == *at_frame;
+			else if (when)
+				condition = scene->create_variable<bool>(L"tasks.task_" + boost::lexical_cast<std::wstring>(task_id), false, *when);
+			else
+				CASPAR_THROW_EXCEPTION(user_error() << msg_info(L"Task elements must have either an at attribute or a when attribute"));
+
+			auto& element_name = task.first;
+
+			std::vector<std::wstring> call_params;
+
+			if (element_name == L"call")
+			{
+				for (auto& arg : task.second)
+				{
+					if (arg.first == L"<xmlattr>")
+						continue;
+
+					ptree_verify_element_name(arg, L"arg");
+					call_params.push_back(ptree_get_value<std::wstring>(arg.second));
+				}
+			}
+			else if (element_name == L"cg_play")
+				call_params.push_back(L"play()");
+			else if (element_name == L"cg_stop")
+				call_params.push_back(L"stop()");
+			else if (element_name == L"cg_next")
+				call_params.push_back(L"next()");
+			else if (element_name == L"cg_invoke")
+			{
+				call_params.push_back(L"invoke()");
+				call_params.push_back(ptree_get<std::wstring>(task.second, L"<xmlattr>.label"));
+			}
+			else if (element_name == L"goto_mark")
+			{
+				auto mark_label = ptree_get<std::wstring>(task.second, L"<xmlattr>.label");
+				auto weak_scene = static_cast<std::weak_ptr<scene_producer>>(scene);
+
+				scene->add_task(std::move(condition), [=]
+				{
+					auto strong = weak_scene.lock();
+
+					if (strong)
+						strong->call({ L"play()", mark_label });
+				});
+			}
+			else
+				CASPAR_THROW_EXCEPTION(user_error() << msg_info(L"Only valid element names in <tasks /> are call, cg_play, cg_stop, cg_next, cg_invoke and goto_mark"));
+
+			if (!call_params.empty())
+			{
+				auto to_layer = ptree_get<std::wstring>(task.second, L"<xmlattr>.to_layer");
+				auto producer = scene->get_layer(to_layer).producer.get();
+
+				auto weak_producer = static_cast<std::weak_ptr<frame_producer>>(producer);
+
+				scene->add_task(std::move(condition), [=]
+				{
+					auto strong = weak_producer.lock();
+
+					if (strong)
+						strong->call(call_params);
+				});
+			}
+
+			++task_id;
+		}
+	}
 
 	for (auto& var_name : scene->get_variables())
 	{

@@ -119,6 +119,7 @@ struct marker
 struct scene_producer::impl
 {
 	std::wstring											producer_name_;
+	std::wstring											template_name_;
 	constraints												pixel_constraints_;
 	video_format_desc										format_desc_;
 	std::list<layer>										layers_;
@@ -135,14 +136,20 @@ struct scene_producer::impl
 	std::map<std::wstring, std::shared_ptr<core::variable>>	variables_;
 	std::vector<std::wstring>								variable_names_;
 	std::multimap<int64_t, marker>							markers_by_frame_;
+	std::vector<std::shared_ptr<void>>						task_subscriptions_;
 	monitor::subject										monitor_subject_;
 	bool													paused_				= true;
 	bool													removed_			= false;
 	bool													going_to_mark_		= false;
 
-	impl(std::wstring producer_name, int width, int height, const video_format_desc& format_desc)
+	impl(
+		std::wstring producer_name,
+		std::wstring template_name,
+		int width,
+		int height,
+		const video_format_desc& format_desc)
 		: producer_name_(std::move(producer_name))
-		, pixel_constraints_(width, height)
+		, template_name_(std::move(template_name))
 		, format_desc_(format_desc)
 		, aggregator_([=] (double x, double y) { return collission_detect(x, y); })
 	{
@@ -153,6 +160,10 @@ struct scene_producer::impl
 		auto frame_variable = std::make_shared<core::variable_impl<double>>(L"-1", true, -1);
 		store_variable(L"frame", frame_variable);
 		frame_number_ = frame_variable->value();
+
+		auto fps = format_desc_.fps * format_desc_.field_count;
+		auto fps_variable = std::make_shared<core::variable_impl<double>>(boost::lexical_cast<std::wstring>(fps), false, fps);
+		store_variable(L"fps", fps_variable);
 
 		auto timeline_frame_variable = std::make_shared<core::variable_impl<int64_t>>(L"-1", false, -1);
 		store_variable(L"timeline_frame", timeline_frame_variable);
@@ -166,6 +177,13 @@ struct scene_producer::impl
 		mouse_y_ = mouse_y_variable->value();
 		m_x_ = 0;
 		m_y_ = 0;
+		
+		auto scene_width = std::make_shared<core::variable_impl<double>>(boost::lexical_cast<std::wstring>(width), false, width);
+		auto scene_height = std::make_shared<core::variable_impl<double>>(boost::lexical_cast<std::wstring>(height), false, height);
+		store_variable(L"scene_width", scene_width);
+		store_variable(L"scene_height", scene_height);
+		pixel_constraints_.width = scene_width->value();
+		pixel_constraints_.height = scene_height->value();
 	}
 
 	layer& create_layer(
@@ -185,6 +203,15 @@ struct scene_producer::impl
 		layers_.reverse();
 	}
 
+	layer& get_layer(const std::wstring& name)
+	{
+		for (auto& layer : layers_)
+			if (layer.name.get() == name)
+				return layer;
+
+		CASPAR_THROW_EXCEPTION(user_error() << msg_info(name + L" not found in scene"));
+	}
+
 	void store_keyframe(void* timeline_identity, const keyframe& k)
 	{
 		timelines_[timeline_identity].keyframes.insert(std::make_pair(k.destination_frame, k));
@@ -200,6 +227,27 @@ struct scene_producer::impl
 	void add_mark(int64_t frame, mark_action action, const std::wstring& label)
 	{
 		markers_by_frame_.insert(std::make_pair(frame, marker(action, label)));
+	}
+
+	void add_task(binding<bool> when, std::function<void()> task)
+	{
+		auto subscription = when.on_change([=]
+		{
+			if (when.get())
+			{
+				try
+				{
+					task();
+				}
+				catch (...)
+				{
+					CASPAR_LOG_CURRENT_EXCEPTION_AT_LEVEL(debug);
+					CASPAR_LOG(error) << print() << " Error when invoking scene task. Turn on log level debug for stacktrace.";
+				}
+			}
+		});
+
+		task_subscriptions_.push_back(std::move(subscription));
 	}
 
 	core::variable& get_variable(const std::wstring& name)
@@ -528,7 +576,7 @@ struct scene_producer::impl
 
 	std::wstring print() const
 	{
-		return L"scene[type=" + name() + L"]";
+		return L"scene[type=" + name() + L" template=" + template_name_ + L"]";
 	}
 
 	std::wstring name() const
@@ -541,6 +589,7 @@ struct scene_producer::impl
 		boost::property_tree::wptree info;
 		info.add(L"type", L"scene");
 		info.add(L"producer-name", name());
+		info.add(L"template-name", template_name_);
 		info.add(L"frame-number", frame_number_.get());
 		info.add(L"timeline-frame-number", timeline_frame_number_.get());
 
@@ -578,8 +627,8 @@ struct scene_producer::impl
 	}
 };
 
-scene_producer::scene_producer(std::wstring producer_name, int width, int height, const video_format_desc& format_desc)
-	: impl_(new impl(std::move(producer_name), width, height, format_desc))
+scene_producer::scene_producer(std::wstring producer_name, std::wstring template_name, int width, int height, const video_format_desc& format_desc)
+	: impl_(new impl(std::move(producer_name), std::move(template_name), width, height, format_desc))
 {
 }
 
@@ -599,8 +648,14 @@ layer& scene_producer::create_layer(
 	return impl_->create_layer(producer, 0, 0, name);
 }
 
-void scene_producer::reverse_layers() {
+void scene_producer::reverse_layers()
+{
 	impl_->reverse_layers();
+}
+
+layer& scene_producer::get_layer(const std::wstring& name)
+{
+	return impl_->get_layer(name);
 }
 
 binding<int64_t> scene_producer::timeline_frame()
@@ -669,6 +724,11 @@ void scene_producer::store_variable(
 void scene_producer::add_mark(int64_t frame, mark_action action, const std::wstring& label)
 {
 	impl_->add_mark(frame, action, label);
+}
+
+void scene_producer::add_task(binding<bool> when, std::function<void()> task)
+{
+	impl_->add_task(std::move(when), std::move(task));
 }
 
 core::variable& scene_producer::get_variable(const std::wstring& name)

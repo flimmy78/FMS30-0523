@@ -115,7 +115,7 @@ mark_action get_mark_action(const std::wstring& name);
 class scene_producer : public frame_producer_base
 {
 public:
-	scene_producer(std::wstring producer_name, int width, int height, const video_format_desc& format_desc);
+	scene_producer(std::wstring producer_name, std::wstring template_name, int width, int height, const video_format_desc& format_desc);
 	~scene_producer();
 
 	draw_frame receive_impl() override;
@@ -133,6 +133,7 @@ public:
 	layer& create_layer(
 			const spl::shared_ptr<frame_producer>& producer, const std::wstring& name);
 	void reverse_layers();
+	layer& get_layer(const std::wstring& name);
 
 	binding<int64_t> timeline_frame();
 	binding<double> speed();
@@ -225,7 +226,8 @@ public:
 		store_keyframe(to_affect.identity(), k);
 	}
 
-	void add_mark(int64_t frame, mark_action action, const std::wstring& label);
+	void add_mark(int64_t at_frame, mark_action action, const std::wstring& label);
+	void add_task(binding<bool> when, std::function<void()> task);
 
 	core::variable& get_variable(const std::wstring& name) override;
 	const std::vector<std::wstring>& get_variables() const override;

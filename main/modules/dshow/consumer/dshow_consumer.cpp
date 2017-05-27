@@ -489,7 +489,19 @@ namespace caspar {
  				case core::video_format::x2160p3000:
  					Des.eVideoFormat = eMVF_4K_UHD_30p;
  					break;
- 
+
+				case core::video_format::x2160p5000:
+					Des.eVideoFormat = eMVF_4K_UHD_50p;
+					break;
+
+				case core::video_format::x2160p5994:
+					Des.eVideoFormat = eMVF_4K_UHD_5994p;
+					break;
+
+				case core::video_format::x2160p6000:
+					Des.eVideoFormat = eMVF_4K_UHD_60p;
+					break;
+
  				case core::video_format::dci2160p2398:
  					Des.eVideoFormat = eMVF_4K_DCI_2398p;
  					break;

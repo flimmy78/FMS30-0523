@@ -67,7 +67,11 @@ link_directories("${DEPENDENCIES_FOLDER}/gtest/lib/${PLATFORM_FOLDER_NAME}")
 link_directories("${DEPENDENCIES_FOLDER}/dtapi/lib/${PLATFORM_FOLDER_NAME}")
 link_directories("${DEPENDENCIES_FOLDER}/mainconcept/lib/${PLATFORM_FOLDER_NAME}")
 link_directories("${DEPENDENCIES_FOLDER}/ldkdog/lib/${PLATFORM_FOLDER_NAME}")
-link_directories("${DEPENDENCIES_FOLDER}/NDI/lib/${PLATFORM_FOLDER_NAME}/x86_64-linux-gnu-4.7")
+if (MSVC)
+	link_directories("${DEPENDENCIES_FOLDER}/NDI/lib/${PLATFORM_FOLDER_NAME}/x64")
+else ()
+	link_directories("${DEPENDENCIES_FOLDER}/NDI/lib/${PLATFORM_FOLDER_NAME}/x86_64-linux-gnu-4.7")
+endif ()
 
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

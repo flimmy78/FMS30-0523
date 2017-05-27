@@ -371,7 +371,7 @@ spl::shared_ptr<core::frame_producer> create_psd_scene_producer(const core::fram
 	psd_document doc;
 	doc.parse(*found_file);
 
-	auto root = spl::make_shared<core::scene::scene_producer>(L"psd", doc.width(), doc.height(), dependencies.format_desc);
+	auto root = spl::make_shared<core::scene::scene_producer>(L"psd", params.at(0), doc.width(), doc.height(), dependencies.format_desc);
 
 	std::vector<std::pair<std::wstring, spl::shared_ptr<core::text_producer>>> text_producers_by_layer_name;
 
@@ -399,7 +399,7 @@ spl::shared_ptr<core::frame_producer> create_psd_scene_producer(const core::fram
 																																	dependencies.format_desc.audio_cadence,
 																																	dependencies.format_desc.afd_mode};
 			
-			auto group = spl::make_shared<core::scene::scene_producer>(psd_layer->name(), doc.width(), doc.height(), format_desc);
+			auto group = spl::make_shared<core::scene::scene_producer>(psd_layer->name(), L"layer group in " + params.at(0), doc.width(), doc.height(), format_desc);
 
 			auto& scene_layer = current.scene()->create_layer(group, psd_layer->location().x, psd_layer->location().y, psd_layer->name());
 			scene_layer.adjustments.opacity.set(psd_layer->opacity() / 255.0);

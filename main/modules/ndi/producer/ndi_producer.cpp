@@ -179,7 +179,7 @@ public:
 
 		int no_sources = 0;
 		
-		NDIlib_source_t load_source_;
+		NDIlib_source_t load_source_ = { 0 };
 		
 			
 		if (!pNDI_find)
@@ -224,7 +224,7 @@ public:
 			ndi_name =boost::to_lower_copy(ndi_name);
 			if (machine.empty())
 			{
-				int pos = ndi_name.find("(");
+				int pos = (int)ndi_name.find("(");
 				if (pos != std::string::npos)
 				{
 					ndi_name = ndi_name.substr(pos + 1, ndi_name.size() - pos - 2);
@@ -306,7 +306,7 @@ public:
 
 		bool meta = false;
 		//统计包数量
-		int count = 0;
+		//int count = 0;
 		while (is_running_)
 		{	// The descriptors
 			NDIlib_video_frame_t ndi_video_frame;
@@ -324,7 +324,7 @@ public:
 			case NDIlib_frame_type_video:
 			{
 
-				core::field_mode dd;
+				core::field_mode dd = core::field_mode::empty;
 				switch (ndi_video_frame.frame_format_type)
 				{
 				case NDIlib_frame_format_type_progressive:
@@ -437,8 +437,8 @@ public:
 			case NDIlib_frame_type_metadata:
 			{
 				//printf("Meta data received.\n");
-				int outchannel = av_get_default_channel_layout(channel_layout_.num_channels);
-				int intchannel = av_get_default_channel_layout(ndi_audio_frame.no_channels);
+				int outchannel = (int)av_get_default_channel_layout(channel_layout_.num_channels);
+				int intchannel = (int)av_get_default_channel_layout(ndi_audio_frame.no_channels);
 				NDIlib_recv_free_metadata(pNDI_recv, &metadata_frame);
 				swr_ = {
 					swr_alloc_set_opts(

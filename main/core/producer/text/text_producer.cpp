@@ -145,7 +145,6 @@ struct text_producer::impl
 	draw_frame								frame_;
 	text::texture_atlas						atlas_						{ 1024, 512, 4 };
 	text::texture_font						font_;
-	bool									dirty_						= false;
 
 public:
 	explicit impl(const spl::shared_ptr<frame_factory>& frame_factory, int x, int y, const std::wstring& str, text::text_info& text_info, long parent_width, long parent_height, bool standalone) 
@@ -166,11 +165,11 @@ public:
 		shear_.value().set(text_info.shear);
 		text_subscription_ = text_.value().on_change([this]()
 		{
-			dirty_ = true;
+			generate_frame();
 		});
 		tracking_subscription_ = tracking_.value().on_change([this]()
 		{
-			dirty_ = true;
+			generate_frame();
 		});
 
 		constraints_.height.depend_on(text());
@@ -213,12 +212,6 @@ public:
 			
 	draw_frame receive_impl()
 	{
-		if (dirty_)
-		{
-			generate_frame();
-			dirty_ = false;
-		}
-
 		return frame_;
 	}
 

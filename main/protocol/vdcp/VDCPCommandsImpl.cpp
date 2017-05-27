@@ -289,7 +289,8 @@ core::frame_producer_dependencies get_producer_dependencies(const std::shared_pt
 					.select([](channel_context c) { return spl::make_shared_ptr(c.channel); })
 					.to_vector(),
 			channel->video_format_desc(),
-			ctx.producer_registry);
+			ctx.producer_registry,
+			ctx.cg_registry);
 }
 
 // Basic Commands

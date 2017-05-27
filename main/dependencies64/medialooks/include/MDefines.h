@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0555 */
-/* at Thu Apr 30 12:54:31 2015
+/* at Mon Oct 03 09:53:32 2016
  */
 /* Compiler settings for ..\..\Include\IDL\MDefines.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 7.00.0555 
@@ -101,12 +101,18 @@ enum eMTimecodeFlags
 	eMTCF_Rate	= 0xff0,
 	eMTCF_Progressive_Even_Frame	= 0x100,
 	eMTCF_Progressive_Odd_Frame	= 0x200,
+	eMTCF_Progressive_3th_Frame	= 0x300,
+	eMTCF_Progressive_4th_Frame	= 0x400,
+	eMTCF_Progressive_5th_Frame	= 0x500,
+	eMTCF_Progressive_6th_Frame	= 0x600,
+	eMTCF_Progressive_7th_Frame	= 0x700,
+	eMTCF_Progressive_8th_Frame	= 0x800,
 	eMTCF_Rate_50	= 0x120,
 	eMTCF_Rate_60_DF	= 0x141,
 	eMTCF_Rate_60	= 0x140,
-	eMTCF_Rate_50_Even	= 0x220,
-	eMTCF_Rate_60_DF_Even	= 0x241,
-	eMTCF_Rate_60_Even	= 0x240,
+	eMTCF_Rate_50_Odd	= 0x220,
+	eMTCF_Rate_60_DF_Odd	= 0x241,
+	eMTCF_Rate_60_Odd	= 0x240,
 	eMTCF_SrcTC	= 0x1000,
 	eMTCF_SrcTC_DropFrame	= 0x1001,
 	eMTCF_SrcTC_Rate_24	= 0x1010,
@@ -118,9 +124,9 @@ enum eMTimecodeFlags
 	eMTCF_SrcTC_Rate_50	= 0x1120,
 	eMTCF_SrcTC_Rate_60_DF	= 0x1141,
 	eMTCF_SrcTC_Rate_60	= 0x1140,
-	eMTCF_SrcTC_Rate_50_Even	= 0x1220,
-	eMTCF_SrcTC_Rate_60_DF_Even	= 0x1241,
-	eMTCF_SrcTC_Rate_60_Even	= 0x1240,
+	eMTCF_SrcTC_Rate_50_Odd	= 0x1220,
+	eMTCF_SrcTC_Rate_60_DF_Odd	= 0x1241,
+	eMTCF_SrcTC_Rate_60_Odd	= 0x1240,
 	eMTCF_UserTC	= 0x2000,
 	eMTCF_UserTC_DropFrame	= 0x2001,
 	eMTCF_UserTC_Rate_24	= 0x2010,
@@ -132,9 +138,9 @@ enum eMTimecodeFlags
 	eMTCF_UserTC_Rate_50	= 0x2120,
 	eMTCF_UserTC_Rate_60_DF	= 0x2141,
 	eMTCF_UserTC_Rate_60	= 0x2140,
-	eMTCF_UserTC_Rate_50_Even	= 0x2220,
-	eMTCF_UserTC_Rate_60_DF_Even	= 0x2241,
-	eMTCF_UserTC_Rate_60_Even	= 0x2240,
+	eMTCF_UserTC_Rate_50_Odd	= 0x2220,
+	eMTCF_UserTC_Rate_60_DF_Odd	= 0x2241,
+	eMTCF_UserTC_Rate_60_Odd	= 0x2240,
 	eMTCF_LocalTimeTC	= 0x10000,
 	eMTCF_Invalid	= 0x80000000
     } 	eMTimecodeFlags;
@@ -152,7 +158,6 @@ typedef struct M_TIMECODE
 typedef /* [v1_enum] */ 
 enum eMFCC
     {	eMFCC_Default	= 0,
-	eMFCC_r210	= 0x30313272,
 	eMFCC_v210	= 0x30313276,
 	eMFCC_I420	= 0x30323449,
 	eMFCC_YV12	= 0x32315659,
@@ -164,16 +169,14 @@ enum eMFCC
 	eMFCC_RGB24	= 0xe436eb7d,
 	eMFCC_RGB32	= 0xe436eb7e,
 	eMFCC_ARGB32	= 0x773c9ac0,
-	eMFCC_RGB8	= 0xe436eb7a,
-	eMFCC_GPU_YUV422	= 0x65ffaf79,
-	eMFCC_GPU_RGB444	= 0x65ffaf80
+	eMFCC_RGB8	= 0xe436eb7a
     } 	eMFCC;
 
 typedef /* [v1_enum] */ 
 enum eMScaleType
     {	eMST_Default	= 0,
-	eMST_None	= ( eMST_Default + 1 ) ,
-	eMST_LetterBox	= ( eMST_None + 1 ) ,
+	eMST_IgnoreAR	= ( eMST_Default + 1 ) ,
+	eMST_LetterBox	= ( eMST_IgnoreAR + 1 ) ,
 	eMST_Crop	= ( eMST_LetterBox + 1 ) ,
 	eMST_NoScale	= ( eMST_Crop + 1 ) 
     } 	eMScaleType;
@@ -204,8 +207,7 @@ enum eM3DFormat
 
 typedef /* [v1_enum] */ 
 enum eMVideoFormat
-    {	
-	eMVF_Custom	= 0,
+    {	eMVF_Custom	= 0,
 	eMVF_NTSC	= ( eMVF_Custom + 1 ) ,
 	eMVF_NTSC_2398	= ( eMVF_NTSC + 1 ) ,
 	eMVF_NTSC_16x9	= ( eMVF_NTSC_2398 + 1 ) ,
@@ -225,7 +227,13 @@ enum eMVideoFormat
 	eMVF_HD1080_50p	= ( eMVF_HD1080_60i + 1 ) ,
 	eMVF_HD1080_5994p	= ( eMVF_HD1080_50p + 1 ) ,
 	eMVF_HD1080_60p	= ( eMVF_HD1080_5994p + 1 ) ,
-	eMVF_2K_2398p	= ( eMVF_HD1080_60p + 1 ) ,
+	eMVF_2K_DCI_2398p	= ( eMVF_HD1080_60p + 1 ) ,
+	eMVF_2K_DCI_24p	= ( eMVF_2K_DCI_2398p + 1 ) ,
+	eMVF_2K_DCI_25p	= ( eMVF_2K_DCI_24p + 1 ) ,
+	eMVF_2K_DCI_50p	= ( eMVF_2K_DCI_25p + 1 ) ,
+	eMVF_2K_DCI_5994p	= ( eMVF_2K_DCI_50p + 1 ) ,
+	eMVF_2K_DCI_60p	= ( eMVF_2K_DCI_5994p + 1 ) ,
+	eMVF_2K_2398p	= ( eMVF_2K_DCI_60p + 1 ) ,
 	eMVF_2K_24p	= ( eMVF_2K_2398p + 1 ) ,
 	eMVF_2K_25p	= ( eMVF_2K_24p + 1 ) ,
 	eMVF_4K_UHD_50i	= ( eMVF_2K_25p + 1 ) ,
@@ -239,7 +247,13 @@ enum eMVideoFormat
 	eMVF_4K_DCI_2398p	= ( eMVF_4K_UHD_30p + 1 ) ,
 	eMVF_4K_DCI_24p	= ( eMVF_4K_DCI_2398p + 1 ) ,
 	eMVF_4K_DCI_25p	= ( eMVF_4K_DCI_24p + 1 ) ,
-	eMVF_Disabled	= ( eMVF_4K_DCI_25p + 1 ) ,
+	eMVF_4K_UHD_50p	= ( eMVF_4K_DCI_25p + 1 ) ,
+	eMVF_4K_UHD_5994p	= ( eMVF_4K_UHD_50p + 1 ) ,
+	eMVF_4K_UHD_60p	= ( eMVF_4K_UHD_5994p + 1 ) ,
+	eMVF_4K_DCI_50p	= ( eMVF_4K_UHD_60p + 1 ) ,
+	eMVF_4K_DCI_5994p	= ( eMVF_4K_DCI_50p + 1 ) ,
+	eMVF_4K_DCI_60p	= ( eMVF_4K_DCI_5994p + 1 ) ,
+	eMVF_Disabled	= ( eMVF_4K_DCI_60p + 1 ) ,
 	eMVF_3D_SbS_720_50p	= ( eMVF_HD720_50p + 0x200 ) ,
 	eMVF_3D_SbS_720_5994p	= ( eMVF_HD720_5994p + 0x200 ) ,
 	eMVF_3D_SbS_720_60p	= ( eMVF_HD720_60p + 0x200 ) ,
@@ -304,24 +318,6 @@ typedef struct M_VID_PROPS
     eM3DFormat e3DFormat;
     } 	M_VID_PROPS;
 
-typedef struct M_VID_PROPS_EX
-    {
-    eMVideoFormat eVideoFormat;
-    eMFCC fccType;
-    int nWidth;
-    int nHeight;
-    int nRowBytes;
-    eMInterlace eInterlace;
-    short nAspectX;
-    short nAspectY;
-    double dblRate;
-    eMScaleType eScaleType;
-    eM3DFormat e3DFormat;
-    LONGLONG m_llAudioSamples;
-    long m_arrPlanesRowBytes[ 4 ];
-    long m_arrPlanesOffset[ 4 ];
-    } 	M_VID_PROPS_EX;
-
 typedef struct M_AUD_PROPS
     {
     int nChannels;
@@ -345,8 +341,6 @@ enum eMFrameFlags
 	eMFF_Last	= 2,
 	eMFF_Dup	= 0x11,
 	eMFF_Pause	= 0x21,
-	eMFF_Last_Dup	= 0x13,
-	eMFF_Last_Pause	= 0x23,
 	eMFF_Live	= 0x100,
 	eMFF_Net	= 0x200,
 	eMFF_Reverse	= 0x1000,
@@ -359,13 +353,18 @@ enum eMFrameFlags
 	eMFF_Switching_Predicted	= 0x60000,
 	eMFF_BI	= 0x70000,
 	eMFF_Type_Mask	= 0xf0000,
-	eMFF_Break_Last	= 3,
+	eMFF_Reverse_Break	= 0x1001,
+	eMFF_Reverse_Last	= 0x1002,
+	eMFF_Reverse_Pause	= 0x1021,
+	eMFF_Last_Break	= 0x3,
+	eMFF_Last_Dup	= 0x13,
+	eMFF_Last_Pause	= 0x23,
 	eMFF_Live_Break	= 0x101,
 	eMFF_Live_Last	= 0x102,
-	eMFF_Live_Break_Last	= 0x103,
+	eMFF_Live_Last_Break	= 0x103,
 	eMFF_Net_Break	= 0x201,
 	eMFF_Net_Last	= 0x202,
-	eMFF_Net_Break_Last	= 0x203,
+	eMFF_Net_Last_Break	= 0x203,
 	eMFF_Break_Intra	= 0x10001,
 	eMFF_Break_Predicted	= 0x20001,
 	eMFF_Break_Bidir_Predicted	= 0x30001,
@@ -373,6 +372,20 @@ enum eMFrameFlags
 	eMFF_Break_Switching_Intra	= 0x50001,
 	eMFF_Break_Switching_Predicted	= 0x60001,
 	eMFF_Break_BI	= 0x70001,
+	eMFF_Reverse_Intra	= 0x11000,
+	eMFF_Reverse_Predicted	= 0x21000,
+	eMFF_Reverse_Bidir_Predicted	= 0x31000,
+	eMFF_Reverse_S_GMC_VOP_MPEG4	= 0x41000,
+	eMFF_Reverse_Switching_Intra	= 0x51000,
+	eMFF_Reverse_Switching_Predicted	= 0x61000,
+	eMFF_Reverse_BI	= 0x71000,
+	eMFF_Reverse_Break_Intra	= 0x11001,
+	eMFF_Reverse_Break_Predicted	= 0x21001,
+	eMFF_Reverse_Break_Bidir_Predicted	= 0x31001,
+	eMFF_Reverse_Break_S_GMC_VOP_MPEG4	= 0x41001,
+	eMFF_Reverse_Break_Switching_Intra	= 0x51001,
+	eMFF_Reverse_Break_Switching_Predicted	= 0x61001,
+	eMFF_Reverse_Break_BI	= 0x71001,
 	eMFF_Net_Intra	= 0x10200,
 	eMFF_Net_Predicted	= 0x20200,
 	eMFF_Net_Bidir_Predicted	= 0x30200,
@@ -433,14 +446,6 @@ typedef struct M_AV_PROPS
     BOOL bLocked;
     } 	M_AV_PROPS;
 
-typedef struct M_AV_PROPS_EX
-    {
-    M_VID_PROPS_EX vidProps;
-    M_AUD_PROPS audProps;
-    M_ANC_DATA ancData;
-    BOOL bLocked;
-    } 	M_AV_PROPS_EX;
-
 typedef struct M_AUDIO_TRACK_LOUDNESS
     {
     float arrVUMeter[ 32 ];
@@ -495,7 +500,8 @@ enum eMCursorType
 	eMCT_SIZEALL	= 32646,
 	eMCT_NO	= 32648,
 	eMCT_HAND	= 32649,
-	eMCT_APPSTARTING	= 32650
+	eMCT_APPSTARTING	= 32650,
+	eMCT_NOCURSOR	= 0
     } 	eMCursorType;
 
 typedef /* [v1_enum] */ 
@@ -526,7 +532,7 @@ enum eMInfoType
 	eMIT_Values	= ( eMIT_Default + 1 ) ,
 	eMIT_Min	= ( eMIT_Values + 1 ) ,
 	eMIT_Max	= ( eMIT_Min + 1 ) ,
-	eMIT_Node	= ( eMIT_Max + 1 ) 
+	eMIT_Dynamic	= ( eMIT_Max + 1 ) 
     } 	eMInfoType;
 
 typedef /* [v1_enum] */ 
@@ -593,6 +599,90 @@ enum eMBMDDeckControlEvent
 	eMDCE_PrepareForCaptureEvent	= 0x70666365,
 	eMDCE_CaptureCompleteEvent	= 0x63636576
     } 	eMBMDDeckControlEvent;
+
+typedef 
+enum eStorageFlags
+    {	eSF_NoWait	= 0x1,
+	eSF_IgnoreTime	= 0x2,
+	eSF_SyncPoint	= 0x4
+    } 	eStorageFlags;
+
+typedef 
+enum eStorageUnits
+    {	eSU_TimeSec	= 0x1,
+	eSU_Bytes	= 0x2
+    } 	eStorageUnits;
+
+typedef 
+enum eStorageInitType
+    {	eSIT_CreateNew	= 0x1,
+	eSIT_ReadExisting	= 0x2,
+	eSIT_Append	= 0x3
+    } 	eStorageInitType;
+
+typedef 
+enum eMFMediaType
+    {	eMFMT_Empty	= 0,
+	eMFMT_Video	= 1,
+	eMFMT_Audio	= ( eMFMT_Video + 1 ) ,
+	eMFMT_Subtitles	= ( eMFMT_Audio + 1 ) ,
+	eMFMT_Data	= ( eMFMT_Subtitles + 1 ) 
+    } 	eMFMediaType;
+
+typedef 
+enum eMFPacketFlags
+    {	eMFPF_None	= 0,
+	eMFPF_KeyFrame	= 1,
+	eMFPF_FlushDecoder	= 0x10,
+	eMFPF_Preroll	= 0x20
+    } 	eMFPacketFlags;
+
+typedef 
+enum eMFSaveFlags
+    {	eMFPF_RawData	= 0,
+	eMFPF_Full	= ( eMFPF_RawData + 1 ) 
+    } 	eMFSaveFlags;
+
+typedef struct M_RATIONAL
+    {
+    int nNum;
+    int nDen;
+    } 	M_RATIONAL;
+
+typedef struct M_STREAM_INFO
+    {
+    eMFMediaType eMediaType;
+    LONG cbCodecData;
+    LONGLONG lpCodecData;
+    M_RATIONAL raTimeBase;
+    int nWidth;
+    int nHeight;
+    int nAspectX;
+    int nAspectY;
+    double dblRate;
+    int nSampleRate;
+    int nChannels;
+    int nBlockAlign;
+    int nBitsPerCodedSample;
+    int nBitrate;
+    BSTR bsCodecNameOrTag;
+    } 	M_STREAM_INFO;
+
+typedef struct M_PACKET_INFO
+    {
+    eMFPacketFlags eFlags;
+    LONG cbPacketData;
+    LONGLONG lpPacketData;
+    REFERENCE_TIME rtDts;
+    REFERENCE_TIME rtPts;
+    REFERENCE_TIME rtDuration;
+    REFERENCE_TIME rtSegmentStart;
+    int nIndexInSegment;
+    int nOrderInSegment;
+    int nKeyDistance;
+    int nStreamIndex;
+    LONGLONG llFilePos;
+    } 	M_PACKET_INFO;
 
 #endif // M_DEFINES_INCLUDED
 

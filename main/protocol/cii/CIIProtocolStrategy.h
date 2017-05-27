@@ -53,7 +53,7 @@ public:
 	spl::shared_ptr<core::video_channel> GetChannel() const { return pChannel_; }
 	spl::shared_ptr<core::cg_producer_registry> get_cg_registry() const { return cg_registry_; }
 	spl::shared_ptr<const core::frame_producer_registry> get_producer_registry() const { return producer_registry_; }
-	core::frame_producer_dependencies get_dependencies() const { return core::frame_producer_dependencies(GetChannel()->frame_factory(), channels_, GetChannel()->video_format_desc(), producer_registry_); }
+	core::frame_producer_dependencies get_dependencies() const { return core::frame_producer_dependencies(GetChannel()->frame_factory(), channels_, GetChannel()->video_format_desc(), producer_registry_, cg_registry_); }
 
 	void DisplayMediaFile(const std::wstring& filename);
 	void DisplayTemplate(const std::wstring& titleName);

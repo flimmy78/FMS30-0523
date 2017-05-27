@@ -181,6 +181,7 @@ struct server::impl : boost::noncopyable
 
 		initialize_modules(dependencies);
 		core::text::init(dependencies);
+		core::init_cg_proxy_as_producer(dependencies);
 		core::scene::init(dependencies);
 		core::syncto::init(dependencies);
 		help_repo_->register_item({ L"producer" }, L"Color Producer", &core::describe_color_producer);
@@ -489,6 +490,7 @@ struct server::impl : boost::noncopyable
 			&image::write_cropped_png,
 			media_info_repo_,
 			producer_registry_,
+			cg_registry_,
 			pt.get(L"configuration.thumbnails.mipmap", true)));
 	}
 

@@ -32,6 +32,8 @@ if (MSVC)
 			common
 			core
 			ffmpeg
+			
+			Processing.NDI.Lib.x64.lib
 	)
 elseif (CMAKE_COMPILER_IS_GNUCXX)
 	target_link_libraries(ndi

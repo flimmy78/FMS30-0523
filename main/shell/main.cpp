@@ -320,7 +320,7 @@ bool run(const std::wstring& config_file_name, tbb::atomic<bool>& should_wait_fo
 	int channel_num = 2;
 #ifndef _DEBUG
 	channel_num = CheckChannelLicense();
-	if (0 == channel_num)
+	if (false/*0 == channel_num*/)
 	{
 		std::wstring wcmd1;
 		std::wstring upper_cmd1;
