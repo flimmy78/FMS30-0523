@@ -146,7 +146,6 @@ public:
 		}		
 		
 		std::map<const void*, audio_stream>	next_audio_streams;
-		std::vector<const void*> used_tags;
 
 		for (auto& item : items_)
 		{			
@@ -159,13 +158,16 @@ public:
 
 			auto tag = item.tag;
 
-			if(boost::range::find(used_tags, tag) != used_tags.end())
-				continue;
-			
-			used_tags.push_back(tag);
+			auto it = next_audio_streams.find(tag);
+			bool found = it != next_audio_streams.end();
 
-			const auto it = audio_streams_.find(tag);
-			if (it != audio_streams_.end())
+			if (!found)
+			{
+				it = audio_streams_.find(tag);
+				found = it != audio_streams_.end();
+			}
+
+			if (found)
 			{
 				prev_transform = it->second.prev_transform;
 				next_audio = std::move(it->second.audio_data);
@@ -181,7 +183,7 @@ public:
 			}
 
 			// Skip it if there is no existing audio stream and item has no audio-data.
-			if(it == audio_streams_.end() && item.audio_data.empty()) 
+			if(!found && item.audio_data.empty()) 
 				continue;
 
 			if (item.channel_layout == audio_channel_layout::invalid())
