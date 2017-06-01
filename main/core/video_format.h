@@ -131,4 +131,6 @@ bool operator!=(const video_format_desc& rhs, const video_format_desc& lhs);
 
 std::wostream& operator<<(std::wostream& out, const video_format_desc& format_desc);
 
+std::vector<int> find_audio_cadence(const boost::rational<int>& framerate, bool log_quiet = false);
+
 }}
