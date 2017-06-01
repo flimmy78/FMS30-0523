@@ -276,8 +276,8 @@ struct image_kernel::impl
 			shader_->set("chroma_min_saturation", params.transform.chroma.min_saturation);
 			shader_->set("chroma_min_brightness", params.transform.chroma.min_brightness);
 			shader_->set("chroma_softness", 1.0 + params.transform.chroma.softness);
-			shader_->set("chroma_spill", params.transform.chroma.spill);
-			shader_->set("chroma_spill_darken", params.transform.chroma.spill_darken);
+			shader_->set("chroma_spill_suppress", params.transform.chroma.spill_suppress / 360.0);
+			shader_->set("chroma_spill_suppress_saturation", params.transform.chroma.spill_suppress_saturation);
 		}
 		else
 			shader_->set("chroma", false);
