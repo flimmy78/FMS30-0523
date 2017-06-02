@@ -46,7 +46,7 @@ private:
 
 public:
 	impl(texture_atlas& atlas, const text_info& info, bool normalize_coordinates)
-		: face_(get_new_face(u8(info.font_file)))
+		: face_(get_new_face(u8(info.font_file), u8(info.font)))
 		, atlas_(atlas)
 		, size_(info.size)
 		, tracking_(info.size*info.tracking/1000.0)
@@ -54,7 +54,7 @@ public:
 		, name_(info.font)
 	{
 		if (FT_Set_Char_Size(face_.get(), static_cast<FT_F26Dot6>(size_*64), 0, 72, 72))
-			CASPAR_THROW_EXCEPTION(freetype_exception() << msg_info("Failed to set font size"));
+			CASPAR_THROW_EXCEPTION(expected_freetype_exception() << msg_info("Failed to set font size"));
 	}
 
 	void set_tracking(int tracking)
