@@ -38,6 +38,7 @@ set(GTEST_INCLUDE_PATH			"${DEPENDENCIES_FOLDER}/gtest/include")
 set(DTAPI_INCLUDE_PATH			"${DEPENDENCIES_FOLDER}/dtapi/include")
 set(MAINCONCEPT_INCLUDE_PATH		"${DEPENDENCIES_FOLDER}/mainconcept/include")
 set(LDKDOG_INCLUDE_PATH			"${DEPENDENCIES_FOLDER}/ldkdog/include")
+set(IPP_INCLUDE_PATH			"${DEPENDENCIES_FOLDER}/intel/ipp/include" )
 
 set(FFMPEG_BIN_PATH			"${DEPENDENCIES_FOLDER}/ffmpeg/bin/${PLATFORM_FOLDER_NAME}")
 set(FREEIMAGE_BIN_PATH			"${DEPENDENCIES_FOLDER}/freeimage/bin/${PLATFORM_FOLDER_NAME}")
@@ -72,7 +73,7 @@ if (MSVC)
 else ()
 	link_directories("${DEPENDENCIES_FOLDER}/NDI/lib/${PLATFORM_FOLDER_NAME}/x86_64-linux-gnu-4.7")
 endif ()
-
+link_directories("${DEPENDENCIES_FOLDER}/intel/ipp/lib/${PLATFORM_FOLDER_NAME}")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 

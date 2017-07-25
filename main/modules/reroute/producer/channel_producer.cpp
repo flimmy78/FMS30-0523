@@ -268,7 +268,7 @@ public:
 			boost::copy(read_frame.audio_data(), std::back_inserter(frame.audio_data()));
 		}
 
-		fast_memcpy(frame.image_data().begin(), read_frame.image_data().begin(), read_frame.image_data().size());
+		std::memcpy(frame.image_data().begin(), read_frame.image_data().begin(), read_frame.image_data().size());
 
 		frame_buffer_.push(core::draw_frame(std::move(frame)));
 		

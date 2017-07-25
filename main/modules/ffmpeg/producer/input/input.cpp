@@ -536,7 +536,13 @@ struct input::implementation : boost::noncopyable
 		weak_context->interrupt_callback.opaque = this;
 		weak_context->interrupt_callback.callback = this->check_interrupt;
 		setCurrentCheckTime(5);
-		THROW_ON_ERROR2(avformat_open_input(&weak_context, u8(resource_name).c_str(), input_format, &format_options), resource_name);
+		try 
+		{
+			THROW_ON_ERROR2(avformat_open_input(&weak_context, u8(resource_name).c_str(), input_format, &format_options), resource_name);
+		}
+		catch (...)
+		{
+		}
 
 		spl::shared_ptr<AVFormatContext> context(weak_context, [](AVFormatContext* ptr)
 		{

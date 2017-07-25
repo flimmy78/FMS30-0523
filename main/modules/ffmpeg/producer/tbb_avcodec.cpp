@@ -143,7 +143,7 @@ void thread_init(AVCodecContext* s)
     s->active_thread_type = FF_THREAD_SLICE;
 //2.0
 	/*static int dummy_opaque;
-	s->thread_opaque	  = &dummy_opaque; */
+	s->opaque	  = &dummy_opaque; */
 //////////
  //   s->execute			  = thread_execute;//这里可以采用ffmpeg内部的多线程处理
 //    s->execute2			  = thread_execute2;
@@ -154,11 +154,11 @@ void thread_free(AVCodecContext* s)
 {
 //3.0  没有这个值
 //2.0
-	/*if(!s->thread_opaque)
+	if(!s->opaque)
 		return;
 
-	s->thread_opaque = nullptr;
-	*/
+	s->opaque = nullptr;
+	
 }
 
 int tbb_avcodec_open(AVCodecContext* avctx, AVCodec* codec, bool single_threaded)
@@ -179,7 +179,9 @@ int tbb_avcodec_close(AVCodecContext* avctx)
 {
 	thread_free(avctx);
 	// ff_thread_free will not be executed since thread_opaque == nullptr.
-	return avcodec_close(avctx); 
+	//return avcodec_close(avctx); 
+	avcodec_free_context(&avctx);
+	return 0;
 }
 
 }

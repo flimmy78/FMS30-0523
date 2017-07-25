@@ -19,21 +19,24 @@ any patents or patent rights of Matrox Electronic Systems Ltd.
 #pragma once
 
 #ifdef	LINUX_PLATFORM
-  #include "mvLinuxDefinitions.h"
-  #include "mvlinuxthread.h"
+   #include "mvLinuxDefinitions.h"
+   #include "mvlinuxthread.h"
 #else	// LINUX_PLATFORM
+#  ifndef WIN32_LEAN_AND_MEAN 
+#     define WIN32_LEAN_AND_MEAN  // Exclude rarely used windows libaries -- helping in prevention of redefinitons
+#  endif
+   #include <objbase.h>
+   #include <windows.h> //for HANDLE, CRITICAL_SECTION, THREAD_PRIORITY_NORMAL, INFINITE, ...
+   #include <string>
 
-#include <windows.h> //for HANDLE, CRITICAL_SECTION, THREAD_PRIORITY_NORMAL, INFINITE, ...
-#include <string>
+   #define MV_MAX_THREAD_NAME_SIZE 128
 
-#define MV_MAX_THREAD_NAME_SIZE 128
-
-#if (defined(_MSC_VER)/* && _MSC_VER <= 1300*/)
-// Functions are declared using exception specifications, which Visual C++ 
-// accepts but does not implement. Code with exception specifications that are
-// ignored during compilation may need to be recompiled and linked to be reused
-// in future versions supporting exception specifications.
-#pragma warning( disable : 4290 )
+   #if (defined(_MSC_VER)/* && _MSC_VER <= 1300*/)
+   // Functions are declared using exception specifications, which Visual C++ 
+   // accepts but does not implement. Code with exception specifications that are
+   // ignored during compilation may need to be recompiled and linked to be reused
+   // in future versions supporting exception specifications.
+   #pragma warning( disable : 4290 )
 #endif
 
 

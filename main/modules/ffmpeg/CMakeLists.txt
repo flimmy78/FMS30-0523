@@ -64,6 +64,7 @@ include_directories(${TBB_INCLUDE_PATH})
 include_directories(${FFMPEG_INCLUDE_PATH})
 include_directories(${RXCPP_INCLUDE_PATH})
 include_directories(${ASMLIB_INCLUDE_PATH})
+include_directories(${IPP_INCLUDE_PATH})
 
 set_target_properties(ffmpeg PROPERTIES FOLDER modules)
 source_group(sources ./*)
@@ -88,6 +89,8 @@ if (MSVC)
 			avdevice.lib
 			swscale.lib
 			swresample.lib
+
+			ippcc.lib
 	)
 else()
 	target_link_libraries(ffmpeg
@@ -136,6 +139,8 @@ else()
 			#xvidcore
 			z
 			-Wl,--end-group
+
+			ippcc
 	)
 endif()
 
@@ -153,6 +158,10 @@ if(MSVC)
 	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/postproc-54.dll")
 	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/swresample-2.dll")
 	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/swscale-4.dll")
+
+	casparcg_add_runtime_dependency("${DEPENDENCIES_FOLDER}/intel/ipp/bin/${PLATFORM_FOLDER_NAME}/ippcc.dll")
+	casparcg_add_runtime_dependency("${DEPENDENCIES_FOLDER}/intel/ipp/bin/${PLATFORM_FOLDER_NAME}/ippccl9.dll")
+	casparcg_add_runtime_dependency("${DEPENDENCIES_FOLDER}/intel/ipp/bin/${PLATFORM_FOLDER_NAME}/ippcore.dll")
 else()
 	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libavcodec.so.57")
 	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libavdevice.so.57")
@@ -166,6 +175,7 @@ else()
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libass.so.5")
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libbluray.so.1")
 	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libcrypto.so.10")
+	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libcuda.so.1")
 	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libexpat.so.1")
 	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libfontconfig.so.1")
 	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libfreetype.so.6")
@@ -181,6 +191,8 @@ else()
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libmodplug.so.1")
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libmp3lame.so.0")
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libnettle.so.4")
+	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libnvcuvid.so.1")
+	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libnvidia-fatbinaryloader.so.375.39")
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libogg.so.0")
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libopencore-amrnb.so.0")
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libopencore-amrwb.so.0")
@@ -191,6 +203,7 @@ else()
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libpng12.so.0")
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/librtmp.so.1")
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libschroedinger-1.0.so.0")
+	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libSDL2-2.0.so.0")
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libsoxr-lsr.so.0")
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libsoxr.so.0")
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libspeex.so.1")
@@ -214,5 +227,9 @@ else()
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libxml2.so.2")
 	#casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libxvidcore.so.4")
 	casparcg_add_runtime_dependency("${FFMPEG_BIN_PATH}/libz.so.1")
+
+	casparcg_add_runtime_dependency("${DEPENDENCIES_FOLDER}/intel/ipp/lib/${PLATFORM_FOLDER_NAME}/libippcc.so")
+	casparcg_add_runtime_dependency("${DEPENDENCIES_FOLDER}/intel/ipp/lib/${PLATFORM_FOLDER_NAME}/libippccl9.so")
+	casparcg_add_runtime_dependency("${DEPENDENCIES_FOLDER}/intel/ipp/lib/${PLATFORM_FOLDER_NAME}/libippcore.so")
 endif()
 

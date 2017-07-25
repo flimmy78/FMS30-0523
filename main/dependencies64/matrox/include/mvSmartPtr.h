@@ -205,7 +205,7 @@ public:
       if( m_ptInterface != NULL )
       {
          ASSERT( false ) ;
-         throw CMvSmartPointerException("TMvSmartPtr::operator* -> Internal pointer will be overriden!");
+         throw CMvSmartPointerException("TMvSmartPtr::operator& -> Internal pointer will be overriden!");
       }
       return &m_ptInterface ;
    }
@@ -219,7 +219,7 @@ public:
       if( m_ptInterface == NULL )
       {
          ASSERT( false ) ;
-         throw CMvSmartPointerException("TMvSmartPtr::operator* -> Internal pointer is NULL!");
+         throw CMvSmartPointerException("TMvSmartPtr::operator-> -> Internal pointer is NULL!");
       }
       return m_ptInterface ;
    }

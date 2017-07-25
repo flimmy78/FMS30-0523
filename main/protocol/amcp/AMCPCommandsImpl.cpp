@@ -1431,15 +1431,15 @@ void mixer_chroma_describer(core::help_sink& sink, const core::help_repository& 
 	sink.para()->text(L"The chroma keying is done in the HSB/HSV color space.");
 	sink.para()->text(L"Parameters:");
 	sink.definitions()
-		->item(L"enable",						L"0 to disable chroma keying on layer. The rest of the parameters should not be given when disabling.")
-		->item(L"target_hue",					L"The hue in degrees between 0-360 where the center of the hue window will open up.")
-		->item(L"hue_width",						L"The width of the hue window within 0.0-1.0 where 1.0 means 100% of 360 degrees around target_hue.")
-		->item(L"min_saturation",				L"The minimum saturation within 0.0-1.0 required for a color to be within the chroma window.")
-		->item(L"min_brightness",				L"The minimum brightness within 0.0-1.0 required for a color to be within the chroma window.")
-		->item(L"softness",						L"The softness of the chroma keying window.")
-		->item(L"spill_suppress",				L"How much to suppress spill by within 0.0-180.0. It works by taking all hue values within +- this value from target_hue and clamps it to either target_hue - this value or target_hue + this value depending on which side it is closest to.")
-		->item(L"spill_suppress_saturation",		L"Controls how much saturation should be kept on colors affected by spill_suppress within 0.0-1.0. Full saturation may not always be desirable to be kept on suppressed colors.")
-		->item(L"show_mask",						L"If enabled, only shows the mask. Useful while editing the chroma key settings.")
+		->item(L"enable", L"0 to disable chroma keying on layer. The rest of the parameters should not be given when disabling.")
+		->item(L"target_hue", L"The hue in degrees between 0-360 where the center of the hue window will open up.")
+		->item(L"hue_width", L"The width of the hue window within 0.0-1.0 where 1.0 means 100% of 360 degrees around target_hue.")
+		->item(L"min_saturation", L"The minimum saturation within 0.0-1.0 required for a color to be within the chroma window.")
+		->item(L"min_brightness", L"The minimum brightness within 0.0-1.0 required for a color to be within the chroma window.")
+		->item(L"softness", L"The softness of the chroma keying window.")
+		->item(L"spill_suppress", L"How much to suppress spill by within 0.0-180.0. It works by taking all hue values within +- this value from target_hue and clamps it to either target_hue - this value or target_hue + this value depending on which side it is closest to.")
+		->item(L"spill_suppress_saturation", L"Controls how much saturation should be kept on colors affected by spill_suppress within 0.0-1.0. Full saturation may not always be desirable to be kept on suppressed colors.")
+		->item(L"show_mask", L"If enabled, only shows the mask. Useful while editing the chroma key settings.")
 		;
 	sink.example(L">> MIXER 1-1 CHROMA 1 120 0.1 0 0 0.1 0.1 0.7 0", L"for enabling chroma keying centered around a hue of 120 degrees (green) and with a 10% hue width");
 	sink.example(L">> MIXER 1-1 CHROMA 0", L"for disabling chroma keying");
@@ -1499,7 +1499,6 @@ std::wstring mixer_chroma_command(command_context& ctx)
 			chroma.spill_suppress				= 180.0 - boost::lexical_cast<double>(ctx.parameters.at(3)) * 180.0;
 			chroma.spill_suppress_saturation	= 1;
 
-
 			if (*legacy_mode == chroma::legacy_type::green)
 				chroma.target_hue = 120;
 			else if (*legacy_mode == chroma::legacy_type::blue)
@@ -1515,7 +1514,7 @@ std::wstring mixer_chroma_command(command_context& ctx)
 
 		if (chroma.enable)
 		{
-						chroma.target_hue					= boost::lexical_cast<double>(ctx.parameters.at(1));
+			chroma.target_hue					= boost::lexical_cast<double>(ctx.parameters.at(1));
 			chroma.hue_width					= boost::lexical_cast<double>(ctx.parameters.at(2));
 			chroma.min_saturation				= boost::lexical_cast<double>(ctx.parameters.at(3));
 			chroma.min_brightness				= boost::lexical_cast<double>(ctx.parameters.at(4));

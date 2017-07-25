@@ -74,14 +74,14 @@ struct levels
 
 struct chroma_key
 {
-	binding<bool>	enable;
-	binding<double>	target_hue;
-	binding<double>	hue_width;
-	binding<double>	min_saturation;
-	binding<double>	min_brightness;
-	binding<double>	softness;
-	binding<double>	spill_suppress;
-	binding<double>	spill_suppress_saturation;
+	binding<bool>				enable;
+	binding<double>				target_hue;
+	binding<double>				hue_width;
+	binding<double>				min_saturation;
+	binding<double>				min_brightness;
+	binding<double>				softness;
+	binding<double>				spill_suppress;
+	binding<double>				spill_suppress_saturation;
 };
 
 struct layer
@@ -102,7 +102,7 @@ struct layer
 	binding<core::blend_mode>					blend_mode;
 	scene::chroma_key							chroma_key;
 	binding<double>								volume;
-	
+
 	explicit layer(const std::wstring& name, const spl::shared_ptr<frame_producer>& producer);
 };
 

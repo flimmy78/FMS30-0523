@@ -58,7 +58,6 @@ interface IMvVancPacketExtractor;
 interface IMvVancPacketInserter;
 interface IMvVancConverter;
 interface IMvTSEncoder;
-interface IMvMPEG2TSMuxer;
 interface IMvSdiVideoInputConnector;
 interface IMvAesEbuAudioInputPairConnector;
 interface IMvSdiVideoOutputConnector;
@@ -74,15 +73,27 @@ interface IMvFlexTunnelToDirectShow;
 interface IMvSystemClock;
 interface IMvSystemClockEnumerator;
 interface IMvMPEG2TSDemuxer;
-interface IMvMPEG2TSDemuxerNotification;
-interface IMvConnectorsEnumerator;
 interface IMvSfpIp;
 interface IMvSfpIpEnumerator;
 interface IMvSfpIpNotificationCallback;
 interface IMvSdiIpInputConnectorsEnumerator;
 interface IMvSdiIpOutputConnectorsEnumerator;
+interface IMvAspenVideoOutputConnectorsEnumerator;
+interface IMvAspenAudioOutputConnectorsEnumerator;
+interface IMvAspenVancOutputConnectorsEnumerator;
+interface IMvSfpSdi;
+interface IMvSfpSdiEnumerator;
+interface IMvSfpSdiNotificationCallback;
 interface IMvDSXCORENotificationCallback;
 interface IMvfDSXCoreLicenseManager;
+interface IMvSmpte2059;
+interface IMvSmpte2059Sfp;
+interface IMvSmpte2059NotificationCallback;
+interface IMvTSMuxerSettings;
+interface IMvTSMuxerOutputCallBack;
+interface IMvTSMuxer;
+interface IMvM264DecoderBoardConfiguration;
+
 struct SMvColor;
 
 // from mvddef.h
@@ -2031,6 +2042,7 @@ interface IMvFlexEngine : public IUnknown
                                                 // explanded from 16-235 to 0-255.
 		) = 0;
 
+#ifndef LINUX_PLATFORM
 	//
 	// Summary:
 	//    Return the interface required to create a server and/or a client session.
@@ -2042,6 +2054,7 @@ interface IMvFlexEngine : public IUnknown
 		(
 		IMvIPInputOutput **out_ppIMvIPInputOutput
 		) = 0;
+#endif
 
 	//
 	// Summary:
@@ -2120,16 +2133,18 @@ interface IMvFlexEngine : public IUnknown
 		) = 0;
 
 
-	//
-	// Summary:
-	//    Instantiates a Matrox MPEG-2 Transport Stream Muxer object and returns the IMvMPEG2TSMuxer interface.
-	// Return value:
-	//    - MV_NOERROR, if completed successfully. 
-	//    - MV_E_INVALID_POINTER, if out_ppITSEncoder is NULL.
-	virtual HRESULT __stdcall CreateMPEG2TSMuxer
-		(
-		IMvMPEG2TSMuxer** out_ppIMPEG2TSMuxer // Pointer that receives the IMvMPEG2TSMuxer interface pointer.
-		) = 0;
+   //
+   // Summary:
+   //    Instantiates a Matrox MPEG-2 Transport Stream Muxer object and returns the IMvTSMuxer interface.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //    - MV_E_INVALID_POINTER, if out_ppITSMuxer is NULL.
+   virtual HRESULT __stdcall CreateMPEG2TSMuxer
+      (
+      IMvTSMuxerSettings *in_pITSSetting,                      // Pointer to the Matrox MPEG-2 Transport Stream Muxer settings interface. 
+      IMvTSMuxerOutputCallBack *in_pIOutputCallBack,           // Pointer to the Matrox MPEG-2 Transport Stream Muxer output callback interface.
+      IMvTSMuxer** out_ppITSMuxer                              // Pointer that receives the IMvTSMuxer interface.
+      ) = 0;
 
    //
    // Summary:
@@ -2139,7 +2154,12 @@ interface IMvFlexEngine : public IUnknown
    //    - MV_E_INVALID_POINTER, if out_ppITSEncoder is NULL.
    virtual HRESULT __stdcall CreateMPEG2TSDemuxer
       (
-      IMvMPEG2TSDemuxer** out_ppIMPEG2TSDemuxer // Pointer that receives the IMvMPEG2TSMuxer interface pointer.
+      uint32_t in_ui32DetectionSizeInBytes,        // Indicate the size (in bytes) of the buffer used to do the 
+                                                   // detection of the PMT / PAT. Value must be a multiple of 188 bytes.
+                                                   // The value zero means to use the default value of 8 MB modulo 188
+                                                   // (8388560 bytes). Which amount at about 1 sec of video at 
+                                                   // 60 Mbits/sec with uncompressed stereo audio.
+      IMvMPEG2TSDemuxer** out_ppIMPEG2TSDemuxer    // Pointer that receives the IMvMPEG2TSMuxer interface pointer.
       ) = 0;
 
    //
@@ -5862,7 +5882,7 @@ public:
 		wchar_t                   * in_pwszFileName,       // File name associated with the element.
 		wchar_t                   * in_pwszFileNameIndex,  // File name associated with the element's video index.
 		SMvVideoElementProperties * in_pProperties,        // Pointer to the properties of the created element.
-		IMvPlayListElement       ** out_ppNewElement       // Pointer to the newly created element interface.
+		IMvPlayListElement       ** out_ppNewElement       // Pointer that receives the newly created element interface.
 		) = 0;
 };
 
@@ -5950,10 +5970,11 @@ public:
 	virtual HRESULT  __stdcall CreateElementWithIndex
 		(
       wchar_t             * in_pwszFileName,                // File name associated with the element.
-      wchar_t             * in_pwszFileNameVideoIndex,      // File name associated with the element's video index.
-      wchar_t             * in_pwszFileNameAudioIndex,      // File name associated with the element's audio index.
+      wchar_t             * in_pwszFileNameVideoIndex,      // File name associated with the element's video index. This index includes both a video index and an audio index. 
+                                                            // As a result, the audio index (in_pwszFileNameAudioIndex) is ignored.
+      wchar_t             * in_pwszFileNameAudioIndex,      // File name associated with the element's audio index. This index is ignored.
       SMvAVInterleavedElementProperties * in_pProperties,   // Pointer to the properties of the element to create.
-      IMvPlayListElement ** out_ppNewElement                // Pointer to the newly created element interface.
+      IMvPlayListElement ** out_ppNewElement                // Pointer that receives the newly created element interface.
 		) = 0;
 };
 
@@ -6147,7 +6168,10 @@ public:
 	//       used only when more than one codecs are available for a specific compression format.
 	//    - For example, if the profile supports an H.264 hardware codec you could use this method to choose between 
    //      the hardware and software H.264 implementation.
-	virtual HRESULT __stdcall SetVideoDecompressionCodec( const CLSID* in_pclsidCodec ) = 0;
+   virtual HRESULT __stdcall SetVideoDecompressionCodec(
+      const CLSID* in_pclsidCodec,                                             // Class ID that can be specified to use which codec to playback the file
+      IMvM264DecoderBoardConfiguration* in_pIDecoderBoardConfiguration = NULL  // if the CLSID is CLSID_MvM264Decoder, the M264 decoder board configuration interface specifies profile and card index 
+      ) = 0;
 	virtual HRESULT __stdcall SetAudioDecompressionCodec( const CLSID* in_pclsidCodec ) = 0;
 
 	//
@@ -6158,7 +6182,11 @@ public:
 	// Remarks:
 	//    - This will return the value programmed by SetDecompressionCodec.
 	//    - Internally the CLSID will be set to GUID_NULL if SetDecompressionCodec was not previously called.
-	virtual HRESULT __stdcall GetVideoDecompressionCodec( CLSID* out_pclsidCodec ) = 0;
+   virtual HRESULT __stdcall GetVideoDecompressionCodec(
+      CLSID* out_pclsidCodec,                                                    // pointer to ClassID that will be used to decompress the media
+      IMvM264DecoderBoardConfiguration** out_ppIDecoderBoardConfiguration = NULL // pointer to M264 Decoder board configuration interface which has information about profile and card index 
+      ) = 0;
+
 	virtual HRESULT __stdcall GetAudioDecompressionCodec( CLSID* out_pclsidCodec ) = 0;
 };
 
@@ -6276,23 +6304,23 @@ public:
 
    //
    // Summary:
-   //    Sets the location of the time code.
+   //    Sets the location of the VANC data.
    // Return value:
    //    - MV_NOERROR, if completed successfully.
    //    - MV_E_NOT_IMPLEMENTED, if in_eVancLocation >= keMvVancLocationLast.
    virtual HRESULT __stdcall SetVANCLocation
       (
-      EMvVANCLocation in_eVancLocation // Indicates where to find the time code.
+      EMvVANCLocation in_eVancLocation // Indicates where to find the VANC data.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the location of the time code.
+   //    Gets the location of the VANC data.
    // Return value:
    //    - MV_NOERROR, if completed successfully.
    virtual HRESULT __stdcall GetVANCLocation
 	   (
-	   EMvVANCLocation *out_peVancLocation // Pointer to the location of the time code.
+	   EMvVANCLocation *out_peVancLocation // Pointer to the location of the VANC data.
 	   ) = 0;
 };
 
@@ -9468,42 +9496,6 @@ interface IMvVideoCodecEnumerator : public IUnknown
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface that enumerates all H264 Decoder installed on
-//    the system. This interface can be obtained from the IMvFlexEngine interface.
-//
-///////////////////////////////////////////////////////////////////////////////
-interface IMvH264DecoderEnumerator : public IUnknown
-{
-   //
-   // Summary:
-   //    Get the total count of H264 Decoder.
-   // Return value:
-   //    - Always returns MV_NOERROR. 
-   virtual HRESULT __stdcall GetCount
-      (
-      uint8_t *out_pui8Count   // Number of H264 Decoder 
-      ) = 0;
-   //
-   // Summary:
-   //    Gets t H264 Decoder CLSID according to the Index
-   // Description:
-   // To retrieve the next AVC Decoder class ID installed on the system 
-   // Return value:
-   //    - MV_NOERROR, if properly filled. 
-   //    - MV_E_END_OF_ENUM, if there is no further video codec information to enumerate. 
-   virtual HRESULT __stdcall GetInfo
-      (
-         uint8_t               in_ui8Index,                              // Index for AVC decoder CLSID
-         CLSID                 * out_pCLSIDH264DecoderCLSID              // Pointer to CLSID of the AVC decoder           
-      ) = 0;
-
-  
-
-};
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Summary:
 //    Interface that exposes functions to "get" and "set" codec configuration data, such as
 //    an ADIF header or MPEG-4 AudioSpecificConfig element.
 //
@@ -9538,40 +9530,39 @@ interface IMvAACCodecConfigDataAccess : public IUnknown
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Generic notification interface on an IMvAVContent.
+//    User provided completion notification callback for a hardware or software encoder.
 //
 ///////////////////////////////////////////////////////////////////////////////
 interface IMvCompletionCallback : public IUnknown
 {
 	//
 	// Summary:
-	//    Notifies that something is completed on the given IMvAVContent.
-	// Return value:
-	//    - MV_NOERROR, if completed successfully.
-	//    - MV_E_INVALID_POINTER, if the in_pIAvContent pointer is NULL.
+	//    Notifies the user application when an operation is completed.
+	// Remarks:
+	//    - Return value is ignored.
 	virtual HRESULT __stdcall Notify
 		( 
-		IMvAVContent* in_pIAvContent // Notified IMvAVContent.
+		IMvAVContent* in_pIAvContent // Pointer to the IMvAVContent interface.
 		) = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Generic notification interface on any object.
+//    User provided completion observer notification for a hardware decoder using the IUnknown interface.
 //
 ///////////////////////////////////////////////////////////////////////////////
 interface IMvCompletionObserver : public IUnknown
 {
 	//
 	// Summary:
-	//    Notifies that something is completed.
+	//    Notifies the user application when an operation is completed.
 	// Return value:
 	//    - MV_NOERROR, if completed successfully.
 	//    - MV_E_INVALID_POINTER, if the given pointer is NULL.
 	virtual HRESULT __stdcall NotifyCompletion
 		( 
-		IUnknown* in_pIUnknown 
+		IUnknown* in_pIUnknown     // Pointer to the IUnknown interface.
 		) = 0;
 };
 
@@ -9620,6 +9611,7 @@ interface IMvInformationCallback : public IUnknown
 		) = 0;
 };
 
+#ifndef LINUX_PLATFORM
 interface IMvIPInput : public IUnknown
 {
 	//
@@ -9726,6 +9718,7 @@ interface IMvIPInputOutput : public IUnknown
 		IMvIPInput **	        out_ppIMvIPInput
 		) = 0;
 };
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////
 // 
@@ -9914,6 +9907,14 @@ public:
 		IMvVancPacketExtractorObserver*  in_pIVancPacketObserver, 
 		int                              in_iVancPacketType, 
 		unsigned long                    in_ulIgnored) = 0;
+
+   //This method extracts the VANC packets from a source surface and 
+   //outputs the desired packets through the output container parameter.
+   virtual HRESULT __stdcall ExtractVancPacketsSynchronous(
+      IMvSurface*                      in_pIVancSurface,
+      int                              in_iVancPacketType,
+      IMvVancPacketsContainer**        out_ppIVancPacketsContainer,
+      unsigned long                    in_ulTimeout) = 0;   //Maximum time (in milliseconds) to wait for Vanc surface.
 };
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -10528,6 +10529,7 @@ interface IMvMediaWriter : public IUnknown
                                                       // is a stream position not always equal to the display position.
                                                       // The position is also present in IMvSurface::GetMediaDescription.
 		IMvSurface**   out_ppIVideo                     // The media data to be written to disk. There's one surface per
+
                                                       // frame.
 		) = 0;
 
@@ -10606,100 +10608,6 @@ interface IMvMPEG2TSMuxerNotification : public IUnknown
 		uint64_t     in_ui64DurationInNanoTime    // Duration (in nanotime) of the surface specified by in_pIMPEG2TSSurface.
 		) = 0;
 };
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Summary:
-//    Controls the Matrox MPEG-2 Transport Stream Muxer.
-//
-///////////////////////////////////////////////////////////////////////////////
-interface IMvMPEG2TSMuxer : public IUnknown
-{	
-	//
-	// Summary:
-	//    Opens the muxer with settings.	
-	// Return value:
-	//    - Returns an error if the command failed or there are invalid parameters.
-	virtual HRESULT __stdcall Open
-		(
-		SMvMPEG2TSMuxerSettings		in_sMPEG2TSMuxerSettings,       // Describes the Matrox MPEG-2 Transport Stream Muxer
-        IMvMPEG2TSMuxerNotification *in_pIMPEG2TSMuxerNotification  // Pointer to the IMvMPEG2TSMuxerNotification interface 
-                                                                    // that will be notified each time an MPEG-2 transport
-                                                                    // stream surface is filled and ready to be played back.
-		) = 0;
-
-	//
-	// Summary:
-	//    Closes the muxer.
-	// Return value:
-	//    - Returns an error if the command failed or there are invalid parameters.
-	virtual HRESULT __stdcall Close() = 0;
-
-	//
-	// Summary:
-	//    Provides a video surface containing video essence to the muxer.	
-	// Return value:
-	//    - Returns an error if the command failed or there are invalid parameters.
-	virtual HRESULT __stdcall PutSurface
-		(
-		IMvSurface* in_pIVideoSurface // Pointer to the IMvSurface interface that contains the video surface.
-		) = 0;
-
-	//
-	// Summary:
-	//    Provides audio samples containing audio essence to the muxer.	
-	// Return value:
-	//    - Returns an error if the command failed or there are invalid parameters.
-	virtual HRESULT __stdcall PutAudioSamples
-		(
-		IMvAudioSamples* in_pIAudioSamples  // Pointer to the audio samples interface.
-		) = 0;
-
-   //
-   // Summary:
-   //    Provides a VANC surface to the muxer.
-   // Return value:
-   //    - Returns an error if the command failed or there are invalid parameters.
-   virtual HRESULT __stdcall PutVancSurface
-      (
-      IMvSurface* in_pIVancSurface  // Pointer to the IMvSurface interface containing VANC data.
-      ) = 0;
-
-	//
-	// Summary:
-	//    Signals the end of the video stream.	
-	// Return value:
-	//    - Returns an error if the command failed or there are invalid parameters.
-	virtual HRESULT __stdcall PutEOSVideo()=0;
-
-	//
-	// Summary:
-	//    Signals the end of the audio stream.	
-	// Return value:
-	//    - Returns an error if the command failed or there are invalid parameters.
-	virtual HRESULT __stdcall PutEOSAudio()=0;
-
-   //
-   // Summary:
-   //    Signals the end of the VANC stream. 
-   // Return value:
-   //    - Returns an error if the command failed or there are invalid parameters.
-   // Remarks:
-   //    - The end of the VANC stream is directly related to the end of the video stream.
-   virtual HRESULT __stdcall PutEOSVanc() = 0;
-
-	//
-	// Summary:
-	//    Provides empty MPEG-2 transport stream packets that will be filled by the muxer.
-	// Return value:
-	//    - Returns an error if the command failed or there are invalid parameters.
-	virtual HRESULT __stdcall GetMuxedSurface
-		(
-		IMvSurface* in_pIMPEG2TSSurface  // Pointer to the IMvSurface interface that contains the MPEG-2 transport stream surface.
-		) = 0;
-
-};
-
 
 //////////////////////////////////////////////////////////////////////////////////
 //
@@ -10840,7 +10748,7 @@ interface IMvVideoConnectorNotificationCallback : public IUnknown
    // Summary:
    //    Receives the new video connector status.
    // Return value:
-   //    - MV_NOERROR. 
+   //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall Notify
       (
@@ -10865,7 +10773,7 @@ interface IMvAesEbuAudioConnectorsNotificationCallback : public IUnknown
    // Summary:
    //    Receives the new AES/EBU connector status.
    // Return value:
-   //    - MV_NOERROR. 
+   //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall Notify
       (
@@ -10889,7 +10797,7 @@ interface IMvSdiEmbeddedAudioConnectorNotificationCallback : public IUnknown
    // Summary:
    //    Receives the new embedded SDI audio connector status.
    // Return value:
-   //    - MV_NOERROR. 
+   //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall Notify
       (
@@ -10918,7 +10826,7 @@ interface IMvGenlockNotificationCallback : public IUnknown
    // Summary:
    //    Receives the new genlock status.
    // Return value:
-   //    - MV_NOERROR. 
+   //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall Notify
       (
@@ -10955,7 +10863,7 @@ interface IMvErrorNotificationCallback : public IUnknown
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Provides the callback notification of the SfpIp. 
+//    Provides the callback notification of the SFP+ transceiver. 
 //    This interface passes notification information to the object implementing it.
 // Remarks:
 //    - Use the IMvSfpIp interface to register and unregister the
@@ -10966,14 +10874,39 @@ interface IMvSfpIpNotificationCallback : public IUnknown
 {
    //
    // Summary:
-   //    Receives the new SfpIp status.
+   //    Receives the new SFP+ transceiver status.
    // Return value:
-   //    - MV_NOERROR. 
+   //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall Notify
       (
-      IMvSfpIp * in_pISfpIp,              // Pointer to the SfpIp interface.
-      const SMvSfpIpStatus & in_krsStatus // Structure of the new SfpIp status.
+      IMvSfpIp * in_pISfpIp,              // Pointer to the SFP+ transceiver interface for IP communication.
+      const SMvSfpIpStatus & in_krsStatus // Structure of the new SFP+ transceiver status.
+      ) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Provides the callback notification of the SFP+ transceiver. 
+//    This interface passes notification information to the object implementing it.
+// Remarks:
+//    - Use the IMvSfpSdi interface to register and unregister the
+//      IMvSfpSdiNotificationCallback interface.
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvSfpSdiNotificationCallback : public IUnknown
+{
+   //
+   // Summary:
+   //    Receives the new SFP+ transceiver status.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall Notify
+      (
+      IMvSfpSdi * in_pISfpSdi,             // Pointer to the SFP+ transceiver interface for SDI communication.
+      const SMvSfpSdiStatus & in_krsStatus // Structure of the new SFP+ transceiver status.
       ) = 0;
 };
 
@@ -11052,7 +10985,7 @@ interface IMvNotification : public IUnknown
 
    //
    // Summary:
-   //    Release the notification event for the corresponding child class notification object.
+   //    Releases the notification event for the corresponding child class notification object.
    // Return value:
    //    - MV_NOERROR, if completed successfully.
    //
@@ -11124,7 +11057,7 @@ interface IMvAesEbuAudioConnectorsNotification : public IMvNotification
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    // Remarks:
-   //    - The IUnknown::AddRef method of the in_pIAesEbuAudioConnectorsNotificationCallback parameter is called when
+   //    - The IUnknown::AddRef method of the in_pINotificationCallback parameter is called when
    //      the notification is registered to prevent the object implementing the 
    //      IMvAesEbuAudioConnectorsNotificationCallback interface from being destroyed.
    //
@@ -11140,7 +11073,7 @@ interface IMvAesEbuAudioConnectorsNotification : public IMvNotification
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    // Remarks:
-   //    - The IUnknown::Release method of the in_pIAesEbuAudioConnectorsNotificationCallback parameter is called when
+   //    - The IUnknown::Release method of the in_pINotificationCallback parameter is called when
    //      the notification is unregistered to remove the reference count added by
    //      IMvAesEbuAudioConnectorsNotification::RegisterCallbackForNotification.
    //
@@ -11169,7 +11102,7 @@ interface IMvSdiEmbeddedAudioConnectorNotification : public IMvNotification
    // Return value:
    //    - MV_NOERROR, if completed successfully.
    // Remarks:
-   //    - The IUnknown::AddRef method of the in_pISdiEmbeddedAudioConnectorNotificationCallback parameter is called
+   //    - The IUnknown::AddRef method of the in_pINotificationCallback parameter is called
    //      when the notification is registered to prevent the object implementing the
    //      IMvSdiEmbeddedAudioConnectorNotificationCallback interface from being destroyed.
    //
@@ -11186,7 +11119,7 @@ interface IMvSdiEmbeddedAudioConnectorNotification : public IMvNotification
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    // Remarks:
-   //    - The IUnknown::Release method of the in_pISdiEmbeddedAudioConnectorNotificationCallback parameter is called 
+   //    - The IUnknown::Release method of the in_pINotificationCallback parameter is called 
    //      when the notification is unregistered to remove the reference count added by
    //      IMvSdiEmbeddedAudioConnectorNotification::RegisterCallbackForNotification.
    //
@@ -11448,7 +11381,7 @@ interface IMvConnector : public IUnknown
 
    //
    // Summary:
-   //    Retrieves the type of the connector.
+   //    Retrieves the type of connector.
    // Return value
    //    - EMvConnectorType: The connector type.    
    //
@@ -11461,19 +11394,17 @@ interface IMvConnector : public IUnknown
 // Summary:
 //    Base interface for all audio input connector types. 
 // Remarks:
-//    - This interface can be queried for the audio input connector type, such as whether it is an AES/EBU pair or SDI
-//      embedded audio. 
-//    - This interface can also be used for input stream configuration.
+//    - This interface can be queried for the type of connector from which the audio data is obtained. 
+//    - This interface can also be used to configure an input stream.
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvAudioInputConnector : public IMvConnector
 {
    //
    // Summary:
-   //    Gets the audio type (such as AES/EBU pair or SDI embedded audio) of the
-   //    connector.
+   //    Gets the type of connector from which the audio data is obtained.
    // Return value:
-   //    - EMvAudioType: Describes the type of audio connector.
+   //    - EMvAudioType: Indicates the type of connector from which the audio data is obtained.
    //
    virtual EMvAudioType __stdcall GetAudioType() = 0;
 };
@@ -11483,19 +11414,17 @@ interface IMvAudioInputConnector : public IMvConnector
 // Summary:
 //    Base interface for all audio output connector types. 
 // Remarks:
-//    - This interface can be queried for the audio output connector type, such as whether it is an AES/EBU pair or
-//      SDI embedded audio. 
-//    - This interface can also be used for output stream configuration.
+//    - This interface can be queried for the type of connector to which the audio data is sent. 
+//    - This interface can also be used to configure an output stream.
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvAudioOutputConnector : public IMvConnector
 {
    //
    // Summary:
-   //    Gets the audio type (such as AES/EBU pair or SDI embedded audio) of the
-   //    connector.
+   //    Gets the type of connector to which the audio data is sent.
    // Return value:
-   //    - EMvAudioType: Describes the type of audio connector.
+   //    - EMvAudioType: Indicates the type of connector to which the audio data is sent.
    //
    virtual EMvAudioType __stdcall GetAudioType() = 0;
 };
@@ -11503,7 +11432,7 @@ interface IMvAudioOutputConnector : public IMvConnector
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Base interface for all video input connector types. 
+//    Base interface for the SDI video input connector types. 
 // Remarks:
 //    - This interface can be queried for the physical details of the video connector.
 //    - This interface can also be used to configure the input stream.
@@ -11562,12 +11491,23 @@ interface IMvVideoInputConnector : public IMvConnector
       IMvVideoInputConnector** out_ppIAlphaConnector  // Pointer that receives the connector interface of the 
                                                       // connector that will capture the alpha values.
       ) = 0;
+
+   //
+   // Summary:
+   //    Gets the SFP SDI interface of the connector.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetAssociatedSfpSdi
+      (
+      IMvSfpSdi ** out_ppISfpSdi      // Pointer that receives the SFP SDI interface.
+      ) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Base interface for all video output connector types. 
+//    Base interface for the SDI video output connector types. 
 // Remarks:
 //    - This interface can be queried for the physical details of the video connector.
 //    - This interface can also be used to configure the output stream.
@@ -11601,6 +11541,17 @@ interface IMvVideoOutputConnector : public IMvConnector
       (
       IMvVideoOutputConnector** out_ppIAlphaConnector // Pointer that receives the connector interface of the 
                                                       // connector that will output the alpha values.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the SFP SDI interface of the connector.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetAssociatedSfpSdi
+      (
+      IMvSfpSdi ** out_ppISfpSdi      // Pointer that receives the SFP SDI interface.
       ) = 0;
 };
 
@@ -12397,48 +12348,48 @@ interface IMvTimeCodeConfiguration : public IUnknown
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface used to configure and query the analog linear time code.
+//    Interface used to configure and query the analog linear time code (LTC).
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvALTCConfiguration : public IUnknown
 {
    //
    // Summary:
-   //    Gets the current analog linear time code settings.
+   //    Gets the current analog LTC input settings.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetALTCSettings
       (
-      SMvALTCSettings& io_rsSettings   // Structure that receives the analog linear time code settings.
+      SMvALTCSettings& io_rsSettings   // Structure that receives the analog LTC input settings.
       ) = 0;
 
    //
    // Summary:
-   //    Modifies the current analog linear time code settings.
+   //    Modifies the current analog LTC input settings.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall SetALTCSettings
       (
-      const SMvALTCSettings& in_rsSettings  // Structure of the analog linear time code settings.
+      const SMvALTCSettings& in_rsSettings  // Structure of the analog LTC input settings.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the current analog linear time code information for the requested time stamp.
+   //    Gets the current analog LTC input information for the requested time stamp.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //    - MV_E_NOT_FOUND, if no time code was found for the requested time stamp.
    //
    virtual HRESULT __stdcall GetALTCInformation
       (
-      SMvTimeCodeInformation& io_rsTimeCodeInfo   // Structure that receives the time code information.
+      SMvTimeCodeInformation& io_rsTimeCodeInfo   // Structure that receives the analog LTC input information.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the input system clock associated with the analog linear time code input.
+   //    Gets the input system clock associated with the analog LTC input.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -12632,7 +12583,7 @@ interface IMvNode : public IUnknown
    // Remarks:
    //    - Provides the user application with a way to synchronize processing branches that do not have the same
    //      number of operations.
-   //    - The write-to-read delay is set when the node is created using IMvTopology::CreateNode.
+   //    - The write-to-read delay is set when the node is created using IMvSystemTopology::CreateCardNode(), IMvSystemTopology::CreateHostNode(), or IMvSystemTopology::CreateHostSharedNode().
    //
    virtual uint64_t __stdcall GetWriteToReadDelayInNanoTime() = 0; 
 
@@ -12673,7 +12624,7 @@ interface IMvNode : public IUnknown
 
    //
    // Summary:
-   //    Retrieves the IMvCardConfiguration interface associated with the connector.
+   //    Retrieves the IMvCardConfiguration interface associated with the node.
    // Return value:
    //    - Pointer to the interface.  There is no AddRef call on this interface.
    //
@@ -12684,8 +12635,8 @@ interface IMvNode : public IUnknown
    //    Gets the type of node (such as card node, host node, or compressed host node).
    //
    // Description:
-   //    The type of node returned by this method is used to query a node's specific interface, such as IMvHostNode, 
-   //    IMvCompressedHostNode, IMvTextureGpuNode, or IMvRenderingTargetGpuNode.
+   //    The type of node returned by this method is used to query a node's specific interface, such as IMvHostNode or 
+   //    IMvCompressedHostNode.
    //
    // Return value:
    //    - EMvNodeType: Type of node. 
@@ -12773,7 +12724,7 @@ interface IMvStream : public IUnknown
 
    //
    // Summary:
-   //    Gets the stream type (input, output, transform, or mixer stream).
+   //    Gets the stream type (such as input, output, transform, or mixer stream).
    // Return value:
    //    - EMvStreamType: Type of stream.
    //
@@ -12843,7 +12794,8 @@ interface IMvInputStream : public IMvStream
    //
    // Summary:
    //    Gets the video connectors listing the video inputs currently bound to the input stream.
-   //    Returns an IMvConnector interface
+   // Remarks:
+   //    - This method returns an IMvConnector interface.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -12870,7 +12822,8 @@ interface IMvInputStream : public IMvStream
    //
    // Summary:
    //    Gets the video input connectors listing the video inputs currently bound to the input stream.
-   //    Returns an IMvVideoInputConnector interface
+   // Remarks:
+   //    - This method returns an IMvVideoInputConnector interface.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -12885,7 +12838,8 @@ interface IMvInputStream : public IMvStream
    //
    // Summary:
    //    Gets the audio connectors listing the audio inputs currently bound to the input stream.
-   //    Returns an IMvConnector interface
+   // Remarks:
+   //    - This method returns an IMvConnector interface.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -12922,10 +12876,9 @@ interface IMvInputStream : public IMvStream
 
    //
    // Summary:
-   //    Gets the Alpha connectors listing the Alpha inputs currently bound to the input stream.
-   //    This method is for future usage.
+   //    Gets the alpha connectors listing the alpha inputs currently bound to the input stream.
    // Return value:
-   //    - MV_E_NOT_SUPPORTED
+   //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetAlphaConnectors
       (
@@ -12949,13 +12902,14 @@ interface IMvInputStream : public IMvStream
    //
    // Summary:
    //    Modifies the audio connectors currently set to the input stream.
-   //    Uses IMvConnector Interface for the connectors
+   // Remarks:
+   //    - This method uses the IMvConnector interface.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall SetAudioConnectors
       (
-      IMvConnector * in_apIConnectors[],        // Pointer that contains the array of new Audio input stream
+      IMvConnector * in_apIConnectors[],        // Pointer that contains the array of new audio input stream
                                                 // connector interfaces.
       uint32_t in_ui32Count                     // Indicates the number of connectors in in_apIConnectors
       ) = 0;
@@ -13102,7 +13056,8 @@ interface IMvOutputStream : public IMvStream
    //
    // Summary:
    //    Gets the video connectors listing the video outputs currently bound to the output stream.
-   //    Returns an IMvConnector interface
+   // Remarks:
+   //    - This method returns an IMvConnector interface.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -13130,8 +13085,9 @@ interface IMvOutputStream : public IMvStream
 
    //
    // Summary:
-   //    Gets the Alpha connectors listing the Alpha outputs currently bound to the output stream.
-   //    Returns an IMvConnector interface
+   //    Gets the alpha connectors listing the alpha outputs currently bound to the output stream.
+   // Remarks:
+   //    - This method returns an IMvConnector interface.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -13140,7 +13096,7 @@ interface IMvOutputStream : public IMvStream
       IMvConnector * out_apIConnectors[],    // Pointer that receives the array of alpha output stream
                                              // connector interfaces.
       uint32_t & io_ui32Count                // Indicates the number of connectors returned in
-                                             // out_apIConnectors
+                                             // out_apIConnectors.
       ) = 0;
 };
 
@@ -13585,7 +13541,13 @@ interface IMvTopology : public IUnknown
 
    //
    // Summary:
-   //    Creates an input stream in the topology on the card.
+   //    Creates an input stream for SDI input connectors in the topology on the card.
+   // Remarks:
+   //    - If you would like to input ultra high definition (UHD), a list of four video 
+   //      input connectors are needed when the input stream is created using this method.
+   //      The audio and VANC are obtained from the first connector in the in_pIVideoInputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -13605,19 +13567,25 @@ interface IMvTopology : public IUnknown
 
    //
    // Summary:
-   //    Creates an input stream using SdiIp connector(s) in the topology on the card.
+   //    Creates an input stream for SMPTE 2022-6 streams over SFP+ transceivers in the topology on the card.
+   // Remarks:
+   //    - If you would like to input ultra high definition (UHD), a list of four SDI IP 
+   //      input connectors are needed when the input stream is created using this method.
+   //      The audio and VANC are obtained from the first connector in the in_pISdiIpInputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall CreateInputStreamSdiIp
       (
       const char * in_kszName,                              // Indicates the name of the input stream to create.
-      IMvConnector* in_pISdiIpInputConnectors[],            // Pointer to the array of SdiIp video input connector interfaces.
-      IMvConnector* in_pISdiIpAlphaInputConnectors[],       // For future usage. For now, always send NULL.
-      uint32_t in_ui32ConnectorsCount,                      // Indicates the number of SdiIp video input connectors.
-      IMvConnector* in_apIAudioInputConnectors[],           // Pointer to the array of audio input connector interfaces.
-      uint32_t in_ui32AudioInputConnectorsCount,            // Indicates the number of audio input connectors.
-      IMvNode* in_pIOutputNode,                             // Pointer to the node interface that receives the audio,
+      IMvConnector* in_pISdiIpInputConnectors[],            // Pointer to the array of SDI IP video input connector interfaces.
+      IMvConnector* in_pISdiIpAlphaInputConnectors[],       // Pointer to the array of SDI IP alpha input connector interfaces.
+      uint32_t in_ui32ConnectorsCount,                      // Indicates the number of SDI IP video input connectors.
+      IMvConnector* in_apIAudioInputConnectors[],           // Pointer to the array of SDI IP audio input connector interfaces.
+      uint32_t in_ui32AudioInputConnectorsCount,            // Indicates the number of SDI IP audio input connectors.
+      IMvNode* in_pIOutputNode,                             // Pointer to the output node interface that receives the audio,
                                                             // video, and VANC data. This parameter can be NULL.
       const SMvResolutionInfo & in_krsResolution,           // Structure of the resolution settings of the input stream. 
       const SMvInputStreamSettings& in_krsStreamSettings,   // Structure of the input stream settings.
@@ -13649,7 +13617,51 @@ interface IMvTopology : public IUnknown
 
    //
    // Summary:
-   //    Creates an output stream in the topology on the card.
+   //    Creates an input stream in the topology of a card..
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - This method allows the user application to determine whether or not alpha connectors are required.
+   //    - If the user application does not specify using alpha connectors, the input stream will only capture the 
+   //      video part of the node, even if the card node contains alpha values.
+   //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
+   //      In this case, the input stream behaves the same as when it is created using IMvSystemTopology::CreateInputStream().
+   //    - If you would like to capture ultra high definition (UHD), a list of four video input connectors are needed.
+   //      If alpha connectors are used, a list of four alpha connectors are also needed. (Otherwise, set the alpha 
+   //      connectors to NULL.) 
+   //      The audio and VANC are obtained from the first connector in the in_pIVideoInputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
+   //
+   virtual HRESULT __stdcall CreateInputStreamSdi
+      (
+      const char* in_kszName,                               // Indicates the name of the input stream to create.
+      IMvConnector* in_apISdiInputConnectors[],             // Pointer to the array of SDI video input connector interfaces.
+      IMvConnector* in_apIAlphaInputConnectors[],           // Pointer to the array of SDI alpha output connector interfaces.
+                                                            // Use IMvVideoInputConnector::GetAssociatedAlphaConnector()
+                                                            // with the connectors of in_apISdiInputConnectors to
+                                                            // determine which connector to use in this parameter.
+      uint32_t in_ui32VideoConnectorsCount,                 // Indicates the number of video input connectors.
+      IMvConnector* in_apIAudioInputConnectors[],           // Pointer to the array of audio input connector interfaces.
+      uint32_t in_ui32AudioInputConnectorsCount,            // Indicates the number of audio input connectors.
+      IMvNode* in_pIOutputNode,                             // Pointer to the node interface that receives the audio,
+                                                            // video, and VANC data. This parameter can be NULL.
+      const SMvResolutionInfo& in_krsResolution,            // Structure of the resolution settings of the input stream.
+      const SMvInputStreamSettings& in_krsStreamSettings,   // Structure of the input stream settings.
+      IMvInputStream **out_ppIInputStream                   // Pointer that receives the created input stream
+                                                            // interface, if the method is completed successfully.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Creates an output stream for SDI output connectors in the topology on the card.
+   // Remarks:
+   //    - This method allows the output stream to automatically determine whether or not alpha connectors are used.
+   //    - If you would like to output ultra high definition (UHD), a list of four video 
+   //      output connectors are needed when the output stream is created using this method.
+   //      The audio and VANC are obtained from the first connector in the in_pIVideoOuputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //   
@@ -13667,7 +13679,19 @@ interface IMvTopology : public IUnknown
 
    //
    // Summary:
-   //    Creates an output stream using Sdi connector(s) in the topology on the card.
+   //    Creates an output stream for SDI output connectors in the topology on the card.
+   // Remarks:
+   //    - This method allows the user application to determine whether or not alpha connectors are used.
+   //    - If the user application does not specify using alpha connectors, the output stream will only output the 
+   //      video part of the node, even if the card node contains alpha values.
+   //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
+   //      In this case, the output stream behaves the same as when it is created using IMvSystemTopology::CreateOutputStream().
+   //    - If you would like to output ultra high definition (UHD), a list of four video 
+   //      output connectors are needed when the output stream is created using this method. If alpha connectors are used,
+   //      a list of four alpha connectors are also needed. (Otherwise, set the alpha connectors to NULL.) 
+   //      The audio and VANC are obtained from the first connector in the in_pIVideoOuputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //   
@@ -13678,19 +13702,31 @@ interface IMvTopology : public IUnknown
                                                             // This parameter can be NULL.
       const SMvResolutionInfo & in_krsResolution,           // Structure of the resolution settings of the output stream.
       const SMvOutputStreamSettings & in_krsStreamSettings, // Structure of the output stream settings.
-      IMvConnector * in_pISdiOutputConnectors[],            // Pointer to the array of Sdi video Output connector interfaces.
-      IMvConnector * in_pAlphaOutputConnectors[],           // Pointer to the array of Sdi alpha Output connector interfaces.
+      IMvConnector * in_pISdiOutputConnectors[],            // Pointer to the array of SDI video output connector interfaces.
+      IMvConnector * in_pAlphaOutputConnectors[],           // Pointer to the array of SDI alpha output connector interfaces.
                                                             // Use IMvVideoOutputConnector::GetAssociatedAlphaConnector()
                                                             // with the connectors of in_pISdiOutputConnectors to
-                                                            // determine the connector to use in this parameter.
-      uint32_t in_ui32ConnectorsCount,                      // Indicates the number of Sdi video output connectors.
+                                                            // determine which connector to use in this parameter.
+      uint32_t in_ui32ConnectorsCount,                      // Indicates the number of SDI video output connectors.
       IMvOutputStream ** out_ppIOutputStream                // Pointer that receives the created output stream
                                                             // interface, if the method is completed successfully.
       ) = 0;
 
    //
    // Summary:
-   //    Creates an output stream using SdiIp connector(s) in the topology on the card.
+   //    Creates an output stream for SMPTE 2022-6 streams over SFP+ transceivers in the topology on the card.
+   // Remarks:
+   //    - This method allows the user application to determine whether or not alpha connectors are used.
+   //    - If the user application does not specify using alpha connectors, the output stream will only output the 
+   //      video part of the node, even if the card node contains alpha values.
+   //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
+   //      In this case, the output stream behaves the same as when it is created using IMvSystemTopology::CreateOutputStream().
+   //    - If you would like to output ultra high definition (UHD), a list of four SDI IP 
+   //      output connectors are needed when the output stream is created using this method. If alpha connectors are used,
+   //      a list of four alpha connectors are also needed. (Otherwise, set the alpha connectors to NULL.) 
+   //      The audio and VANC are obtained from the first connector in the in_pISdiIpOutputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //   
@@ -13701,16 +13737,51 @@ interface IMvTopology : public IUnknown
                                                             // This parameter can be NULL.
       const SMvResolutionInfo & in_krsResolution,           // Structure of the resolution settings of the output stream.
       const SMvOutputStreamSettings & in_krsStreamSettings, // Structure of the output stream settings.
-      IMvConnector * in_pISdiIpOutputConnectors[],          // Pointer to the array of SdiIp video Output connector interfaces.
-      IMvConnector * in_pSdiIpAlphaOutputConnectors[],      // Pointer to the array of SdiIp alpha Output connector interfaces.
+      IMvConnector * in_pISdiIpOutputConnectors[],          // Pointer to the array of SDI IP video output connector interfaces.
+      IMvConnector * in_pSdiIpAlphaOutputConnectors[],      // Pointer to the array of SDI IP alpha output connector interfaces.
                                                             // Use IMvSdiIpOutputConnector::GetAssociatedAlphaConnector() 
                                                             // with the connectors of in_pISdiIpOutputConnectors to
-                                                            // determine the connector to use in this parameter.
-      uint32_t in_ui32ConnectorsCount,                      // Indicates the number of SdiIp video output connectors.
+                                                            // determine which connector to use in this parameter.
+      uint32_t in_ui32ConnectorsCount,                      // Indicates the number of SDI IP video output connectors.
       IMvOutputStream ** out_ppIOutputStream                // Pointer that receives the created output stream
                                                             // interface, if the method is completed successfully.
       ) = 0;
    
+   //
+   // Summary:
+   //    Creates an output stream for ASPEN streams over SFP+ transceivers in the topology on the card.
+   // Remarks:
+   //    - If the user application does not specify using alpha connectors, the output stream will only output the 
+   //      video part of the node, even if the card node contains alpha values.
+   //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
+   //    - If you would like to output ultra high definition (UHD), a list of four video 
+   //      output connectors are needed when the output stream is created using this method. If alpha connectors are used,
+   //      a list of four alpha connectors are also needed. (Otherwise, set the alpha connectors to NULL.) 
+   //      However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //   
+   virtual HRESULT __stdcall CreateOutputStreamAspen
+      (
+      const char * in_kszName,                              // Indicates the name of the output stream to create.
+      IMvNode    * in_pIInputNode,                          // Pointer to the input node interface of the output stream.
+                                                            // This parameter can be NULL.
+      const SMvResolutionInfo & in_krsResolution,           // Structure of the resolution settings of the output stream.
+      const SMvOutputStreamSettings & in_krsStreamSettings, // Structure of the output stream settings.
+      IMvConnector * in_apIVideoOutputConnectors[],         // Pointer to the array of ASPEN video output connector interfaces.
+      IMvConnector * in_apAlphaOutputConnectors[],          // Pointer to the array of ASPEN alpha output connector interfaces.
+                                                            // Use IMvAspenVideoOutputConnector::GetAssociatedAlphaConnector() 
+                                                            // with the connectors of in_pIVideoOutputConnectors to
+                                                            // determine which connector to use in this parameter.
+      uint32_t       in_ui32VideoConnectorsCount,           // Indicates the number of video output connectors.
+      IMvConnector * in_apIAudioConnectors[],               // Pointer to the array of ASPEN audio output connector interfaces.
+      uint32_t       in_ui32AudioConnectorsCount,           // Indicates the number of audio output connectors.
+      IMvConnector * in_pIVancConnector,                    // Pointer to the ASPEN VANC output connector interface.
+      IMvOutputStream ** out_ppIOutputStream                // Pointer that receives the created output stream
+                                                            // interface, if the method is completed successfully.
+      ) = 0;
+
    //
    // Summary:
    //    Creates a transform stream in the topology on the card.
@@ -13821,14 +13892,14 @@ interface IMvTopology : public IUnknown
    //    Creates an alias node in the topology on the card.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
-   // Remarks:
-   //    - The maximum number of nodes that can be allocated in all topologies on a card is 64.
+   // Note:
+   //    - An alias card node represents a read-only card node that is used to access the data contained in a card node owned by another or the same process.
    //
    virtual HRESULT __stdcall CreateAliasNode
       (
-      const char   in_kszName[32],             // Indicate the name of the node to create.
-      IMvNode*     in_pIReferenceNode,         // Pointer to the reference node.
-      IMvNode**    out_ppINode                 // Pointer that receives the created node interface, if the
+      const char   in_kszName[32],             // Pointer to the name of the alias card node.
+      IMvNode*     in_pIReferenceNode,         // Pointer to the reference card node containing the data to access from another topology.
+      IMvNode**    out_ppINode                 // Pointer that receives the created node interface, if the 
                                                // method is completed successfully.
       ) = 0;
 
@@ -13987,7 +14058,10 @@ interface IMvTopologiesEnumerator : public IUnknown
 //    - This interface can be used to enumerate or acquire the different input and output streams available for this
 //      hardware profile and to manage the stored topologies.
 // Note:
-//    <sup>*</sup> Not supported on the Matrox DSX LE3 card.
+//    <sup>*</sup> Not supported on Matrox DSX LE3.<p>
+//    <sup>**</sup> Not supported on Matrox X.mio2 Plus and DSX LE3.<p>
+//    <sup>***</sup> Supported only on hardware with SFP+ transceivers for IP communication, such as Matrox X.mio3 IP.<p>
+//    <sup>****</sup> Supported only on hardware with SFP+ transceivers for SDI communication, such as Matrox X.mio3 12G.
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvCardConfiguration : public IUnknown
@@ -14059,13 +14133,13 @@ interface IMvCardConfiguration : public IUnknown
 
    //
    // Summary:
-   //    Creates an enumerator listing all the system clocks for the card.
+   //    Creates an enumerator listing all the DSX system clocks for the card.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall CreateSystemClockEnumerator
       (
-      IMvSystemClockEnumerator ** out_ppIEnumerator   // Pointer that receives the clock enumerator interface.
+      IMvSystemClockEnumerator ** out_ppIEnumerator   // Pointer that receives the DSX system clock enumerator interface.
       ) = 0;
 
    //
@@ -14078,7 +14152,7 @@ interface IMvCardConfiguration : public IUnknown
       (
       const char      * in_kszName,                // Pointer to the name of the newly created rendering system clock.
       uint32_t          in_ui32ClockSpeed,         // Target speed of the rendering clock. The value cannot be zero. 
-                                                   // The accepted values are 1, 2, 4, and 8 times the speed of the genlock clock.
+                                                   // The possible values are 1, 2, 4, or 8 times the speed of the genlock clock.
       IMvSystemClock ** out_ppINewRenderingClock   // Pointer that receives the rendering system clock interface.
       ) = 0;
 
@@ -14121,6 +14195,22 @@ interface IMvCardConfiguration : public IUnknown
       (
       IMvTopology* in_pITopology // Pointer to the topology interface that allows a topology to be removed from the
                                  // card's default state.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the name of the topology at the specified index in the card's default state.<sup>**</sup>
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //    - MV_E_INVALID_INDEX, if the index is out of range
+   // Note:
+   //    <sup>**</sup> Not supported on Matrox X.mio2 Plus and DSX LE3.
+   //
+   virtual HRESULT __stdcall GetDefaultStateTopologyName
+      (
+      uint32_t in_ui32TopologyIndex,      // Index of the default state topology.
+      char   * out_szName,                // An array of characters that will receive the name of the topology (maximum of 32 characters).
+      uint32_t in_ui32NbOfDestCharacters  // Indicates the number of characters in out_szName.
       ) = 0;
 
    //
@@ -14174,6 +14264,22 @@ interface IMvCardConfiguration : public IUnknown
       (
       IMvWatchdog* in_pIWatchdog // Pointer to the watchdog interface that allows a watchdog to be removed from the
                                  // card's default state.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the name of the watchdog at the specified index in the card's default state.<sup>**</sup>
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //    - MV_E_INVALID_INDEX, if the index is out of range
+   // Note:
+   //    <sup>**</sup> Not supported on Matrox X.mio2 Plus and DSX LE3.
+   //
+   virtual HRESULT __stdcall GetDefaultStateWatchdogName
+      (
+      uint32_t in_ui32WatchdogIndex,      // Index of the default state watchdog.
+      char   * out_szName,                // An array of characters that will receive the name of the watchdog (maximum of 32 characters).
+      uint32_t in_ui32NbOfDestCharacters  // Indicates the number of characters in out_szName.
       ) = 0;
 
    //
@@ -14241,6 +14347,77 @@ interface IMvCardConfiguration : public IUnknown
    //
    virtual HRESULT __stdcall ClearDefaultsAndPermanentMemory
       (
+      ) = 0;
+
+   //
+   // Summary:
+   //    Reports if the default state settings are different from the default state settings that were saved to permanent memory.<sup>**</sup>
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - If you would like to save the changes to permanent memory, use IMvCardConfiguration::SaveDefaultsToPermanentMemory().
+   // Note:
+   //    <sup>**</sup> Not supported on Matrox X.mio2 Plus and DSX LE3.
+   //
+   virtual HRESULT __stdcall DefaultStateRequiredToBeSaved
+      (
+      bool& out_bRequireSave // If true, indicates that the default state is different from permanent memory.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Sets the card's default genlock settings to the default state.<sup>**</sup>
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - If you do not call this method, the current genlock settings will be used in the default state.
+   // Note:
+   //    <sup>**</sup> Not supported on Matrox X.mio2 Plus and DSX LE3.
+   //
+   virtual HRESULT __stdcall SetGenlockSettingsToDefaultState
+      (
+      const SMvGenlockSettings& in_krsSettings  // Structure of the default genlock settings.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the card's default genlock settings from the default state.<sup>**</sup>
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Note:
+   //    <sup>**</sup> Not supported on Matrox X.mio2 Plus and DSX LE3.
+   //
+   virtual HRESULT __stdcall GetGenlockSettingsFromDefaultState
+      (
+      SMvGenlockSettings& io_rsSettings  // Structure that receives the default genlock settings.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Sets the card's default SDI output settings to the default state.<sup>**</sup>
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Note:
+   //    <sup>**</sup> Not supported on Matrox X.mio2 Plus and DSX LE3.
+   //
+   virtual HRESULT __stdcall SetSdiOutputSettingsToDefaultState
+      (
+      IMvSdiVideoOutputConnector*         in_pIVideoOutputConnector,    // Pointer to the SDI video output connector interface.
+      const SMvSdiOutputDefaultSettings&  in_krsDefaultSettings         // Structure of the default SDI output settings.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the card's default SDI output settings from the default state.<sup>**</sup>
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Note:
+   //    <sup>**</sup> Not supported on Matrox X.mio2 Plus and DSX LE3.
+   //
+   virtual HRESULT __stdcall GetSdiOutputSettingsFromDefaultState
+      (
+      IMvSdiVideoOutputConnector*   in_pIVideoOutputConnector,    // Pointer to the SDI video output connector interface.
+      SMvSdiOutputDefaultSettings&  io_rsDefaultSettings          // Structure that receives the default SDI output settings.
       ) = 0;
 
    //
@@ -14364,66 +14541,140 @@ interface IMvCardConfiguration : public IUnknown
 
    //
    // Summary:
-   //    Creates an enumerator listing all SfpIp for the card.
+   //    Creates an enumerator listing all SFP+ transceiver interfaces for the card.<sup>***</sup>
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
+   // Note:
+   //    <sup>***</sup> Supported only on hardware with SFP+ transceivers, such as Matrox X.mio3 IP.
    //
    virtual HRESULT __stdcall CreateSfpIpEnumerator
       (
       IMvSfpIpEnumerator ** out_ppIEnum                        // Pointer that receives the
-                                                               // SfpIp enumerator interface.
+                                                               // SFP+ transceiver enumerator interface.
       ) = 0;
 
    //
    // Summary:
-   //    Creates an enumerator listing all SdiIp video input connectors for the card.
+   //    Creates an enumerator listing all SFP+ transceiver interfaces for SDI communication for the card.<sup>****</sup>
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
+   // Note:
+   //    <sup>****</sup> Supported only on hardware with SFP+ transceivers for SDI communication, such as Matrox X.mio3 12G.
+   //
+   virtual HRESULT __stdcall CreateSfpSdiEnumerator
+      (
+      IMvSfpSdiEnumerator ** out_ppIEnum                       // Pointer that receives the
+                                                               // SFP+ transceiver enumerator interface for SDI communication.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Creates an enumerator listing all SDI IP input connectors for the card.<sup>***</sup>
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Note:
+   //    <sup>***</sup> Supported only on hardware with SFP+ transceivers for IP communication, such as Matrox X.mio3 IP.
    //
    virtual HRESULT __stdcall CreateSdiIpInputConnectorsEnumerator
       (
       IMvSdiIpInputConnectorsEnumerator** out_ppISdiIpInputConnectorsEnumerator     // Pointer that receives the
-                                                                                    // SdiIp input connectors
+                                                                                    // SDI IP input connectors
                                                                                     // enumerator interface.
       ) = 0;
 
    //
    // Summary:
-   //    Creates an enumerator listing all SdiIp video output connectors for the card.
+   //    Creates an enumerator listing all SDI IP output connectors for the card.<sup>***</sup>
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
+   // Note:
+   //    <sup>***</sup> Supported only on hardware with SFP+ transceivers for IP communication, such as Matrox X.mio3 IP.
    //
    virtual HRESULT __stdcall CreateSdiIpOutputConnectorsEnumerator
       (
       IMvSdiIpOutputConnectorsEnumerator** out_ppISdiIpOutputConnectorsEnumerator   // Pointer that receives the
-                                                                                    // SdiIp output connectors
+                                                                                    // SDI IP output connectors
                                                                                     // enumerator interface.
       ) = 0;
       
    //
    // Summary:
-   //    Gets the number of analog linear time code configurations.
+   //    Creates an enumerator listing all ASPEN video output connectors for the card.<sup>***</sup>
    // Return value:
-   //    - Number of available analog linear time code configurations.
+   //    - MV_NOERROR, if completed successfully. 
+   // Note:
+   //    <sup>***</sup> Supported only on hardware with SFP+ transceivers for IP communication, such as Matrox X.mio3 IP.
+   //
+   virtual HRESULT __stdcall CreateAspenVideoOutputConnectorsEnumerator
+      (
+      IMvAspenVideoOutputConnectorsEnumerator** out_ppIEnumerator   // Pointer that receives the ASPEN video output 
+                                                                    // connectors enumerator interface.
+      ) = 0;
+      
+   //
+   // Summary:
+   //    Creates an enumerator listing all ASPEN audio output connectors for the card.<sup>***</sup>
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Note:
+   //    <sup>***</sup> Supported only on hardware with SFP+ transceivers for IP communication, such as Matrox X.mio3 IP.
+   //
+   virtual HRESULT __stdcall CreateAspenAudioOutputConnectorsEnumerator
+      (
+      IMvAspenAudioOutputConnectorsEnumerator** out_ppIEnumerator   // Pointer that receives the ASPEN audio output 
+                                                                    // connectors enumerator interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Creates an enumerator listing all ASPEN VANC output connectors for the card.<sup>***</sup>
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Note:
+   //    <sup>***</sup> Supported only on hardware with SFP+ transceivers for IP communication, such as Matrox X.mio3 IP.
+   //
+   virtual HRESULT __stdcall CreateAspenVancOutputConnectorsEnumerator
+      (
+      IMvAspenVancOutputConnectorsEnumerator** out_ppIEnumerator  // Pointer that receives the ASPEN VANC output 
+                                                                  // connectors enumerator interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the number of analog linear time code (LTC) configurations.
+   // Return value:
+   //    - Number of available analog LTC configurations.
    // 
    virtual uint32_t __stdcall GetALTCConfigurationCount() = 0;
 
    //
    // Summary:
-   //    Gets an analog linear time code configuration.
+   //    Gets an analog linear time code (LTC) configuration.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetALTCConfiguration
       (
-      uint32_t               in_ui32Index,             // Index of analog linear time code configurations. 
+      uint32_t               in_ui32Index,             // Index of the analog LTC configurations. 
                                                        // The in_ui32Index parameter is a zero-based index. 
                                                        // The maximum index value is (count - 1), where 
-                                                       // "count" is the value returned by 
+                                                       // <i>count</i> is the value returned by 
                                                        // IMvCardConfiguration::GetALTCConfigurationCount().
-      IMvALTCConfiguration** out_ppIALTCConfiguration  // Pointer that receives an analog linear time code 
+      IMvALTCConfiguration** out_ppIALTCConfiguration  // Pointer that receives an analog LTC 
                                                        // configuration interface.
       ) = 0;
+
+   //
+   // Summary:
+   //    Gets the SMPTE 2059 genlock signal control interface.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetSmpte2059Interface
+      (
+      IMvSmpte2059** out_ppISmpte2059  // Pointer that receives an SMPTE 2059 signal control interface.
+      ) = 0;
+
 };
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -16848,7 +17099,7 @@ interface IMvDMFramework_AS11_UK_DPP : public IMvMXFDMFramework
 
    //
    // Summary:
-   //    Sets the total programme duration.
+   //    Sets the total program duration.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -16860,7 +17111,7 @@ interface IMvDMFramework_AS11_UK_DPP : public IMvMXFDMFramework
 
    //
    // Summary:
-   //    Gets the total programme duration.
+   //    Gets the total program duration.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -16868,7 +17119,6 @@ interface IMvDMFramework_AS11_UK_DPP : public IMvMXFDMFramework
       (
       uint64_t * out_pui64TotalProgrammeDuration // Pointer to the total programme duration value.
       ) = 0;
-
 
    //
    // Summary:
@@ -16882,8 +17132,6 @@ interface IMvDMFramework_AS11_UK_DPP : public IMvMXFDMFramework
       (
       unsigned char * in_ucCompletionDate // Indicates the completion date value as an 8-byte array.
       ) = 0;
-
-
 
    //
    // Summary:
@@ -16900,72 +17148,187 @@ interface IMvDMFramework_AS11_UK_DPP : public IMvMXFDMFramework
 
 };
 
-///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Controls the Matrox MPEG-2 Transport Stream Demuxer notification. 
+//    Provides the output buffer callback notification of the MPEG-2 TS demuxer.
 // Remarks:
-//    - This interface will be notified each time the demuxing operation is completed on an MPEG-2 transport stream muxed buffer.
+//    - Use the method IMvMPEG2TSDemuxer::RegisterCallbackForOutput to register the
+//      IMvMPEG2TSDemuxerOutputCallback interface.
+// Description:
+//    This interface is use to receive data for one elementary stream. The MPEG-2 TS demuxer will call the methods on 
+//    this interface to notify of error and data ready buffer and to retrieve buffer to fill with data.
 //
-///////////////////////////////////////////////////////////////////////////////
-interface IMvMPEG2TSDemuxerNotification : public IUnknown
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvMPEG2TSDemuxerOutputCallback : public IUnknown
 {
    //
    // Summary:
-   //    Provides the demuxed video buffer to the caller.
+   //    The MPREG-2 TS demuxer call this methods so the application can return a proper buffer. 
    // Return value:
-   //    MV_NOERROR.
-   //
-   virtual HRESULT __stdcall NotifyVideoBuffer
-      (
-      IMvSurface * in_pIVideoBuffer       // Pointer to the IMvSurface containing the video stream.
-      ) = 0;
-
-   //
-   // Summary:
-   //    Provides the demuxed audio samples to the caller.
-   // Return value:
-   //    MV_NOERROR.
-   //
-   virtual HRESULT __stdcall NotifyAudioSamples
-      (
-      IMvAudioSamples * in_pIAudioSamples,            // Pointer to the IMvAudioSamples interface containing the audio streams.
-      uint64_t          in_ui64OffsetFromActualStart  // Offset used to synchronize the video on the audio stream.
-      ) = 0;
-
-   //
-   // Summary:
-   //    Provides the demuxed VANC buffer to the caller.
-   // Return value:
-   //    MV_NOERROR.
-   //
-   virtual HRESULT __stdcall NotifyVANCBuffer
-   (
-   IMvSurface * in_pIVANCBuffer          // Pointer to the IMvSurface containing the VANC stream.
-   ) = 0;
-
-   //
-   // Summary:
-   //    Provides the caller with information regarding setup data for AAC audio, if present in the audio stream.
+   //    - MV_NOERROR, if completed successfully.
+   //    - Any other error, the chunk of data to be sent will be ignore and the method NotifyForError will be called 
+   //      to confirm the cancellation.
    // Remarks:
-   // - This method is called before calling IMvMPEG2TSDemuxerNotification::NotifyAudioSamples().
-   // Return value:
-   //    MV_NOERROR.
+   //    - The MPEG-2 TS demuxer expect that the buffer will already have a write count to be consumed. The application
+   //      must do at least one IMvAVContent::IncrementWriteCount().
+   //    - Whether or not the data is put into the buffer, there will always be a IMvAVContent::SignalWriteCompletion() 
+   //      done.
+   //    - The MPEG-2Demuxer expect to have a buffer of the proper type (IMvSurface or IMvAudioSamples).
+   //    - The buffer returned must respect the values returned by IMvMPEG2TSDemuxer::GetCreateSurfaceDescription and 
+   //      IMvMPEG2TSDemuxer::GetCreateAudioSamplesDescription, depending on the type of elementary stream that is
+   //      processed.
+   //    - When returning a buffer for video, the demuxer expect valid value in the following fields of the surface
+   //      description SMvSurfaceDescription: eFormat, eMemoryLocation (keMvMemoryLocationHost or 
+   //      keMvMemoryLocationUser) and ulBufferSizeInBytes. If using a user buffer, the application should also set the 
+   //      field SMvUserBufferSurfaceDescription::ulSlicePitchInBytes.
+   //    - When returning a buffer for audio, the demuxer expect valid value in the following fields of the audio
+   //      samples description SMvAudioSampleDescription: eMemoryLocation (keMvMemoryLocationHost or 
+   //      keMvMemoryLocationUser) and all fields of sWaveFormat.
+   //    - When returning a buffer for VANC, the demuxer expect valid value in the following fields of the Matrox
+   //      Ancillary Data surface description SMvSurfaceDescription: eFormat (keMvSurfaceFormatMatroxancillarydata),
+   //      eMemoryLocation (keMvMemoryLocationHost or keMvMemoryLocationUser) and ulComponentBitCount (16).
+   //    - When returning a buffer for any other type of buffer, demuxer expect valid value in the following fields of
+   //      the surface description SMvSurfaceDescription: eFormat (keMvSurfaceFormatData), eMemoryLocation 
+   //      (keMvMemoryLocationHost or keMvMemoryLocationUser) and ulBufferSizeInBytes. If using a user buffer, the 
+   //      application should also set the field SMvUserBufferSurfaceDescription::ulSlicePitchInBytes.
+   //    - The field SMvUserBufferSurfaceDescription::ulSlicePitchInBytes is used to set the size of the buffer
+   //      in the SMvLockSurfaceDescription structure when calling IMvSurface::LockSurfaceDescription(). Note that not
+   //      all DSX.sdk module need this information as the SMvSurfaceDescription::ulBufferSizeInBytes is also 
+   //      available.
    //
-   virtual HRESULT __stdcall NotifyData
+   virtual HRESULT __stdcall GetBuffer
       (
-      IID         in_IIDInterface,  // GUID of the data the user is interested in.
-      IUnknown*   in_pIUnk          // Pointer to the interface of the GUID.
+      uint32_t in_ui32PgmPID,       // Specifies the program PID identifying the elementary stream.
+      uint32_t in_ui32ES_PID,       // Specifies the elementary stream PID identifying the elementary stream.
+      uint32_t in_ui32BufferSize,   // Specifies the data size that will be written to the buffer.
+      IMvAVContent ** out_ppIBuffer // Pointer to the address of the IMvAVContent interface that receives the 
+                                    // buffer that the demuxer will fill with elementary stream data.
       ) = 0;
 
    //
    // Summary:
-   //    Notifies the caller that the demuxer processing is finished and the demuxer is closed.
-   // Return value:
-   //    MV_NOERROR.
+   //    The MPREG-2 TS demuxer call this methods so the application can process elementary stream data. 
+   // Remarks:
+   //    - The application must always test the write error on the buffer to make sure that there was no validation 
+   //      of the buffer.
+   //    - The write completion is always done before calling this method. That is, the data is guaranteed to be
+   //      written when the call is done.
+   //    - The buffer must respect the values returned by IMvMPEG2TSDemuxer::GetCreateSurfaceDescription and 
+   //      IMvMPEG2TSDemuxer::GetCreateAudioSamplesDescription depending on the type of elementary stream that is 
+   //      processed.
    //
-   virtual HRESULT __stdcall NotifyDemuxerClosed () = 0;
+   virtual void __stdcall NotifyForBuffer
+      (
+      uint32_t in_ui32PgmPID,    // Specifies the program PID identifying the elementary stream.
+      uint32_t in_ui32ES_PID,    // Specifies the elementary stream PID identifying the elementary stream.
+      const SMvMPEG2TSBufferInfo & in_krsInfo,  // Specifies more specific information about the chunk of data being 
+                                                // received.
+      IMvAVContent * in_pIBuffer // Pointer to the address of the IMvAVContent interface that was passed to
+                                 // IMvMPEG2TSDemuxerOutputCallback::GetBuffer.
+      ) = 0;
 
+   //
+   // Summary:
+   //    The MPREG-2 TS demuxer call this methods to notify of asynchronous errors that the application must be 
+   //    aware of. Like canceled buffers or invalid streams. 
+   //
+   virtual void __stdcall NotifyForError
+      (
+      uint32_t in_ui32PgmPID,    // Specifies the program PID identifying the elementary stream.
+      uint32_t in_ui32ES_PID,    // Specifies the elementary stream PID identifying the elementary stream.
+      HRESULT  in_error          // Error code.
+      ) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Provides the description of the MPEG-2 transport stream found on the PMT/PAT packets.
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvMPEG2TSDescription : public IUnknown
+{
+   //
+   // Summary:
+   //    Provides the number of programs in the MPEG-2 transport stream.
+   // Return value:
+   //    - Returns the number of programs in the transport stream.
+   //
+   virtual uint32_t __stdcall GetProgramCount() = 0;
+
+   //
+   // Summary:
+   //    Provides the generic description of the program.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully
+   //
+   virtual HRESULT __stdcall GetProgramDescription
+      (
+      uint32_t in_ui32PgmIndex,              // Index of the program.
+      SMvMPEG2TSProgramDesc & io_rsInfo      // Returns the description of the program.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Provides the generic description of the elementary stream.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully
+   //
+   virtual HRESULT __stdcall GetElementaryStreamDescription
+      (
+      uint32_t in_ui32PgmIndex,                    // Index of the program.
+      uint32_t in_ui32ESIndex,                     // Index of the elementary stream in the program. Use the
+                                                   // field SMvMPEG2TSProgramDesc::ui32StreamCount.
+      SMvMPEG2TSElementaryStreamDesc & io_rsInfo   // Returns the generic description of the elementary stream.
+      ) = 0;
+
+   virtual HRESULT __stdcall GetElementaryStreamH264VideoDescription
+      (
+      uint32_t in_ui32PgmIndex,                    // Index of the program.
+      uint32_t in_ui32ESIndex,                     // Index of the elementary stream in the program. Use the
+                                                   // field SMvMPEG2TSProgramDesc::ui32StreamCount.
+      SMvMPEG2TSElementaryStreamH264VideoDesc & io_rsInfo // Return the specific description of an H.264 video elementary 
+                                                          // stream.
+      ) = 0;
+
+   virtual HRESULT __stdcall GetElementaryStreamPCMAudioDescription
+      (
+      uint32_t in_ui32PgmIndex,                             // Index of the program.
+      uint32_t in_ui32ESIndex,                              // Index of the elementary stream in the program. 
+                                                            // Use the field SMvMPEG2TSProgramDesc::ui32StreamCount.
+      SMvMPEG2TSElementaryStreamPCMAudioDesc & io_rsInfo    // Return the specific description of a PCM audio 
+                                                            // elementary stream.
+      ) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Provides the MPEG2 transport stream PMT/PAT description callback notification of the MPEG-2 TS demuxer.
+// Remarks:
+//    - Use the method IMvMPEG2TSDemuxer::RegisterCallbackForDetectionNotification and 
+//      IMvMPEG2TSDemuxer::UnregisterCallbackForDetectionNotification to register and unregister the
+//      IMvMPEG2TSDemuxerDetectionCallback interface.
+// Description:
+//    This interface is use to receive data from the MPEG-2 TS demuxer when the PMT/PAT table has been detected and 
+//    parsed.
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvMPEG2TSDemuxerDetectionCallback : public IUnknown
+{
+   //
+   // Summary:
+   //    Receives the MPEG-2 transport stream description.
+   //
+   virtual void __stdcall Notify
+      (
+      IMvMPEG2TSDescription * in_pIDescription  // Pointer to a IMvMPEG2TSDescription interface. The application
+                                                // can take ownership of the interface using method IUnknown::AddRef().
+                                                // The data contained in the interface is guaranteed no to change 
+                                                // while the application has ownership. The MPEG-2 TS demuxer will 
+                                                // build a new object for each detection done.
+      ) = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -16975,66 +17338,138 @@ interface IMvMPEG2TSDemuxerNotification : public IUnknown
 //
 ///////////////////////////////////////////////////////////////////////////////
 interface IMvMPEG2TSDemuxer : public IUnknown
-{	
+{
    //
    // Summary:
-   //    Initializes the transport stream demuxer with a pointer to the IMvMPEG2TSDemuxerNotification interface.
+   //    Registers a callback notification for the MPEG-2 transport stream PMT/PAT detection.
    // Return value:
-   //    - Returns an error if the command failed or the input parameter is NULL.
-   virtual HRESULT __stdcall Open
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - The IUnknown::AddRef method of the in_pICallback parameter is called when the
+   //      notification is registered to prevent the object implementing the IMvMPEG2TSDemuxerDetectionCallback 
+   //      interface from being destroyed.
+   //
+   virtual HRESULT __stdcall RegisterCallbackForDetectionNotification
       (
-      IMvMPEG2TSDemuxerNotification *in_pIMPEG2TSDemuxerNotification	// Pointer to the IMvMPEG2TSDemuxerNotification interface
-																		// that will be notified each time an MPEG-2 transport
-																		// stream buffer is demuxed into video, audio, and VANC (if present) streams.
-      ) = 0;                                                           
-                                                                     
-
-   //
-   // Summary:
-   //    Closes the transport stream demuxer.
-   // Return value:
-   //    - Returns an error if the command failed or there are invalid parameters.
-   virtual HRESULT __stdcall Close() = 0;
-
-   //
-   // Summary:
-   //    Provides a transport stream muxed buffer containing video, audio, and VANC (if present) streams.
-   // Return value:
-   //    - Returns an error if the command failed or there are invalid parameters.
-   virtual HRESULT __stdcall PutTSMuxedSurface
-      (
-      IMvSurface* in_pITSMuxedBuffer      // Pointer to the IMvSurface interface that contains the transport stream muxed surface.
+      IMvMPEG2TSDemuxerDetectionCallback * in_pICallback    // Pointer to the detection callback interface.
       ) = 0;
-      
+
    //
    // Summary:
-   //    Signals the end of the MPEG-2 transport stream buffer.	
+   //    Unregisters a callback notification for the MPEG-2 transport stream PMT/PAT detection.
    // Return value:
-   //    - Returns an error if the command failed or there are invalid parameters.
-   virtual HRESULT __stdcall PutEOSTSMuxedSurface()=0;
-
-};
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Summary:
-//    Supplied to the user application via the IMvMPEG2TSDemuxerNotification::NotifyData method.
-//
-///////////////////////////////////////////////////////////////////////////////
-interface IMvMPEG2TSDemuxerStreamInfo : public IUnknown
-{	
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - The IUnknown::Release method of the in_pICallback parameter is called when the
+   //      notification is unregistered to remove the reference count added by 
+   //      IMvSfpIp::RegisterCallbackForNotification.
    //
-   // Summary:
-   //    Used to retrieve the information found in the TS stream.
-   // Return value:
-   //    - Returns an error if the command failed or an input parameter is not initialized properly.
-   virtual HRESULT __stdcall GetTSStreamInfo
+   virtual HRESULT __stdcall UnregisterCallbackForDetectionNotification
       (
-      SMvResolutionInfo &io_rsResInfo, // size has to be initialized
-      EMvSurfaceFormat  &io_reSurfaceFormat,
-      SMvaWaveFormatInfo &io_rsWavFormatInfo // size has to be initialized
-      ) = 0;                                                           
+      IMvMPEG2TSDemuxerDetectionCallback * in_pICallback    // Pointer to the detection callback interface.
+      ) = 0;
 
+   virtual HRESULT __stdcall GetTransportStreamDescription
+      (
+      IMvMPEG2TSDescription ** out_ppIInfo
+      ) = 0;
+
+   //
+   // Summary:
+   //    Registers a callback notification to retrieve data for the elementary stream.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - The IUnknown::AddRef method of the in_pICallback parameter is called when the
+   //      notification is registered to prevent the object implementing the IMvMPEG2TSDemuxerOutputCallback 
+   //      interface from being destroyed.
+   //
+   virtual HRESULT __stdcall RegisterCallbackForOutput
+      (
+      uint32_t in_ui32PgmPID,          // Specifies the program PID identifying the elementary stream.
+      uint32_t in_ui32ES_PID,          // Specifies the elementary stream PID identifying the elementary stream.
+      IMvMPEG2TSDemuxerOutputCallback * in_pCallback  // Pointer to the elementary stream output callback interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Unregisters a callback notification for the data retrieval of the elementary stream.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - The IUnknown::Release method of the in_pICallback parameter is called when the
+   //      notification is unregistered to remove the reference count added by 
+   //      IMvSfpIp::RegisterCallbackForNotification.
+   //
+   virtual HRESULT __stdcall UnregisterCallbackForOutput
+      (
+      IMvMPEG2TSDemuxerOutputCallback * in_pCallback     // Pointer to the elementary stream output callback interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Send a MPEG-2 transport stream buffer to the demuxer for processing.
+   // Remarks:
+   //    - Buffer should be big enough to perform PMT / PAT detection. Once done, buffer size can be anything that is
+   //      a multiple of 188 bytes.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall PutMuxedBuffer
+      (
+      IMvSurface * in_pBuffer    // Pointer to the MPEG-2 transport stream buffer interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Indicate to the MPEG-2 TS demuxer that there will be no more data to process and to complete remaining 
+   //    processing.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //    - MV_E_TIMEOUT, if the operation took too long.
+   // Remarks:
+   //    - It is guaranteed that after the successfully completed of this call, there is no more data to process, that 
+   //      the output callback have all receive everything they could and that all input buffer will be signal for read 
+   //      completion.
+   //
+   virtual HRESULT __stdcall WaitForEndOfStream
+      (
+      uint32_t in_ui32Timeout    // Maximum timeout in milliseconds to wait before returning.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Get the surface description to use for creating IMvSurface buffers to receive data for an H.264 video 
+   //    elementary stream. 
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - Normally use when to supply a buffer to IMvMPEG2TSDemuxerOutputCallback::GetBuffer.
+   //
+   virtual HRESULT __stdcall GetSurfaceDescription
+      (
+      uint32_t in_ui32PgmPID,             // Specifies the program PID identifying the elementary stream.
+      uint32_t in_ui32ES_PID,             // Specifies the elementary stream PID identifying the elementary stream.
+      SMvCreateSurfaceDescription & io_rsDescription  // Structure that will be filled with data extracted from the 
+                                                      // data detected in the MPEG-2 transport stream PMT/PAT.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Get the audio sample description description to use for creating IMvAudioSamples buffers to receive data for 
+   //    a PCM audio elementary stream. 
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - Normally use when to supply a buffer to IMvMPEG2TSDemuxerOutputCallback::GetBuffer.
+   //
+   virtual HRESULT __stdcall GetAudioSampleDescription
+      (
+      uint32_t in_ui32PgmPID,             // Specifies the program PID identifying the elementary stream.
+      uint32_t in_ui32ES_PID,             // Specifies the elementary stream PID identifying the elementary stream.
+      SMvCreateAudioSamplesDescription & io_rsDescription   // Structure that will be filled with data extracted from 
+                                                            // the data detected in the MPEG-2 transport stream PMT/PAT.
+      ) = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -17064,270 +17499,332 @@ interface IMvAVCIntraHelper : public IUnknown
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface to control a video encoder.
+//    Interface used to control a hardware or software encoder.
 // Remarks:
-//    
-//    Currently for the H.264 software encoder 2 and the M264 hardware encoder.
+//    - This interface is currently supported by the Matrox M264 hardware encoder and the Matrox H.264 SW2 software encoder.
 //    
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvEncoderVideo : public IUnknown
 {
    //
    // Summary:
-   //    Initializes the encoder.
-   //    The encoder's compression settings structure is given via the in_pmvchOptionValue
-   //    parameter and must match the in_eCodecOption value expected for each encoder.
+   //    Initializes the encoder for compression.
+   // Remarks:
+   //    - The structure indicated in in_pmvchOptionValue must be of the type indicated by in_eCodecOption.
+   // Description:
+   //    - When using Matrox M264 (keMvCodecOptionM264CompressionOptions_st) in in_eCodecOption, the structures that can be used with in_pmvchOptionValue are as follows:
+   //<table>
+   // Type of footage to capture       Matrox M264                            
+   // ----------------------------     ---------------------------------   
+   // generic H.264                    SMvM264GenericCompressionOptions  
+   // Sony XAVC                        SMvM264XAVCCompressionOptions     
+   // </table>
+   //    - When using Matrox H.264 SW2 (keMvCodecOptionH264SWCompressionOptions_st) in in_eCodecOption, the structures that can be used with in_pmvchOptionValue are as follows:
+   //<table>
+   // Type of footage to capture       Matrox H.264 SW2
+   // ----------------------------     --------------------------------- 
+   // generic H.264                    SMvH264SWGenericCompressionOptions
+   // Sony XAVC                        SMvH264SWXAVCCompressionOptions
+   // Panasonic AVC Ultra              SMvH264SWAVCUltraCompressionOptions
+   // </table>
    // Return value:
-   //    - Returns an error if any parameters are invalid or if the compression 
-   //    settings are invalid.
-   virtual HRESULT __stdcall Open(
-      MVCHANDLE      in_pmvchOptionValue,    // pointer the expected compression settings structure
-      EMvCodecOption in_eCodecOption) = 0;   // value specifying the type of the compression structure
+   //    - MV_NOERROR, if completed successfully.
+   //    - Error code, if any parameters are invalid or if the compression settings are invalid.
+   virtual HRESULT __stdcall Open
+      (
+      MVCHANDLE      in_pmvchOptionValue,    // Pointer to the structure that contains the settings that will be used to configure the encoder.
+      EMvCodecOption in_eCodecOption         // Indicates the type of compression settings structure.
+      ) = 0;   
 
    //
    // Summary:
-   //    Tells the encoder to stop encoding as soon as possible.
-   //    The encoder will call the IMvCompletionCallback::Notify (if the encoder supports this option)
-   //    with NULL when it has finished encoding.  The IMvCompletionCallback interface should have been
-   //    specified with SetOption below before the first Open call in order to receive this notification.
-   //    There must be a Close after a successful Open.
+   //    Closes the encoder.
+   // Remarks:
+   //    - The encoder stops encoding as soon as possible.
+   //    - When Open() is called successfully, there must be a Close() whether or not the encoder was used.
+   //    - If a completion callback interface has been provided using IMvEncoderVideo::SetOption(), 
+   //      IMvCompletionCallback::Notify() will be called with a in_pIAVContent == NULL parameter to let the
+   //      user application know when it is finished encoding. Prior to this notification, you cannot call Open(). 
    // Return value:
-   //    - Returns an error if problems occurred while stopping the encoder.
+   //    - MV_NOERROR, if completed successfully.
+   //    - Error code, if an error occurred while stopping the encoder.
    virtual HRESULT __stdcall Close() = 0;
 
    //
    // Summary:
-   //    Give uncompressed video surfaces and VANC surfaces to be encoded.
+   //    Provides the encoder with uncompressed video and VANC surfaces.
    // Return value:
-   //    - Returns an error if any parameters are invalid.
-   //    - May return MV_E_MODULE_BUSY if there are too many pending buffers in the encoder 
-   virtual HRESULT __stdcall PutUncompressedVideoAndVANC(
-      IMvSurface*    in_pIVideoSurface,      // video surface containing uncompressed video to encode
-      IMvSurface*    in_pIVANCSurface) = 0;  // VANC surface to encode, can be NULL
+   //    - Error code, if any parameters are invalid.
+   //    - MV_E_MODULE_BUSY, if there are too many pending buffers. If this error code is returned, the encoder is busy and unable to 
+   //      take commands at this time, the surface must be resent or skipped/dropped. 
+   virtual HRESULT __stdcall PutUncompressedVideoAndVANC
+      (
+      IMvSurface*    in_pIVideoSurface,      // Pointer to the uncompressed video surface to encode.
+      IMvSurface*    in_pIVANCSurface        // Pointer to the VANC surface to encode. Can be NULL.
+      ) = 0;  
 
    //
    // Summary:
-   //    Give an empty user buffer surface which will eventually be filled with compressed data.
-   //    The size of the empty surface should be set to the value obtained from GetOption with 
-   //    in_eCodecOption keMvCodecOptionMaxCompressedFrameSizeByBytes_ui32 from encoders that 
-   //    support this option.
-   //    Once the surface has been written to, the IMvSurface::SignalWriteCompletion will be done and the size of
-   //    the surface will be changed to the amount of data written.
-   //    The IMvCompletionCallback::Notify (if the encoder supports this option) will also be
-   //    called with the pointer to this surface when the write has completed.  
-   //    The IMvCompletionCallback interface should have been specified with SetOption below 
-   //    in order to receive this notification.
+   //    Provides a user buffer surface to be filled with compressed data.
+   // Remarks:
+   //    - The size of the user buffer must be the same as the size indicated by keMvCodecOptionMaxCompressedFrameSizeByBytes_ui32 
+   //      in IMvEncoderVideo::GetOption::in_eCodecOption.
+   //    - Once the user buffer has been written to, the write operation is completed with a call to IMvAVContent::SignalWriteCompletion(). 
+   //      The size of the user buffer surface will be changed to the size of the data that was written.
+   //    - If a completion callback interface has been provided using IMvEncoderVideo::SetOption(), IMvCompletionCallback::Notify() will also 
+   //      be called when the write operation is completed with the pointer to IMvAVContent of the surface that was filled. 
    // Return value:
-   //    - Returns an error if any parameters are invalid.
-   //    - May return MV_E_MODULE_BUSY if there are too many pending buffers in the encoder 
-   virtual HRESULT __stdcall GetCompressedSurface(
-      IMvSurface*    in_pISurface) = 0;      // empty surface which will eventually hold compressed data 
+   //    - Error code, if any parameters are invalid.
+   //    - MV_E_MODULE_BUSY, if there are too many pending buffers. If this error code is returned, the encoder is busy and unable to 
+   //      take commands at this time, the surface must be resent or skipped/dropped. 
+   virtual HRESULT __stdcall GetCompressedSurface
+      (
+      IMvSurface*    in_pISurface      // Pointer to the empty surface that will be used to hold the compressed data.
+      ) = 0;       
 
    //
    // Summary:
-   //    Get information from the encoder.
-   //    The type of information requested is specified with the in_eCodecOption value.
-   //    The information will be returned in out_pmvchOptionValue if the option is supported.
+   //    Gets the requested information from the encoder.
+   // Remarks:
+   //    - The type of information to obtain is specified by the in_eCodecOption parameter, and the 
+   //      information is obtained from the out_pmvchOptionValue parameter.
    // Return value:
-   //    - Returns an error if the parameters are invalid or if the option is not supported by this encoder.
-   virtual HRESULT __stdcall GetOption(
-      MVCHANDLE      out_pmvchOptionValue,   // value specifying the type of information requested
-      EMvCodecOption in_eCodecOption) = 0;   // pointer to the appropriate data that will be filled with the requested information
+   //    - MV_NOERROR, if completed successfully.
+   //    - Error code, if the parameters are invalid or if the option is not supported.
+   virtual HRESULT __stdcall GetOption
+      (
+      MVCHANDLE      out_pmvchOptionValue,   // Pointer to the value that will be filled with the requested information.
+      EMvCodecOption in_eCodecOption         // Indicates the type of information to obtain.
+      ) = 0;   
 
    //
    // Summary:
-   //    Give information to the encoder.
-   //    The type of information to be provided is specified with the in_eCodecOption value.
-   //    The information provided is given via the in_pmvchOptionValue.
+   //    Provides the encoder with the specified information.
+   // Remarks:
+   //    - The type of information to provide is specified by the in_eCodecOption parameter, and the 
+   //      information is provided using in_pmvchOptionValue.
    // Return value:
-   //    - Returns an error if the parameters are invalid or if the option is not supported by this encoder.
-   virtual HRESULT __stdcall SetOption(
-      MVCHANDLE      in_pmvchOptionValue,    // value specifying the type of information being provided
-      EMvCodecOption in_eCodecOption) = 0 ;  // pointer to the data containing the appropriate information
+   //    - MV_NOERROR, if completed successfully.
+   //    - Error code, if the parameters are invalid or if the option is not supported.
+   virtual HRESULT __stdcall SetOption
+      (
+      MVCHANDLE      in_pmvchOptionValue,    // Pointer to the value of information specified.
+      EMvCodecOption in_eCodecOption         // Indicates the type of information specified.
+      ) = 0 ;  
 };
 
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface to control a video decoder.
+//    Interface used to control and instantiate a hardware decoder.
 // Remarks:
-//    
-//    Currently for the H.264 M264 hardware decoder.
+//    - This interface is currently supported by the Matrox M264 hardware decoder.
 //    
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvDecoderVideo : public IUnknown
 {
    //
    // Summary:
-   //    Initializes the decoder.
-   //    The decoder's decompression settings structure is given via the in_pmvchOptionValue
-   //    parameter and must match the in_eCodecOption value expected for each decoder.
+   //    Initializes the decoder for decompression.
+   // Remarks:
+   //    - The structure indicated in in_pmvchOptionValue must be of the type indicated by in_eCodecOption.
+   //    - To instantiate the Matrox M264 decoder in access unit mode, set bAccessUnitAlignedInput in 
+   //      SMvM264DecompressionOptions to true. Otherwise, it will be instantiated in blob mode. For more
+   //      details, see the <i>Matrox M264 Installation and User Guide</i>.
    // Return value:
-   //    - Returns an error if any parameters are invalid or if the decompression 
-   //    settings are invalid.
-   virtual HRESULT __stdcall Open(
-      MVCHANDLE      in_pmvchOptionValue,
-      EMvCodecOption in_eCodecOption) = 0;
+   //    - MV_NOERROR, if completed successfully.
+   //    - Error code, if any parameters are invalid or if the decompression settings are invalid.
+   virtual HRESULT __stdcall Open
+      (
+      MVCHANDLE      in_pmvchOptionValue,    // Pointer to the structure that contains the settings that will be used to configure the decoder.
+      EMvCodecOption in_eCodecOption         // Indicates the type of the structure that will be used to set the codec options for decompression.
+      ) = 0;
 
    //
    // Summary:
-   //    Waits for the decoder to finish decoding all provided data.
-   //    There must be a Close after a successful Open.
+   //    Closes the decoder after all the provided data is decompressed.
+   // Remarks:
+   //    - When Open() is called successfully, there must be a Close() whether or not the decoder was used.
+   //    - After calling this method, no additional calls to PutCompressedSurface() and GetUncompressedVideoAndVANCSurface()
+   //      can be sent. The decoder will decompress and return all compressed data, as long as enough uncompressed surfaces
+   //      are provided. Any additional uncompressed surfaces will be cancelled.   
    // Return value:
-   //    - Returns an error if problems occurred while stopping the decoder.
+   //    - MV_NOERROR, if completed successfully.
+   //    - Error code, if an error occurred while stopping the decoder.
    virtual HRESULT __stdcall Close() = 0;
 
    //
    // Summary:
-   //    Give compressed video surfaces to be decoded. The video data does not need to
-   //    be on frame/field boundaries it can be any size.  
-   //    In general, providing buffers that are too small will reduce performance.
+   //    Provides the decoder with compressed surfaces.
+   // Remarks:
+   //    - The video surface can be any size and does not need to be on frame/field boundaries, unless the decoder is configured in access unit mode.
+   //    - If the buffers are too small, the performance will be reduced.
+   //    - This call is asynchronous. The decoder will call IMvAVContent::SignalReadCompletion() when it has finished reading the surface.
    // Return value:
-   //    - Returns an error if any parameters are invalid or if the decoder is in the wrong state.
-   virtual HRESULT __stdcall PutCompressedSurface(
-      IMvSurface*    in_pISurface) = 0;
+   //    - MV_NOERROR, if completed successfully.
+   //    - Error code, if any parameters are invalid or if the decoder is in the wrong state.
+   virtual HRESULT __stdcall PutCompressedSurface
+      (
+      IMvSurface*    in_pISurface   // Pointer to the video surface containing compressed video to decode.
+      ) = 0;
 
    //
    // Summary:
-   //    Give an empty user buffer surface which will eventually be filled with decompressed data.
-   //    This call is asynchronous, the provided surface will be signalled once the data is ready.
+   //    Provides a host surface to be filled with uncompressed video and VANC data.
+   // Remarks:
+   //    - For the Matrox M264 hardware decoder, VANC surfaces are not supported yet, set VANC surfaces to NULL.
+   //    - This call is asynchronous, the provided surface will be signalled once the data is ready.
    // Return value:
-   //    - Returns an error if any parameters are invalid or if the decoder is in the wrong state.
-   virtual HRESULT __stdcall GetUncompressedVideoAndVANCSurface(
-      IMvSurface*    in_pISurfaceVideo,
-      IMvSurface*    in_pISurfaceVANC) = 0;
+   //    - Error code, if any of the parameters are invalid or if the decoder is in the wrong state.
+   virtual HRESULT __stdcall GetUncompressedVideoAndVANCSurface
+      (
+      IMvSurface*    in_pISurfaceVideo,      // Pointer to the surface that will be used to hold the uncompressed video data.
+      IMvSurface*    in_pISurfaceVANC        // Pointer to the surface that will be used to hold the VANC data. Can be NULL.
+      ) = 0;
 
    //
    // Summary:
-   //    Get information from the decoder.
-   //    The type of information requested is specified with the in_eCodecOption value.
-   //    The information will be returned in out_pmvchOptionValue if the option is supported.
+   //    Gets the requested information from the decoder.
+   // Remarks:
+   //    - The type of information to obtain is specified by the in_eCodecOption parameter, and the 
+   //      information is obtained from the io_pmvchOptionValue parameter.
    // Return value:
-   //    - Returns an error if the parameters are invalid or if the option is not supported by this decoder.
-   virtual HRESULT __stdcall GetOption(
-      MVCHANDLE      io_pmvchOptionValue,
-      EMvCodecOption in_eCodecOption) = 0;
+   //    - MV_NOERROR, if completed successfully.
+   //    - Error code, if the parameters are invalid or if the option is not supported.
+   virtual HRESULT __stdcall GetOption
+      (
+      MVCHANDLE      io_pmvchOptionValue,    // Pointer to the value that will be filled with the requested information.
+      EMvCodecOption in_eCodecOption         // Indicates the type of information to obtain.
+      ) = 0;
 
    //
    // Summary:
-   //    Give information to the decoder.
-   //    The type of information to be provided is specified with the in_eCodecOption value.
-   //    The information provided is given via the in_pmvchOptionValue.
+   //    Provides the decoder with the required information or callbacks.
+   // Remarks:
+   //    - The type of information to provide is specified by the in_eCodecOption parameter, and the 
+   //      information requested is provided using in_pmvchOptionValue.
    // Return value:
-   //    - Returns an error if the parameters are invalid or if the option is not supported by this decoder.
-   virtual HRESULT __stdcall SetOption(
-      MVCHANDLE      in_pmvchOptionValue,
-      EMvCodecOption in_eCodecOption) = 0 ;
+   //    - MV_NOERROR, if completed successfully.
+   //    - Error code, if the parameters are invalid or if the option is not supported.
+   virtual HRESULT __stdcall SetOption
+      (
+      MVCHANDLE      in_pmvchOptionValue,    // Pointer to the value containing the provided information.
+      EMvCodecOption in_eCodecOption         // Indicates the type of information being provided.
+      ) = 0 ;
 
    //
    // Summary:
-   //    Tells the decoder that no more compressed data will be sent.  The application should
-   //    continue calling GetUncompressedVideoAndVANCSurface() until it receives the call 
-   //    IMvCompletionObserver::NotifyCompletion with NULL indicating that all data has been decoded.
-   //    The IMvCompletionObserver interface should have been specified with SetOption 
-   //    in order to receive this notification.
+   //    Notifies the decoder that no more compressed data will be sent.  
+   // Remarks:
+   //    - The user application must implement the completion observer interface using IMvCompletionObserver::NotifyCompletion()
+   //      and set a notification callback by calling IMvDecoderVideo::SetOption() with the keMvCodecOptionFlushObserver_pI parameter.
+   //    - After this method is called, you can no longer call IMvDecoderVideo::PutCompressedSurface().
+   //    - The user application will be notified by the notification callback when the decoder has decompressed all the compressed data.
+   //    - Continue calling IMvDecoderVideo::GetUncompressedVideoAndVANCSurface() until the notification callback is called. 
    // Return value:
-   //    - Returns an error if problems occurred while flushing.
+   //    - MV_NOERROR, if completed successfully.
+   //    - Error code, if an error occurred.
    virtual HRESULT __stdcall Flush() = 0;
+
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface that enumerates connectors. 
-//
-//////////////////////////////////////////////////////////////////////////////////
-interface IMvConnectorsEnumerator : public IUnknown
-{
-   //
-   // Summary:
-   //    Gets the next available connector installed on the system.
-   // Description:
-   // The next connector installed on the system is retrieved from the internal list of connectors.
-   // Return value:
-   //    - MV_NOERROR, if properly filled. 
-   //    - MV_E_END_OF_ENUM, if there is no further connectors to enumerate. 
-   virtual HRESULT __stdcall Next
-      (
-      IMvConnector ** out_ppIConnector
-      ) = 0;
-
-   //
-   // Summary:
-   //    Resets the internal counter to the first connectors found on the system.
-   // Description:
-   //    The internal pointer is reset so that the next call to IMvConnectorsEnumerator::Next returns the first 
-   //    connector found on the system.
-   // Return value:
-   //    - Always returns MV_NOERROR.
-   virtual HRESULT __stdcall Reset() = 0;
-
-   //
-   // Summary:
-   //    Skips a given number of connectors.
-   // Description:
-   //    The internal pointer is reset so that the next call to IMvConnectorsEnumerator::Next skips a given number of 
-   //   connectors in the internal list.
-   // Return value:
-   //    - Always returns MV_NOERROR. 
-   virtual HRESULT __stdcall Skip
-      (
-      uint32_t in_ui32Count   // Number of connectors to skip.
-      ) = 0;
-};
-
-//////////////////////////////////////////////////////////////////////////////////
-//
-// Summary:
-//    Interface that enumerates the SfpIp. 
+//    Interface that enumerates the SFP+ transceivers for IP communication. 
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvSfpIpEnumerator : public IUnknown
 {
    //
    // Summary:
-   //    Resets the internal counter to the first SfpIp found on the system.
+   //    Updates and resets the internal counter to the first SFP+ transceiver in the system.
    // Description:
    //    The internal pointer is reset so that the next call to IMvSfpIpEnumerator::Next returns the first 
-   //    SfpIp found on the system.
+   //    SFP+ transceiver in the system.
    // Return value:
    //    - Always returns MV_NOERROR.
    virtual HRESULT __stdcall Reset() = 0;
 
    //
    // Summary:
-   //    Gets the next available SfpIp installed on the system.
+   //    Gets the next available SFP+ transceiver in the system.
    // Description:
-   // The next SfpIp installed on the system is retrieved from the internal list of SfpIp.
+   // The next SFP+ transceiver interface in the system is retrieved from the internal list of SFP+ transceiver interfaces.
    // Return value:
-   //    - MV_NOERROR, if properly filled. 
-   //    - MV_E_END_OF_ENUM, if there is no further SfpIp to enumerate. 
+   //    - MV_NOERROR, if filled properly. 
+   //    - MV_E_END_OF_ENUM, if there are no other SFP+ transceiver interfaces to enumerate. 
    virtual HRESULT __stdcall Next
       (
-      IMvSfpIp** out_ppISfpIp    // Pointer that receives the next SfpIp interface.
+      IMvSfpIp** out_ppISfpIp    // Pointer that receives the next SFP+ transceiver interface.
       ) = 0;
 
    //
    // Summary:
-   //    Skips a given number of SfpIp.
+   //    Skips a given number of SFP+ transceiver interfaces.
    // Description:
-   //    The internal pointer is reset so that the next call to IMvSfpIpEnumerator::Next skips a given number of 
-   //   SfpIp in the internal list.
+   //    The internal pointer is changed so that the next call to IMvSfpIpEnumerator::Next skips a given number of 
+   //   SFP+ transceiver interfaces in the internal list.
    // Return value:
    //    - Always returns MV_NOERROR. 
    virtual HRESULT __stdcall Skip
       (
-      uint32_t in_ui32Count      // Number of SfpIp to skip.
+      uint32_t in_ui32Count      // Number of SFP+ transceiver interfaces to skip.
       ) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface that represents an SdiIp audio output virtual pair connector.
+//    Interface that enumerates the SFP+ transceivers for SDI communication. 
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvSfpSdiEnumerator : public IUnknown
+{
+   //
+   // Summary:
+   //    Updates and resets the internal counter to the first SFP+ transceiver in the system.
+   // Description:
+   //    The internal pointer is reset so that the next call to IMvSfpSdiEnumerator::Next returns the first 
+   //    SFP+ transceiver in the system.
+   // Return value:
+   //    - Always returns MV_NOERROR.
+   virtual HRESULT __stdcall Reset() = 0;
+
+   //
+   // Summary:
+   //    Gets the next available SFP+ transceiver in the system.
+   // Description:
+   // The next SFP+ transceiver interface in the system is retrieved from the internal list of SFP+ transceiver interfaces.
+   // Return value:
+   //    - MV_NOERROR, if filled properly. 
+   //    - MV_E_END_OF_ENUM, if there are no other SFP+ transceiver interfaces to enumerate. 
+   virtual HRESULT __stdcall Next
+      (
+      IMvSfpSdi** out_ppISfp    // Pointer that receives the next SFP+ transceiver interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Skips a given number of SFP+ transceiver interfaces.
+   // Description:
+   //    The internal pointer is changed so that the next call to IMvSfpSdiEnumerator::Next skips a given number of 
+   //   SFP+ transceiver interfaces in the internal list.
+   // Return value:
+   //    - Always returns MV_NOERROR. 
+   virtual HRESULT __stdcall Skip
+      (
+      uint32_t in_ui32Count      // Number of SFP+ transceiver interfaces to skip.
+      ) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Interface that represents an SDI IP audio output virtual pair connector.
 // Remarks:
-//    - This interface is used to configure the audio output.
+//    - This interface is used to configure the audio output from a SMPTE 2022-6 stream over an SFP+ transceiver.
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvSdiIpAudioOutputPairConnector : public IMvConnector
@@ -17345,9 +17842,9 @@ interface IMvSdiIpAudioOutputPairConnector : public IMvConnector
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface that represents an SdiIp audio input virtual pair connector.
+//    Interface that represents an SDI IP audio input virtual pair connector.
 // Remarks:
-//    - This interface is used to configure the audio input.
+//    - This interface is used to configure the audio input from a SMPTE 2022-6 stream over an SFP+ transceiver.
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvSdiIpAudioInputPairConnector : public IMvConnector
@@ -17364,7 +17861,7 @@ interface IMvSdiIpAudioInputPairConnector : public IMvConnector
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface that enumerates the SdiIp audio input pair connectors. 
+//    Interface that enumerates the SDI IP audio input pair connectors. 
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvSdiIpAudioInputPairConnectorsEnumerator : public IUnknown
@@ -17373,9 +17870,9 @@ interface IMvSdiIpAudioInputPairConnectorsEnumerator : public IUnknown
    // Summary:
    //    Updates and resets the internal list of interfaces.
    // Description:
-   //    The internal list of SdiIp audio input pair connector interfaces is updated with the most recent 
+   //    The internal list of SDI IP audio input pair connector interfaces is updated with the most recent 
    //    values on the card and the internal pointer is reset so that the next call to
-   //    IMvSdiIpAudioInputPairConnectorsEnumerator::Next returns the first SdiIp audio input pair 
+   //    IMvSdiIpAudioInputPairConnectorsEnumerator::Next returns the first SDI IP audio input pair 
    //    connector interface in the internal list.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
@@ -17386,14 +17883,14 @@ interface IMvSdiIpAudioInputPairConnectorsEnumerator : public IUnknown
    // Summary:
    //   Gets the next interface.
    // Description:
-   //	  The next SdiIp audio input pair connector interface is retrieved from the internal list of SdiIp
+   //	  The next SDI IP audio input pair connector interface is retrieved from the internal list of SDI IP
    //   audio input pair connector interfaces.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall Next
       (
-      IMvSdiIpAudioInputPairConnector ** out_ppIConnector   // Pointer that receives the next SdiIp audio
+      IMvSdiIpAudioInputPairConnector ** out_ppIConnector   // Pointer that receives the next SDI IP audio
                                                             // input pair connector interface.
       ) = 0;
 
@@ -17402,20 +17899,20 @@ interface IMvSdiIpAudioInputPairConnectorsEnumerator : public IUnknown
    //    Skips a given number of interfaces.
    // Description:
    //    The internal pointer is changed so that the next call to IMvSdiIpAudioInputPairConnectorsEnumerator::Next 
-   //    skips a given number of SdiIp audio input pair connector interfaces in the internal list.
+   //    skips a given number of SDI IP audio input pair connector interfaces in the internal list.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall Skip
       (
-      uint32_t in_ui32Count   // Number of SdiIp audio input pair connector interfaces to skip.
+      uint32_t in_ui32Count   // Number of SDI IP audio input pair connector interfaces to skip.
       ) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface that enumerates the SdiIp audio output pair connectors. 
+//    Interface that enumerates the SDI IP audio output pair connectors. 
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvSdiIpAudioOutputPairConnectorsEnumerator : public IUnknown
@@ -17424,9 +17921,9 @@ interface IMvSdiIpAudioOutputPairConnectorsEnumerator : public IUnknown
    // Summary:
    //    Updates and resets the internal list of interfaces.
    // Description:
-   //    The internal list of SdiIp audio output pair connector interfaces is updated with the most recent
+   //    The internal list of SDI IP audio output pair connector interfaces is updated with the most recent
    //    values on the card and the internal pointer is reset so that the next call to
-   //    IMvSdiIpAudioOutputPairConnectorsEnumerator::Next returns the first SdiIp audio output pair
+   //    IMvSdiIpAudioOutputPairConnectorsEnumerator::Next returns the first SDI IP audio output pair
    //    connector interface in the internal list.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
@@ -17437,14 +17934,14 @@ interface IMvSdiIpAudioOutputPairConnectorsEnumerator : public IUnknown
    // Summary:
    //    Gets the next interface.
    // Description:
-   //	   The next SdiIp audio output pair connector interface is retrieved from the internal list of SdiIp
+   //	   The next SDI IP audio output pair connector interface is retrieved from the internal list of SDI IP
    //    audio output pair connector interfaces.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall Next
       (
-      IMvSdiIpAudioOutputPairConnector ** out_ppIConnector  // Pointer that receives the next SdiIp audio 
+      IMvSdiIpAudioOutputPairConnector ** out_ppIConnector  // Pointer that receives the next SDI IP audio 
                                                             // output pair connector interface.
       ) = 0;
 
@@ -17453,20 +17950,20 @@ interface IMvSdiIpAudioOutputPairConnectorsEnumerator : public IUnknown
    //    Skips a given number of interfaces.
    // Description:
    //    The internal pointer is changed so that the next call to IMvSdiIpAudioOutputPairConnectorsEnumerator::Next
-   //    skips a given number of SdiIp audio output pair connector interfaces in the internal list.
+   //    skips a given number of SDI IP audio output pair connector interfaces in the internal list.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall Skip
       (
-      uint32_t in_ui32Count   // Number of SdiIp audio output pair connector interfaces to skip.
+      uint32_t in_ui32Count   // Number of SDI IP audio output pair connector interfaces to skip.
       ) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Provides the callback notification of the SdiIp video input connector. 
+//    Provides the callback notification of the SDI IP video input connector. 
 //    This interface passes notification information to the object implementing it.
 // Remarks:
 //    - Use the IMvSdiIpInputConnector interface to register and unregister the
@@ -17477,22 +17974,22 @@ interface IMvSdiIpConnectorNotificationCallback : public IUnknown
 {
    //
    // Summary:
-   //    Receives the new video connector status.
+   //    Receives the new SDI IP video connector status.
    // Return value:
-   //    - MV_NOERROR. 
+   //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall Notify
       (
-      EMvSfpLabel in_eCage,                      // Indicates at which SfpIp belongs the SdiIp video connector.
-      EMvVideoConnectorLabel in_eConnectorLabel, // Indicates which SdiIp video connector label status has changed.
-      const SMvSdiIpConnectorStatus & in_krsVideoConnectorStatus // Structure of the new SdiIp video connector status.
+      EMvSfpLabel in_eCage,                      // Indicates the SFP+ transceiver of the SDI IP connector.
+      EMvVideoConnectorLabel in_eConnectorLabel, // Indicates which SDI IP video connector label status has changed.
+      const SMvSdiIpConnectorStatus & in_krsVideoConnectorStatus // Structure of the new SDI IP video connector status.
       ) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Provides the callback notification of the SdiIp audio input connector. 
+//    Provides the callback notification of the SDI IP audio input connector. 
 //    This interface passes notification information to the object implementing it.
 // Remarks:
 //    - Use the IMvSdiIpInputConnector interface to register and unregister the
@@ -17501,22 +17998,29 @@ interface IMvSdiIpConnectorNotificationCallback : public IUnknown
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvSdiIpAudioConnectorNotificationCallback : public IUnknown
 {
+   //
+   // Summary:
+   //    Receives the new SDI IP audio connector status.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
    virtual HRESULT __stdcall Notify
       (
-      EMvSfpLabel in_eCage,                        // Indicates at which SfpIp belongs the SdiIp audio connector.
-      EMvVideoConnectorLabel in_eConnectorLabel,   // Connector label of the SdiIp audio connector
-                                                   // that has changed status. 
-      const SMvAudioPairStatus in_asStatus[],      // Pointer to the array of structures of SdiIp audio
-                                                   // connector pairs whose status has changed.
-      uint32_t in_ui32NbOfAudioPairs) = 0;         // Number of SdiIp audio connector pairs in the preceding
+      EMvSfpLabel in_eCage,                        // Indicates the SFP+ transceiver of the SDI IP audio connector.
+      EMvVideoConnectorLabel in_eConnectorLabel,   // Indicates the SDI IP video connector label status in which the audio has changed.
+      const SMvAudioPairStatus in_asStatus[],      // Pointer to the array of structures containing the status for each SDI IP audio
+                                                   // connector pairs.
+      uint32_t in_ui32NbOfAudioPairs               // Number of SDI IP audio connector pairs in the preceding array.
+      ) = 0;        
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface that represents an SdiIp input connector. 
+//    Interface that represents an SDI IP input connector. 
 // Remarks:
-//    - This interface can be queried for the physical details of the SdiIp input connector.
+//    - This interface is used to configure the video input from a SMPTE 2022-6 stream over an SFP+ transceiver.
+//    - This interface can be queried for the physical details of the SDI IP input connector.
 //    - This interface can also be used to query or change a connector's current settings.
 //
 //////////////////////////////////////////////////////////////////////////////////
@@ -17524,27 +18028,27 @@ interface IMvSdiIpInputConnector : public IMvConnector
 {
    //
    // Summary:
-   //    Gets the SdiIp input connector label.
+   //    Gets the SDI IP input connector label.
    // Return value:
-   //    - EMvVideoConnectorLabel: SdiIp input connector label. 
+   //    - EMvVideoConnectorLabel: SDI IP input connector label. 
    //
    virtual EMvVideoConnectorLabel __stdcall GetConnectorLabel() = 0;
 
    //
    // Summary:
-   //    Gets the current video status of the SdiIp input connector.
+   //    Gets the current video status of the SDI IP input connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetSdiIpConnectorStatus
       (
-      SMvSdiIpConnectorStatus & io_rsStatus  // Structure that receives the current video status of the SdiIp 
+      SMvSdiIpConnectorStatus & io_rsStatus  // Structure that receives the current video status of the SDI IP 
                                              // input connector.
       ) = 0;
 
    //
    // Summary:
-   //    Registers a video callback notification for the SdiIp input connector.
+   //    Registers a video callback notification for the SDI IP input connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    // Remarks:
@@ -17554,13 +18058,13 @@ interface IMvSdiIpInputConnector : public IMvConnector
    //
    virtual HRESULT __stdcall RegisterVideoCallbackForNotification
       (
-      IMvSdiIpConnectorNotificationCallback * in_pICallback    // Pointer to the SdiIp video connector
+      IMvSdiIpConnectorNotificationCallback * in_pICallback    // Pointer to the SDI IP video connector
                                                                // notification callback interface.
       ) = 0;
 
    //
    // Summary:
-   //    Unregisters a video callback notification for the SdiIp input connector.
+   //    Unregisters a video callback notification for the SDI IP input connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    // Remarks:
@@ -17570,82 +18074,82 @@ interface IMvSdiIpInputConnector : public IMvConnector
    //
    virtual HRESULT __stdcall UnregisterVideoCallbackForNotification
       (
-      IMvSdiIpConnectorNotificationCallback * in_pICallback    // Pointer to the SdiIp video connector
+      IMvSdiIpConnectorNotificationCallback * in_pICallback    // Pointer to the SDI IP video connector
                                                                // notification callback interface.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the SfpIp of the SdiIp input connector.
+   //    Gets the SFP IP interface of the SDI IP input connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetAssociatedSfpIp
       (
-      IMvSfpIp ** out_ppISfpIp      // Pointer that receives the SfpIp interface.
+      IMvSfpIp ** out_ppISfpIp      // Pointer that receives the SFP IP interface.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the current settings of the SdiIp input connector.
+   //    Gets the current SDI IP input connector settings.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetConnectorSettings
       (
-      SMvSdiIpInputConnectorSettings & io_rsSettings  // Structure that receives the current SdiIp input 
+      SMvSdiIpInputConnectorSettings & io_rsSettings  // Structure that receives the current SDI IP input 
                                                       // connector settings.
       ) = 0;
 
    //
    // Summary:
-   //    Modifies the current settings of the SdiIp input connector.
+   //    Modifies the current SDI IP input connector settings.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall SetConnectorSettings
       (
-      const SMvSdiIpInputConnectorSettings & in_rsSettings  // Structure of the new SdiIp input settings.
+      const SMvSdiIpInputConnectorSettings & in_rsSettings  // Structure of the new SDI IP input settings.
       ) = 0;
 
    //
    // Summary:
-   //    Creates the enumerator for the SdiIp audio input pair connector for the corresponding SdiIp input
+   //    Creates the enumerator for the SDI IP audio input pair connector for the corresponding SDI IP input
    //    connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall CreateAudioConnectorsEnumerator
       (
-      IMvSdiIpAudioInputPairConnectorsEnumerator ** out_ppIEnumerator   // Pointer that receives the SdiIp audio input pair 
-                                                                        // connector enumerator for the corresponding SdiIp 
+      IMvSdiIpAudioInputPairConnectorsEnumerator ** out_ppIEnumerator   // Pointer that receives the SDI IP audio input pair 
+                                                                        // connector enumerator for the corresponding SDI IP 
                                                                         // input connector.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the SdiIp audio input pair connector using the pair ID.
+   //    Gets the SDI IP audio input pair connector using the pair ID.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetAudioPairConnector
       (
-      uint32_t in_ui32Pair,      // Connector identifier.
-      IMvSdiIpAudioInputPairConnector ** out_ppIConnector   // Pointer that receives the SdiIp audio input pair 
+      uint32_t in_ui32Pair,      // Indicates the connector identifier.
+      IMvSdiIpAudioInputPairConnector ** out_ppIConnector   // Pointer that receives the SDI IP audio input pair 
                                                             // connector interface.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the number of SdiIp audio input pair connectors.
+   //    Gets the number of SDI IP audio input pair connectors.
    // Return value:
-   //    - uint32_t: Number of SdiIp audio input pair connectors. 
+   //    - uint32_t: Number of SDI IP audio input pair connectors. 
    //
    virtual uint32_t __stdcall GetAudioConnectorCount() = 0;
 
    //
    // Summary:
-   //    Registers an audio callback notification for the SdiIp input connector.
+   //    Registers an audio callback notification for the SDI IP input connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully.
    // Remarks:
@@ -17655,13 +18159,13 @@ interface IMvSdiIpInputConnector : public IMvConnector
    //
    virtual HRESULT __stdcall RegisterAudioCallbackForNotification
       (
-      IMvSdiIpAudioConnectorNotificationCallback * in_pICallback     // Pointer to the SdiIp audio connector 
+      IMvSdiIpAudioConnectorNotificationCallback * in_pICallback     // Pointer to the SDI IP audio connector 
                                                                      // notification callback interface.
       ) = 0;
 
    //
    // Summary:
-   //    Unregisters an audio callback notification for the SdiIp input connector.
+   //    Unregisters an audio callback notification for the SDI IP input connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    // Remarks:
@@ -17671,32 +18175,32 @@ interface IMvSdiIpInputConnector : public IMvConnector
    //
    virtual HRESULT __stdcall UnregisterAudioCallbackForNotification
       (
-      IMvSdiIpAudioConnectorNotificationCallback * in_pICallback     // Pointer to the SdiIp audio connector 
+      IMvSdiIpAudioConnectorNotificationCallback * in_pICallback     // Pointer to the SDI IP audio connector 
                                                                      // notification callback interface.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the current audio status of the SdiIp input connectors.
+   //    Gets the current audio status of the SDI IP input connectors.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetAudioStatus
       (
-      SMvAudioPairStatus out_asAudioPairStatus[],  // Pointer to the array of structures that receives the status of the
-                                                   // SdiIp audio input pair connectors.
+      SMvAudioPairStatus out_asAudioPairStatus[],  // Pointer to the array of structures that receives the audio status of the
+                                                   // SDI IP input pair connectors.
       uint32_t in_ui32ArrayCount                   // The number of elements in the array.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the connector interface of the connector that will capture the alpha values.
+   //    Gets the connector interface of the SDI IP connector that will capture the alpha values.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetAssociatedAlphaConnector
       (
-      IMvSdiIpInputConnector** out_ppIAlphaConnector // Pointer that receives the connector interface of the connector 
+      IMvSdiIpInputConnector** out_ppIAlphaConnector // Pointer that receives the connector interface of the SDI IP connector 
                                                      // that will capture the alpha values.
       ) = 0;
 };
@@ -17704,7 +18208,7 @@ interface IMvSdiIpInputConnector : public IMvConnector
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface that enumerates the SdiIp input connectors. 
+//    Interface that enumerates the SDI IP input connectors. 
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvSdiIpInputConnectorsEnumerator : public IUnknown
@@ -17713,9 +18217,9 @@ interface IMvSdiIpInputConnectorsEnumerator : public IUnknown
    // Summary:
    //    Updates and resets the internal list of interfaces.
    // Description:
-   //    The internal list of SdiIp input connector interfaces is updated with the most recent values on the card
+   //    The internal list of SDI IP input connector interfaces is updated with the most recent values on the card
    //    and the internal pointer is reset so that the next call to IMvSdiIpInputConnectorsEnumerator::Next returns
-   //    the first SdiIp input connector interface in the internal list.
+   //    the first SDI IP input connector interface in the internal list.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -17725,14 +18229,14 @@ interface IMvSdiIpInputConnectorsEnumerator : public IUnknown
    // Summary:
    //    Gets the next interface.
    // Description:
-   //	   The next SdiIp input connector interface is retrieved from the internal list of SdiIp input connector
+   //	   The next SDI IP input connector interface is retrieved from the internal list of SDI IP input connector
    //    interfaces.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall Next
       (
-      IMvSdiIpInputConnector** out_ppISdiIpInputConnector   // Pointer that receives the next SdiIp input
+      IMvSdiIpInputConnector** out_ppISdiIpInputConnector   // Pointer that receives the next SDI IP input
                                                             // connector interface.
       ) = 0;
 
@@ -17741,22 +18245,23 @@ interface IMvSdiIpInputConnectorsEnumerator : public IUnknown
    //    Skips a given number of interfaces.
    // Description:
    //	   The internal pointer is changed so that the next call to IMvSdiIpInputConnectorsEnumerator::Next skips a
-   //    given number of SdiIp input connector interfaces in the internal list.
+   //    given number of SDI IP input connector interfaces in the internal list.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall Skip
       (
-      uint32_t in_ui32Count      // Number of SdiIp input connector interfaces to skip.
+      uint32_t in_ui32Count      // Number of SDI IP input connector interfaces to skip.
       ) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface that represents an SdiIp output connector. 
+//    Interface that represents an SDI IP output connector. 
 // Remarks:
-//    - This interface can be queried for the physical details of the SdiIp output connector.
+//    - This interface is used to configure the video output from a SMPTE 2022-6 stream over an SFP+ transceiver.
+//    - This interface can be queried for the physical details of the SDI IP output connector.
 //    - This interface can also be used to query or change a connector's current settings.
 //
 //////////////////////////////////////////////////////////////////////////////////
@@ -17764,80 +18269,80 @@ interface IMvSdiIpOutputConnector : public IMvConnector
 {
    //
    // Summary:
-   //    Gets the SdiIp output connector label.
+   //    Gets the SDI IP output connector label.
    // Return value:
-   //    - EMvVideoConnectorLabel: SdiIp output connector label. 
+   //    - EMvVideoConnectorLabel: SDI IP output connector label. 
    //
    virtual EMvVideoConnectorLabel __stdcall GetConnectorLabel() = 0;
 
 
    //
    // Summary:
-   //    Creates the enumerator for the SdiIp audio output connector for the corresponding SdiIp output connector.
+   //    Creates the enumerator for the SDI IP audio output connector for the corresponding SDI IP output connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall CreateAudioConnectorsEnumerator
       (
-      IMvSdiIpAudioOutputPairConnectorsEnumerator ** out_ppIEnumerator     // Pointer that receives the SdiIp audio 
+      IMvSdiIpAudioOutputPairConnectorsEnumerator ** out_ppIEnumerator     // Pointer that receives the SDI IP audio 
                                                                            // output pair connector enumerator for the 
-                                                                           // corresponding SdiIp output connector.
+                                                                           // corresponding SDI IP output connector.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the SdiIp audio output pair connector using the pair ID.
+   //    Gets the SDI IP audio output pair connector using the pair ID.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetAudioPairConnector
       (
       uint32_t in_ui32Pair,        // Connector identifier.
-      IMvSdiIpAudioOutputPairConnector ** out_ppIConnector     // Pointer that receives the SdiIp audio output pair 
+      IMvSdiIpAudioOutputPairConnector ** out_ppIConnector     // Pointer that receives the SDI IP audio output pair 
                                                                // connector interface.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the number of SdiIp audio output pair connectors.
+   //    Gets the number of SDI IP audio output pair connectors.
    // Return value:
-   //    - uint32_t: Number of SdiIp audio output pair connectors. 
+   //    - uint32_t: Number of SDI IP audio output pair connectors. 
    //
    virtual uint32_t __stdcall GetAudioConnectorCount() = 0;
 
 
    //
    // Summary:
-   //    Gets the SfpIp of the SdiIp output connector.
+   //    Gets the SFP IP interface of the SDI IP output connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetAssociatedSfpIp
       (
-      IMvSfpIp ** out_ppISfpIp      // Pointer that receives the SfpIp interface.
+      IMvSfpIp ** out_ppISfpIp      // Pointer that receives the SFP IP interface.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the current SdiIp output connector settings.
+   //    Gets the current SDI IP output connector settings.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetConnectorSettings
       (
-      SMvSdiIpOutputConnectorSettings & io_rsSettings    // Structure that receives the SdiIp output 
+      SMvSdiIpOutputConnectorSettings & io_rsSettings    // Structure that receives the current SDI IP output 
                                                          // connector settings.
       ) = 0;
 
    //
    // Summary:
-   //    Modifies the current SdiIp output connector settings.
+   //    Modifies the current SDI IP output connector settings.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall SetConnectorSettings
       (
-      const SMvSdiIpOutputConnectorSettings & in_rsSettings   // Structure of the SdiIp output connector settings.
+      const SMvSdiIpOutputConnectorSettings & in_rsSettings   // Structure of the SDI IP output connector settings.
       ) = 0;
 
    //
@@ -17849,7 +18354,7 @@ interface IMvSdiIpOutputConnector : public IMvConnector
    virtual HRESULT __stdcall SetSourceOutputStreamAndAudioPairs
       (
       IMvOutputStream * in_pIOutputStream,   // Pointer to the output stream interface.
-      EMvAudioPair in_aeAudioPairs[],        // Pointer to the array of the audio pairs output stream for the SDiIp
+      EMvAudioPair in_aeAudioPairs[],        // Pointer to the array of the audio pairs output stream for the SDI IP
                                              // audio pair connector.
       uint32_t in_ui32NbAudioPairs           // Indicates the number of output audio pairs in in_aeAudioPairs.
       ) = 0;
@@ -17864,19 +18369,19 @@ interface IMvSdiIpOutputConnector : public IMvConnector
       (
       IMvOutputStream ** out_ppIOutputStream,   // Pointer that receives the output stream interface.
       EMvAudioPair out_aeAudioPairs[],          // Pointer to the array that receives the audio pairs output stream for the
-                                                // SdiIp audio pair connector.
+                                                // SDI IP audio pair connector.
       uint32_t in_ui32NbAudioPairs              // Indicates the number of output audio pairs in out_aeAudioPairs.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the connector interface of the connector that will output the alpha values.
+   //    Gets the connector interface of the SDI IP connector that will output the alpha values.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetAssociatedAlphaConnector
       (
-      IMvSdiIpOutputConnector** out_ppIAlphaConnector // Pointer that receives the connector interface of the connector 
+      IMvSdiIpOutputConnector** out_ppIAlphaConnector // Pointer that receives the connector interface of the SDI IP connector 
                                                       // that will output the alpha values.
       ) = 0;
 };
@@ -17884,7 +18389,7 @@ interface IMvSdiIpOutputConnector : public IMvConnector
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface that enumerates the SdiIp output connectors. 
+//    Interface that enumerates the SDI IP output connectors. 
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvSdiIpOutputConnectorsEnumerator : public IUnknown
@@ -17893,9 +18398,9 @@ interface IMvSdiIpOutputConnectorsEnumerator : public IUnknown
    // Summary:
    //    Updates and resets the internal list of interfaces.
    // Description:
-   //    The internal list of SdiIp output connector interfaces is updated with the most recent values on the card
+   //    The internal list of SDI IP output connector interfaces is updated with the most recent values on the card
    //    and the internal pointer is reset so that the next call to IMvSdiIpOutputConnectorsEnumerator::Next returns
-   //    the first SdiIp output connector interface in the internal list.
+   //    the first SDI IP output connector interface in the internal list.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -17905,14 +18410,14 @@ interface IMvSdiIpOutputConnectorsEnumerator : public IUnknown
    // Summary:
    //    Gets the next interface.
    // Description:
-   //	   The next SdiIp output connector interface is retrieved from the internal list of SdiIp output connector
+   //    The next SDI IP output connector interface is retrieved from the internal list of SDI IP output connector
    //    interfaces.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall Next
       (
-      IMvSdiIpOutputConnector** out_ppISdiIpOutputConnector    // Pointer that receives the next SdiIp output
+      IMvSdiIpOutputConnector** out_ppISdiIpOutputConnector    // Pointer that receives the next SDI IP output
                                                                // connector interface.
       ) = 0;
    
@@ -17920,73 +18425,470 @@ interface IMvSdiIpOutputConnectorsEnumerator : public IUnknown
    // Summary:
    //    Skips a given number of interfaces.
    // Description:
-   //	   The internal pointer is changed so that the next call to IMvSdiIpOutputConnectorsEnumerator::Next skips a 
-   //    given number of SdiIp output connector interfaces in the internal list.
+   //    The internal pointer is changed so that the next call to IMvSdiIpOutputConnectorsEnumerator::Next skips a 
+   //    given number of SDI IP output connector interfaces in the internal list.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //   
    virtual HRESULT __stdcall Skip
       (
-      uint32_t in_ui32Count   // Number of SdiIp output connector interfaces to skip.
+      uint32_t in_ui32Count   // Number of SDI IP output connector interfaces to skip.
       ) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface that represents an SfpIp. 
+//    Interface that represents an ASPEN video output connector. 
 // Remarks:
-//    - This interface can be queried for the physical details of the SfpIp.
-//    - This interface can also be used to query or change a SfpIp's current settings.
+//    - This interface is used to configure the video output from an ASPEN stream over an SFP+ transceiver.
+//    - This interface can be queried for the physical details of the ASPEN video output connector.
+//    - This interface can also be used to query or change a connector's current settings.
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvAspenVideoOutputConnector : public IMvConnector
+{
+   //
+   // Summary:
+   //    Gets the ASPEN video output connector label.
+   // Return value:
+   //    - EMvVideoConnectorLabel: ASPEN video output connector label. 
+   //
+   virtual EMvVideoConnectorLabel __stdcall GetConnectorLabel() = 0;
+
+   //
+   // Summary:
+   //    Gets the SFP IP interface of the ASPEN video output connector.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetAssociatedSfpIp
+      (
+      IMvSfpIp ** out_ppISfpIp      // Pointer that receives the SFP IP interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the current ASPEN video output connector settings.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetConnectorSettings
+      (
+      SMvAspenVideoOutputConnectorSettings & io_rsSettings  // Structure that receives the current ASPEN video output 
+                                                            // connector settings.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Modifies the current ASPEN video output connector settings.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall SetConnectorSettings
+      (
+      const SMvAspenVideoOutputConnectorSettings & in_rsSettings  // Structure of the ASPEN video output connector 
+                                                                  // settings.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Modifies the current output stream source.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall SetSourceOutputStream
+      (
+      IMvOutputStream * in_pIOutputStream    // Pointer to the output stream interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the current output stream source.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetSourceOutputStream
+      (
+      IMvOutputStream ** out_ppIOutputStream    // Pointer that receives the output stream interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the connector interface of the ASPEN video connector that will output the alpha values.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetAssociatedAlphaConnector
+      (
+      IMvAspenVideoOutputConnector ** out_ppIAlphaConnector    // Pointer that receives the connector interface of 
+                                                               // the ASPEN video connector that will output the alpha 
+                                                               // values.
+      ) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Interface that enumerates the ASPEN video output connectors. 
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvAspenVideoOutputConnectorsEnumerator : public IUnknown
+{
+   //
+   // Summary:
+   //    Updates and resets the internal list of interfaces.
+   // Description:
+   //    The internal list of ASPEN video output connector interfaces is updated with the most recent values on the card
+   //    and the internal pointer is reset so that the next call to IMvAspenVideoOutputConnectorsEnumerator::Next returns
+   //    the first ASPEN video output connector interface in the internal list.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall Reset() = 0;
+
+   //
+   // Summary:
+   //    Gets the next interface.
+   // Description:
+   //    The next ASPEN video output connector interface is retrieved from the internal list of ASPEN video output 
+   //    connector interfaces.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall Next
+      (
+      IMvAspenVideoOutputConnector** out_ppIConnector    // Pointer that receives the next ASPEN video output
+                                                         // connector interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Skips a given number of interfaces.
+   // Description:
+   //	   The internal pointer is changed so that the next call to IMvAspenVideoOutputConnectorsEnumerator::Next skips a 
+   //    given number of ASPEN video output connector interfaces in the internal list.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //   
+   virtual HRESULT __stdcall Skip
+      (
+      uint32_t in_ui32Count   // Number of ASPEN video output connector interfaces to skip.
+      ) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Interface that represents an ASPEN audio output connector. 
+// Remarks:
+//    - This interface is used to configure the audio output from an ASPEN stream over an SFP+ transceiver.
+//    - This interface can be queried for the physical details of the ASPEN audio output connector.
+//    - This interface can also be used to query or change a connector's current settings.
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvAspenAudioOutputConnector : public IMvConnector
+{
+   //
+   // Summary:
+   //    Gets the ASPEN audio output connector label.
+   // Return value:
+   //    - EMvVideoConnectorLabel: ASPEN audio output connector label. 
+   //
+   virtual EMvVideoConnectorLabel __stdcall GetConnectorLabel() = 0;
+
+   //
+   // Summary:
+   //    Gets the SFP IP interface of the ASPEN audio output connector.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetAssociatedSfpIp
+      (
+      IMvSfpIp ** out_ppISfpIp      // Pointer that receives the SFP IP interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the current ASPEN audio output connector settings.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetConnectorSettings
+      (
+      SMvAspenAudioOutputConnectorSettings & io_rsSettings    // Structure that receives the current ASPEN audio output 
+                                                              // connector settings.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Modifies the current ASPEN audio output connector settings.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall SetConnectorSettings
+      (
+      const SMvAspenAudioOutputConnectorSettings & in_rsSettings  // Structure of the ASPEN audio output connector 
+                                                                  // settings.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Modifies the current output stream source for the ASPEN audio output connector.    
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall SetSourceOutputStream
+      (
+      IMvOutputStream * in_pIOutputStream   // Pointer to the output stream interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the current output stream source for the ASPEN audio output connector.    
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetSourceOutputStream
+      (
+      IMvOutputStream ** out_ppIOutputStream   // Pointer that receives the output stream interface.
+      ) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Interface that enumerates the ASPEN audio output connectors. 
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvAspenAudioOutputConnectorsEnumerator : public IUnknown
+{
+   //
+   // Summary:
+   //    Updates and resets the internal list of interfaces.
+   // Description:
+   //    The internal list of ASPEN audio output connector interfaces is updated with the most recent values on the card
+   //    and the internal pointer is reset so that the next call to IMvAspenAudioOutputConnectorsEnumerator::Next returns
+   //    the first ASPEN audio output connector interface in the internal list.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall Reset() = 0;
+
+   //
+   // Summary:
+   //    Gets the next interface.
+   // Description:
+   //    The next ASPEN audio output connector interface is retrieved from the internal list of ASPEN audio output 
+   //    connector interfaces.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall Next
+      (
+      IMvAspenAudioOutputConnector** out_ppIConnector    // Pointer that receives the next ASPEN audio output
+                                                         // connector interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Skips a given number of interfaces.
+   // Description:
+   //	   The internal pointer is changed so that the next call to IMvAspenAudioOutputConnectorsEnumerator::Next skips a 
+   //    given number of ASPEN audio output connector interfaces in the internal list.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //   
+   virtual HRESULT __stdcall Skip
+      (
+      uint32_t in_ui32Count   // Number of ASPEN audio output connector interfaces to skip.
+      ) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Interface that represents an ASPEN VANC output connector. 
+// Remarks:
+//    - This interface is used to configure the VANC output from an ASPEN stream over an SFP+ transceiver.
+//    - This interface can be queried for the physical details of the ASPEN VANC output connector.
+//    - This interface can also be used to query or change a connector's current settings.
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvAspenVancOutputConnector : public IMvConnector
+{
+   //
+   // Summary:
+   //    Gets the ASPEN VANC output connector label.
+   // Return value:
+   //    - EMvVideoConnectorLabel: ASPEN VANC output connector label. 
+   //
+   virtual EMvVideoConnectorLabel __stdcall GetConnectorLabel() = 0;
+
+   //
+   // Summary:
+   //    Gets the SFP IP interface of the ASPEN VANC output connector.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetAssociatedSfpIp
+      (
+      IMvSfpIp ** out_ppISfpIp      // Pointer that receives the SFP IP interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the current ASPEN VANC output connector settings.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetConnectorSettings
+      (
+      SMvAspenVancOutputConnectorSettings & io_rsSettings   // Structure that receives the current ASPEN VANC output 
+                                                            // connector settings.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Modifies the current ASPEN VANC output connector settings.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall SetConnectorSettings
+      (
+      const SMvAspenVancOutputConnectorSettings & in_rsSettings   // Structure of the ASPEN VANC output connector 
+                                                                  // settings.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Modifies the current output stream source for the ASPEN VANC output connector.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall SetSourceOutputStream
+      (
+      IMvOutputStream * in_pIOutputStream    // Pointer to the output stream interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the current output stream source for the ASPEN VANC output connector.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetSourceOutputStream
+      (
+      IMvOutputStream ** out_ppIOutputStream    // Pointer that receives the output stream interface.
+      ) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Interface that enumerates the ASPEN VANC output connectors. 
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvAspenVancOutputConnectorsEnumerator : public IUnknown
+{
+   //
+   // Summary:
+   //    Updates and resets the internal list of interfaces.
+   // Description:
+   //    The internal list of ASPEN VANC output connector interfaces is updated with the most recent values on the card
+   //    and the internal pointer is reset so that the next call to IMvAspenVancOutputConnectorsEnumerator::Next returns
+   //    the first ASPEN VANC output connector interface in the internal list.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall Reset() = 0;
+
+   //
+   // Summary:
+   //    Gets the next interface.
+   // Description:
+   //    The next ASPEN VANC output connector interface is retrieved from the internal list of ASPEN VANC output 
+   //    connector interfaces.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall Next
+      (
+      IMvAspenVancOutputConnector** out_ppIConnector    // Pointer that receives the next ASPEN VANC output
+                                                         // connector interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Skips a given number of interfaces.
+   // Description:
+   //	   The internal pointer is changed so that the next call to IMvAspenVancOutputConnectorsEnumerator::Next skips a 
+   //    given number of ASPEN VANC output connector interfaces in the internal list.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //   
+   virtual HRESULT __stdcall Skip
+      (
+      uint32_t in_ui32Count   // Number of ASPEN VANC output connector interfaces to skip.
+      ) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Interface that represents an SFP+ (small form-factor pluggable) transceiver for IP (Internet Protocol) communication. 
+// Remarks:
+//    - This interface can be queried for the physical details of an SFP+ transceiver.
+//    - This interface can also be used to query or change the current settings of an SFP+ transceiver.
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvSfpIp : public IUnknown
 {
    //
    // Summary:
-   //    Gets the SfpIp label.
+   //    Gets the SFP+ transceiver label.
    // Return value:
-   //    - EMvSfpLabel: SfpIp label. 
+   //    - EMvSfpLabel: SFP+ transceiver label. 
    //
    virtual EMvSfpLabel __stdcall GetLabel() = 0;
 
 
    //
    // Summary:
-   //    Gets the current SfpIp settings.
+   //    Gets the current SFP+ transceiver settings.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetSettings
       (
-      SMvSfpIpSettings & out_rsSettings   // Structure that receives the SfpIp settings.
+      SMvSfpIpSettings & out_rsSettings   // Structure that receives the current SFP+ transceiver settings.
       ) = 0;
 
    //
    // Summary:
-   //    Modifies the current SfpIp settings.
+   //    Modifies the current SFP+ transceiver settings.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall SetSettings
       (
-      const SMvSfpIpSettings & in_rsSettings    // Structure of the SfpIp settings.
+      const SMvSfpIpSettings & in_rsSettings    // Structure of the SFP+ transceiver settings.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the current status of the SfpIp.
+   //    Gets the status of the SFP+ transceiver.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetStatus
       (
-      SMvSfpIpStatus & out_rsSettings   // Structure that receives the current status of the SfpIp.
+      SMvSfpIpStatus & out_rsSettings   // Structure that receives the current status of the SFP+ transceiver.
       ) = 0;
 
    //
    // Summary:
-   //    Registers a callback notification for the SfpIp.
+   //    Registers a callback notification for the SFP+ transceiver.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    // Remarks:
@@ -17996,12 +18898,12 @@ interface IMvSfpIp : public IUnknown
    //
    virtual HRESULT __stdcall RegisterCallbackForNotification
       (
-      IMvSfpIpNotificationCallback * in_pICallback  // Pointer to the SfpIp notification callback interface.
+      IMvSfpIpNotificationCallback * in_pICallback  // Pointer to the SFP+ transceiver notification callback interface.
       ) = 0;
 
    //
    // Summary:
-   //    Unregisters a callback notification for the SfpIp.
+   //    Unregisters a callback notification for the SFP+ transceiver.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    // Remarks:
@@ -18011,42 +18913,117 @@ interface IMvSfpIp : public IUnknown
    //
    virtual HRESULT __stdcall UnregisterCallbackForNotification
       (
-      IMvSfpIpNotificationCallback * in_pICallback  // Pointer to the SfpIp notification callback interface.
+      IMvSfpIpNotificationCallback * in_pICallback  // Pointer to the SFP+ transceiver notification callback interface.
       ) = 0;
 
    //
    // Summary:
-   //    Gets the capabilities of the SfpIp.
+   //    Gets the current SFP+ transceiver capabilities.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall GetCapabilities
       (
-      SMvSfpIpCapabilities & out_rsCaps  // Structure that receives the capabilities of the SfpIp.
+      SMvSfpIpCapabilities & out_rsCaps  // Structure that receives the current SFP+ transceiver capabilities.
       ) = 0;
-
-
-   
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    TBD
-//    
+//    Interface that represents an SFP+ (small form-factor pluggable) transceiver for SDI (serial digital interface) communication. 
 // Remarks:
-//    
+//    - This interface can be queried for the physical details of an SFP+ transceiver.
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvSfpSdi : public IUnknown
+{
+   //
+   // Summary:
+   //    Gets the SFP+ transceiver label.
+   // Return value:
+   //    - EMvSfpLabel: SFP+ transceiver label. 
+   //
+   virtual EMvSfpLabel __stdcall GetLabel() = 0;
+
+   //
+   // Summary:
+   //    Gets the current status of the SFP+ transceiver.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - The status is for the last SFP+ transceiver detected from a completed detection process. 
+   //      The detection process can be triggered using IMvSfpSdi::DetectSfpTransceiver().
+   //
+   virtual HRESULT __stdcall GetStatus
+      (
+      SMvSfpSdiStatus & out_rsSettings   // Structure that receives the current status of the SFP+ transceiver.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Registers a callback notification for the SFP+ transceiver.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - The IUnknown::AddRef method of the in_pICallback parameter is called when the
+   //      notification is registered to prevent the object implementing the IMvSfpSdiNotificationCallback 
+   //      interface from being destroyed.
+   //
+   virtual HRESULT __stdcall RegisterCallbackForNotification
+      (
+      IMvSfpSdiNotificationCallback * in_pICallback  // Pointer to the SFP+ transceiver notification callback interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Unregisters a callback notification for the SFP+ transceiver.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - The IUnknown::Release method of the in_pICallback parameter is called when the
+   //      notification is unregistered to remove the reference count added by 
+   //      IMvSfpSdi::RegisterCallbackForNotification.
+   //
+   virtual HRESULT __stdcall UnregisterCallbackForNotification
+      (
+      IMvSfpSdiNotificationCallback * in_pICallback  // Pointer to the SFP+ transceiver notification callback interface.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Triggers the detection of SFP+ transceivers that are connected to the SFP ports on the card.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - The detection process is a long operation (around 13 milliseconds) and is asynchronous. 
+   //    - To be notified when the detection process is completed, register a callback notification using IMvSfpSdi::RegisterCallbackForNotification().
+   //    - Once the detection process is completed, the detected information can be retrieved using the IMvSfpSdi::GetStatus() method. 
+   //
+   virtual HRESULT __stdcall DetectSfpTransceiver() = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Provides the callback notification for asynchronous errors related to DSX Core. 
+//    This interface passes notification information to the object implementing it.
+// Remarks:
+//    - Use the IMvfDSXCoreLicenseManager interface to register and unregister the IMvDSXCORENotificationCallback interface.
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvDSXCORENotificationCallback : public IUnknown
 {
    //
    // Summary:
-   //    Receives the new asynchronous error for the DSX Core
+   //    Receives the new asynchronous error for DSX Core.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
-   virtual HRESULT __stdcall NotifyAsyncCoreEvent(const SMvDSXCORENotification & in_krsNotification) = 0;
+   virtual HRESULT __stdcall NotifyAsyncCoreEvent
+      (
+      const SMvDSXCORENotification & in_krsNotification     // Structure containing the DSX Core asynchronous error event.
+      ) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -18062,31 +19039,38 @@ interface IMvfDSXCoreLicenseManager : public IUnknown
 {
    //
    // Summary:
-   //    Updates and resets the internal list of available seats on the network.
+   //    Updates and resets the internal list of available seats in the network.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
-   // Remarks:
+   // Description:
+   //    The internal list is updated with the available seats in the network and the internal pointer is reset so that 
+   //    the next call to IMvfDSXCoreLicenseManager::Next returns the first seat in the list.
    //    
    virtual HRESULT __stdcall Reset
       (
-      bool bAvailableOnly,   // Discover only the seats that are available to use ( the one in use or reserved will not be discovered) 
-      bool bLocalOnly        // Discover the local seats only
+      bool bAvailableOnly,   // If true, returns only the seats that are available to use (the one in use or reserved will not be returned).
+      bool bLocalOnly        // If true, returns the local seats only.
       ) = 0;
 
    //
    // Summary:
-   //    The next call to Next will return the first seat present in the list,
+   //    Gets the next available seat in the network.
    //    created by the call to reset().
    // Return value:
-   //    - MV_NOERROR, if completed successfully. 
+   //    - MV_NOERROR, if completed successfully.
+   //    - MV_E_END_OF_ENUM, if there are no other seats to enumerate.
+   // Description:
+   //    The next seat is retrieved from the internal list of seats.
    // 
    virtual HRESULT __stdcall Next
       (
-      SMvSeatInfoPublic*     out_pwsSiegeSN //Structure that receives the seat description
+      SMvSeatInfoPublic*     out_psSiegeInfo // Pointer to the structure that receives the seat description.
       ) = 0;
 
    //
    // Summary:
+   //    Skips a given number of seats.
+   // Description:
    //    The internal pointer is changed so that the next call to IMvfDSXCoreLicenseManager::Next skips a given number
    //    of seats in the internal list.
    // Return value:
@@ -18094,38 +19078,37 @@ interface IMvfDSXCoreLicenseManager : public IUnknown
    // 
    virtual HRESULT __stdcall Skip
       (
-      uint32_t in_ui32Count   //Number of seats to skip
+      uint32_t in_ui32Count   // Number of seats to skip.
       ) = 0;
 
    //
    // Summary:
-   //    Update a Matrox DSX Core usb key using a file of type *.WibuCmRaU
+   //    Updates a Matrox DSX Core USB key using a file of type *.WibuCmRaU.
    // Return value:
    //    - MV_NOERROR, if completed successfully.  
    // 
    virtual HRESULT __stdcall UpdateKeyWithRaUFile
       (
-      const char* in_kacFilePath //path to the *.WibuCmRaU file
+      const char* in_kacFilePath // Pointer to the path of the *.WibuCmRaU file.
       ) = 0;
    
    //
    // Summary:
-   //    This will configure the DSX Core servers list.
-   //    The server list should be provided using the ipv4 ip addresses of the servers.
-   //    Multiple entries should be comma separated. 
-   //    e.g. "192.168.10.11"
-   //    e.g. "192.168.10.11,192.168.10.12"
+   //    Configures the DSX Core server list.
+   // Remarks:
+   //    The server list must be provided using the IPv4 IP addresses of the servers.
+   //    Multiple entries must be separated by a comma. For example, 192.168.10.11,192.168.10.12.
    // Return value:
    //    - MV_NOERROR, if completed successfully.  
    // 
    virtual HRESULT __stdcall SetServerList
       (
-      char* in_IPList  //Pointer to the string of ipv4 addresses
+      char* in_szIPList  // Pointer to the string of IPv4 addresses.
       ) = 0;
 
    //
    // Summary:
-   //    This will clear the server list.    
+   //    Clears the server list.    
    // Return value:
    //    - MV_NOERROR, if completed successfully.  
    //
@@ -18134,46 +19117,238 @@ interface IMvfDSXCoreLicenseManager : public IUnknown
 
    //
    // Summary:
-   //    Updates and resets the internal list of currently configured DSXCore server.     
+   //    Updates and resets the internal list of currently configured DSX Core servers.     
    // Return value:
-   //    - uint32_t, the number of server configured in the server list.   
+   //    - uint32_t, the number of servers configured in the server list.  
+   // Description:
+   //    The internal list is updated with the available DSX Core servers and the internal pointer is reset so that 
+   //    the next call to IMvfDSXCoreLicenseManager::GetServerAt returns the first server in the list.
    //  
    virtual uint32_t __stdcall GetServerCount() = 0;
 
 
    //
    // Summary:
-   //    This will get the ipv4 address of the server at a given index. 
+   //    Gets the IPv4 address of the server at a given index. 
    // Return value:
    //    - MV_NOERROR, if completed successfully.  
    // Remarks:
-   //    IMvfDSXCoreLicenseManager::GetServerCount() should be called first 
+   //    Before calling this method, IMvfDSXCoreLicenseManager::GetServerCount() must be called first.
+   //
    virtual HRESULT __stdcall GetServerAt
       (
-      int iIndex,                         // Index of the server 
-      uint8_t  out_pucServerIp[4]     // An array of 4 unsigned int to receive the ip address
+      int iIndex,                         // Index of the server. 
+      uint8_t  out_auiServerIp[4]     // Pointer to an array that will receive the IP address.
       ) = 0;
    //
    // Summary:
-   //    This will allow the applications to register themselves to receive notifications about the state of the handle
+   //    Registers a callback notification for the state of the DSX Core connection.
    // Return Value:
    //    - MV_NOERROR, if completed successfully.
    // Remarks:
-   //    You should unregister when you've received all the notifications that you require.
+   //    - The IUnknown::AddRef method of the in_pINotificationCallback parameter is called when the notification is registered to 
+   //      prevent the object implementing the IMvDSXCORENotificationCallback interface from being destroyed.
+   //    - When you have received all the notifications that you require, unregister the callback using IMvfDSXCoreLicenseManager::UnregisterCallbackForNotification.
    virtual HRESULT __stdcall RegisterCallbackForNotification
       (
-      IMvDSXCORENotificationCallback * in_pINotificationCallback    // Pointer to the callback interface that receives on clock events
+      IMvDSXCORENotificationCallback * in_pINotificationCallback    // Pointer to the DSX Core notification callback interface.
       ) = 0;
 
    //
    // Summary:
-   //    This will allow the applications to un register themselves from receiving further updates pertaining to the state of the connection
+   //    Unregisters a callback notification for the state of the DSX Core connection.
    // Return Value:
    //    - MV_NOERROR, if completed successfully.
    // Remarks:
-   //    Must have called a RegisterCallbackForNotification first.
+   //    - The IUnknown::Release method of the in_pINotificationCallback parameter is called when the notification is unregistered to remove 
+   //      the reference count added by IMvfDSXCoreLicenseManager::RegisterCallbackForNotification.
+
    virtual HRESULT __stdcall UnregisterCallbackForNotification
       (
-      IMvDSXCORENotificationCallback * in_pINotificationCallback    // Pointer to the callback interface that receives on clock events
+      IMvDSXCORENotificationCallback * in_pINotificationCallback    // Pointer to the DSX Core callback interface.
       ) = 0;
 };
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Interface used to control the SMPTE 2059 genlock signal.
+// Remarks:
+//    - This interface can be used to query or change the current settings of the SMPTE 2059 signal of the card.
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvSmpte2059 : public IUnknown
+{
+   //
+   // Summary:
+   //    Modifies the current SMPTE 2059 genlock signal settings.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall SetSettings
+      (
+      const SMvSmpte2059Settings & in_rsSettings   // Structure of the SMPTE 2059 signal settings.
+      ) = 0;
+   
+   //
+   // Summary:
+   //    Gets the current SMPTE 2059 genlock signal settings.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetSettings
+      (
+      SMvSmpte2059Settings & out_rsSettings     // Structure the receives the SMPTE 2059 signal settings.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the current status of the SMPTE 2059 genlock signal.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetStatus
+      (
+      SMvSmpte2059Status & out_rsStatus   // Structure that receives the current status of the SMPTE 2059 genlock signal.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Registers a callback notification for the SMPTE 2059 signal control.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - The IUnknown::AddRef method of the in_pICallback parameter is called when the notification is registered 
+   //      to prevent the object implementing the IMvSmpte2059NotificationCallback interface from being destroyed.
+   //
+   virtual HRESULT __stdcall RegisterCallbackForNotification
+      (
+      IMvSmpte2059NotificationCallback* in_pICallback    // Pointer to the SMPTE 2059 signal notification 
+                                                         // callback interface.
+      ) = 0;
+   
+   //
+   // Summary:
+   //    Unregisters a callback notification for the SMPTE 2059 signal control.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - The IUnknown::Release method of the in_pICallback parameter is called when the notification is unregistered 
+   //      to remove the reference count added by IMvSmpte2059::RegisterCallbackForNotification.
+   //
+   virtual HRESULT __stdcall UnregisterCallbackForNotification
+      (
+      IMvSmpte2059NotificationCallback* in_pICallback    // Pointer to the SMPTE 2059 signal control notification 
+                                                         // callback interface.
+      ) = 0;
+   
+   //
+   // Summary:
+   //    Gets the SMPTE 2059 SFP cage control interface.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetSmpte2059SfpInterface
+      (
+      IMvSfpIp* in_pISfpIp,                     // Pointer that specifies the SFP cage for which SMPTE 2059 cage 
+                                                // control is needed.
+      IMvSmpte2059Sfp** out_ppISmpte2059Sfp     // Pointer that receives an SMPTE 2059 SFP cage control interface.
+      ) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Interface used to control the SMPTE 2059 SFP cage signal.
+// Remarks:
+//    - This interface can be used to query or change the current settings of the SMPTE 2059 SFP.
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvSmpte2059Sfp : public IUnknown
+{
+   //
+   // Summary:
+   //    Modifies the current SMPTE 2059 SFP settings.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall SetSettings
+      (
+      const SMvSmpte2059SfpSettings & in_rsSettings      // Structure of the SMPTE 2059 SFP settings.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Gets the current SMPTE 2059 SFP settings.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetSettings
+      (
+      SMvSmpte2059SfpSettings & out_rsSettings     // Structure the receives the SMPTE 2059 SFP settings.
+      ) = 0;
+   
+   //
+   // Summary:
+   //    Gets more in-depth information about the state of the SMPTE 2059 SFP.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall GetTelemetry
+      (
+      SMvSmpte2059SfpTelemetry & out_rsTelemetry   // Structure that receives the telemetry the SMPTE 2059 genlock SFP.
+      ) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Provides the callback notification of the SMPTE 2059 signal control of the card. 
+//    This interface passes notification information to the object implementing it.
+// Remarks:
+//    - Use the IMvSmpte2059Notification interface to register and unregister the
+//      IMvSmpte2059NotificationCallback interface.
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvSmpte2059NotificationCallback : public IUnknown
+{
+   //
+   // Summary:
+   //    Receives the new SMPTE 2059 signal control status.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall Notify
+      (
+      const SMvSmpte2059Status & in_krsStatus   // Structure of the new SMPTE 2059 signal status.
+      ) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+// Summary:
+//    Interface to get M264 decoder board configuration. 
+// Remarks:
+//    - This interface is used to access information about M264 decoder profile and index
+//
+//////////////////////////////////////////////////////////////////////////////////
+interface IMvM264DecoderBoardConfiguration : public IUnknown
+{
+public:
+   
+   //
+   // Summary:
+   //    This will retrieve the hardware profile of M264 decoder
+   // Return Value:
+   //    EMvHardwareProfile: Indicates the type of hardware profile where the M264 decoder is located.
+   
+   virtual EMvHardwareProfile __stdcall GetHardwareProfile() = 0;
+
+   //
+   // Summary:
+   //    This will retrieve the index of M264 decoder to be created
+   // Return Value:
+   //    uint32_t: Indicates the index of board where the M264 decoder will be used
+   virtual uint32_t __stdcall GetHardwareProfileIndexToUse() = 0;
+};
+

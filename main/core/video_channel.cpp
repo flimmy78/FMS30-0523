@@ -118,6 +118,12 @@ struct video_channel::impl final
 
 	bool                                                isInternalDelay_ = false;
 	tbb::concurrent_bounded_queue<core::const_frame>	frame_buffer_;
+	
+	int                                                 framerate_interval_ = format_desc_.fps > 0 ? format_desc_.fps : 25;
+	int                                                 framerate_count_ = 0;
+	caspar::timer                                       framerate_timer_;
+	double                                              framerate_ = framerate_interval_;
+
 public:
 	impl(
 			int index,
@@ -457,8 +463,8 @@ public:
 
 			std::uint8_t* dst = static_cast<std::uint8_t*>(addr) + currentFrameNum_*mappedSize;
 			std::uint8_t* dstAudio = dst + imageSize;
-			fast_memcpy((void*)dst, mixed_frame.image_data().begin(), mixed_frame.image_data().size());
-			fast_memcpy((void*)dstAudio, mixed_frame.audio_data().begin(), audio_frame_size);
+			std::memcpy((void*)dst, mixed_frame.image_data().begin(), mixed_frame.image_data().size());
+			std::memcpy((void*)dstAudio, mixed_frame.audio_data().begin(), audio_frame_size);
 			//caspar::timer write_timer;
 			//region_write_.flush(currentFrameNum_*mappedSize, mappedSize, true);
 			flush_executor_.begin_invoke([=]
@@ -486,8 +492,8 @@ public:
 			void* addrR = region_read_.get_address();
 			std::uint8_t* src = static_cast<std::uint8_t*>(addrR) + currentFrameNum_*mappedSize;
 			std::uint8_t* srcAudio = src + imageSize;
-			fast_memcpy((void*)frame.image_data().begin(), src, mixed_frame.image_data().size());
-			fast_memcpy((void*)frame.audio_data().begin(), srcAudio, audio_frame_size);
+			std::memcpy((void*)frame.image_data().begin(), src, mixed_frame.image_data().size());
+			std::memcpy((void*)frame.audio_data().begin(), srcAudio, audio_frame_size);
 			currentFrameNum_++;
 
 			// Consume
@@ -535,7 +541,13 @@ public:
 
 			auto frame_time = frame_timer.elapsed()*format_desc.fps*0.5;
 			graph_->set_value("tick-time", frame_time);
-
+			if (++framerate_count_ >= framerate_interval_)
+			{
+				framerate_ = framerate_count_ / framerate_timer_.elapsed();
+				framerate_timer_.restart();
+				framerate_count_ = 0;
+			}
+			graph_->set_text(print());
 			*monitor_subject_ << monitor::message("/profiler/time") % frame_timer.elapsed() % (1.0 / video_format_desc().fps)
 				<< monitor::message("/format") % format_desc.name;
 		}
@@ -550,9 +562,9 @@ public:
 
 	std::wstring print() const
 	{
-		return L"video_channel[" + boost::lexical_cast<std::wstring>(index_) + L"|" +  video_format_desc().name + L"]";
+		return L"video_channel[" + boost::lexical_cast<std::wstring>(index_) + L"|" +  video_format_desc().name  +  L"|" + boost::lexical_cast<std::wstring>((float)framerate_) + L"]";
 	}
-
+	
 	int index() const
 	{
 		return index_;

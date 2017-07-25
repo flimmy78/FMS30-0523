@@ -750,7 +750,15 @@ namespace com_matrox_vpg_SDK
 #define MV_E_SOCKET_ERROR                                       MAKE_MVHRESULTERROR (0x831F)  // Generic Socket error.
 #define MV_E_SOCKET_TIMEOUT                                     MAKE_MVHRESULTERROR (0x8320)  // The socket operation timed out.
 #define MV_E_SOCKET_INVALID                                     MAKE_MVHRESULTERROR (0x8321)  // The socket is invalid
-
+#define MV_E_SIZE_NOT_MULTIPLE_OF_TS_PACKET                     MAKE_MVHRESULTERROR (0x8322)  // The size of the buffer is not a mulitple of a TS packet (normally 188 bytes).
+#define MV_E_AVCONTENT_IS_NOT_SURFACE_BUFFER                    MAKE_MVHRESULTERROR (0x8323)  // The object implementing the interface IMvAVContent does not support the interface IMvSurface.
+#define MV_E_AVCONTENT_IS_NOT_AUDIO_SAMPLES_BUFFER              MAKE_MVHRESULTERROR (0x8324)  // The object implementing the interface IMvAVContent does not support the interface IMvaudioSamples.
+#define MV_E_OUTPUT_RESOLUTION_MISMATCH                         MAKE_MVHRESULTERROR (0x8325)  // Output resolution mismatch.
+#define MV_E_INVALID_AUDIO_CONNECTOR                            MAKE_MVHRESULTERROR (0x8326)  // The connector is not used in the right context.  
+#define MV_E_MISMATCH_SFP                                       MAKE_MVHRESULTERROR (0x8327)  // The connectors must come from the same SFP+ transceiver.
+#define MV_E_MUXER_ERROR                                        MAKE_MVHRESULTERROR (0x8328)  // General error from Muxer.
+#define MV_E_DAEMON_SERVICE_CONNECTION_FAILED                   MAKE_MVHRESULTERROR (0x8329)  // Connection to the Matrox daemon/service application failed.
+#define MV_E_CODEC_INERNAL_BUFFERS_RELEASED_OUT_OF_ORDER        MAKE_MVHRESULTERROR (0x832A)  // Internal Error: The codec's buffers were released out of order.
 
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -877,13 +885,21 @@ namespace com_matrox_vpg_SDK
 #define  MV_W_CODEC_INCOMPLETE_REORDERED_SEQUENCE           MAKE_MVHRESULTWARNING(0x0081)  // The command is incomplete because it is in the middle of a reordered sequence.
 #define  MV_W_CODEC_MISSING_FIRST_SPS                       MAKE_MVHRESULTWARNING(0x0082)  // Parsing continue without decoding until a first SPS is met in the byte stream.
 #define  MV_W_CODEC_STREAM_NOT_LOWLATENCY                   MAKE_MVHRESULTWARNING(0x0083)  // Stream contains frame reordering, decoding continues in normal mode (not low latency mode).
-#define  MV_W_CODEC_WAITING_FOR_INPUT_BUFFER                MAKE_MVHRESULTWARNING(0x0084)  // Encoder is waiting for an input buffer to become available.
-#define  MV_W_CODEC_WAITING_FOR_OUTPUT_BUFFER               MAKE_MVHRESULTWARNING(0x0085)  // Encoder is waiting for an output buffer to become available.
+#define  MV_W_CODEC_WAITING_FOR_INPUT_BUFFER                MAKE_MVHRESULTWARNING(0x0084)  // Codec is waiting for an input buffer to become available.
+#define  MV_W_CODEC_WAITING_FOR_OUTPUT_BUFFER               MAKE_MVHRESULTWARNING(0x0085)  // Codec is waiting for an output buffer to become available.
 #define  MV_W_TOO_MANY_VANC_PACKETS                         MAKE_MVHRESULTWARNING(0x0086)  // The maximum number of Vanc packets has been reached.
 #define  MV_W_POINTER_NOT_32_BYTE_ALIGNED                   MAKE_MVHRESULTWARNING(0x0087)  // The data pointer of the surface is not aligned to 32 bytes which is not optimal.
-#define  MV_W_CODEC_CPB_OVERFLOW                            MAKE_MVHRESULTWARNING(0x0088)  // Coded Picture Buffer (CPB) overflow. Contents exceeded the maximum CPB size.
-#define  MV_W_CODEC_CPB_UNDERFLOW                           MAKE_MVHRESULTWARNING(0x0089)  // Coded Picture Buffer (CPB) underflow. Contents reached zero.
+#define  MV_W_CODEC_CPB_OVERFLOW                            MAKE_MVHRESULTWARNING(0x0088)  // Coded Picture Buffer (CPB) overflow. This is a sign that the target bitrate or the CPB size is inappropriate.
+#define  MV_W_CODEC_CPB_UNDERFLOW                           MAKE_MVHRESULTWARNING(0x0089)  // Coded Picture Buffer (CPB) underflow. This is a sign that the target bitrate or the CPB size is too low.
 #define  MV_W_AAC_OUTPUT_FORMAT_NOT_SUPPORTED               MAKE_MVHRESULTWARNING(0x0090)  // AAC audio output format is not supported.
+#define  MV_W_CODEC_QPMIN_SATURATED                         MAKE_MVHRESULTWARNING(0x0091)  // The minimum Quantization Parameter is saturated. This is a sign that the target bitrate or the CPB size is inappropriate.
+#define  MV_W_CODEC_QPMAX_SATURATED                         MAKE_MVHRESULTWARNING(0x0092)  // The maximum Quantization Parameter is saturated. This is a sign that the target bitrate or the CPB size is too low.
+#define  MV_W_CODEC_ACCESS_UNIT_SKIPPED                     MAKE_MVHRESULTWARNING(0x0093)  // The decoder encountered corruption in the compressed data which caused skipped frames or fields.
+#define  MV_W_CODEC_POSITION_CANCELED                       MAKE_MVHRESULTWARNING(0x0094)  // The application cancelled a position
+#define  MV_W_CODEC_TIMEOUT_WAITING_FOR_SEQUENCE_RESET      MAKE_MVHRESULTWARNING(0x0095)  // The decoder timed out waiting for the sequence reset to complete in order to finish cancelling
+#define  MV_W_MUXER_WARNING                                 MAKE_MVHRESULTWARNING(0x0096)  // General warning message from Muxer.
+#define  MV_W_MUXER_VIDEO_STREAM_DELAY_TOO_LONG             MAKE_MVHRESULTWARNING(0x0097)  // During muxing, video stream is delayed too long.
+
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 // ---------------------- MESSAGE CODES ----------------------------- //
@@ -928,7 +944,7 @@ namespace com_matrox_vpg_SDK
 #define  MV_M_ENCODERSTREAM_CODEC_STOPPED               MAKE_MVHRESULTWARNING(0x2029)  // The encoder stream has stopped streaming.
 #define  MV_M_NEW_PLAYMODE_IN_H264_DECODER              MAKE_MVHRESULTWARNING(0x202A)  // There is new play mode in H264 Decoder.
 #define  MV_M_CODEC_END_OF_STREAM                       MAKE_MVHRESULTWARNING(0x202B)  // There are no more pictures available for the current stream
-
+#define  MV_M_MPEG2TS_MUXER_END_OF_STREAM               MAKE_MVHRESULTWARNING(0x202C)  // Last TS Packet was sent
 
 #ifdef MAC_PLATFORM
 };   // namespace com_matrox_vpg_SDK

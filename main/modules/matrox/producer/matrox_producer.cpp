@@ -20,7 +20,8 @@
 */
 
 #include "matrox_producer.h"
-#include "../matrox_interface.h"
+#include "../matrox_interface_producer.h"
+#include "../matrox_2022_capture.h"
 
 #include "../../ffmpeg/producer/filter/filter.h"
 #include "../../ffmpeg/producer/util/util.h"
@@ -70,8 +71,11 @@ extern "C"
 #endif
 
 #include <functional>
+
+#include "../common.h"
 namespace caspar {
 	namespace matrox {
+
 	core::audio_channel_layout get_adjusted_channel_layout(core::audio_channel_layout layout)
 	{
 		if (layout.num_channels <= 2)
@@ -102,11 +106,12 @@ namespace caspar {
 class matrox_producer : boost::noncopyable
 {
 
-	unsigned int									hardwareindex_;
-	unsigned int									connector_;
-	unsigned int									audio_channel_;
-	std::wstring									ratio_;
-	matrox_interface								pttl_;
+	/*unsigned int									m_card;
+	unsigned int									m_sdi;
+	std::wstring									ratio_;*/
+	producer_need									need_;
+	matrox_interface_producer						*pjsdicap_;
+	matrox_2022_capture								*pj2022cap_;
 	core::monitor::subject							monitor_subject_;
 	spl::shared_ptr<diagnostics::graph>				graph_;
 	caspar::timer									tick_timer_;
@@ -114,16 +119,15 @@ class matrox_producer : boost::noncopyable
 	const std::wstring								filter_;
 
 	core::video_format_desc							in_format_desc_;
-	core::video_format_desc							out_format_desc_;
 	std::vector<int>								audio_cadence_ = in_format_desc_.audio_cadence;
 	
 	spl::shared_ptr<core::frame_factory>			frame_factory_;
 	core::audio_channel_layout						channel_layout_;
 	ffmpeg::frame_muxer								muxer_{
 		in_format_desc_.framerate,
-		{ create_input_pad(in_format_desc_, channel_layout_.num_channels) },
+		{create_input_pad(in_format_desc_, channel_layout_.num_channels)},
 		frame_factory_,
-		out_format_desc_,
+		in_format_desc_,
 		channel_layout_,
 		filter_,
 		ffmpeg::filter::is_deinterlacing(filter_)
@@ -141,26 +145,26 @@ class matrox_producer : boost::noncopyable
 	
 public:
 	matrox_producer(
-		const core::video_format_desc& in_format_desc,
 		const spl::shared_ptr<core::frame_factory>& frame_factory,
-		const core::video_format_desc& out_format_desc,
+		const core::video_format_desc& in_format_desc,
 		const core::audio_channel_layout& channel_layout,
 		const std::wstring& filter,
-		const unsigned int HardwareIndex,
-		const unsigned int ChanenlIndex,
-		const unsigned int AudioChannels,
-		const std::wstring Ratio)
+		producer_need need)
 		:filter_(filter)
 		, in_format_desc_(in_format_desc)
-		, out_format_desc_(out_format_desc)
 		, frame_factory_(frame_factory)
 		, channel_layout_(get_adjusted_channel_layout(channel_layout))
-		, hardwareindex_(HardwareIndex)
-		, connector_(ChanenlIndex)
-		, audio_channel_(AudioChannels)
-		, ratio_(Ratio)
-		,pttl_(hardwareindex_, audio_channel_, connector_, ratio_,in_format_desc.format)
+		,need_(need)
 	{		
+		if (need.type==type_mid::SDI_TYPE)
+		{
+			pjsdicap_ = new matrox_interface_producer(in_format_desc_.format, channel_layout.num_channels, need);
+		}
+		else if(need.type == type_mid::IP_TYPE)
+		{
+			pj2022cap_ = new matrox_2022_capture(in_format_desc_.format, channel_layout.num_channels, need);
+		}
+
 		frame_buffer_.set_capacity(4);
 
 		graph_->set_color("tick-time", diagnostics::color(0.0f, 0.6f, 0.9f));
@@ -170,6 +174,39 @@ public:
 		graph_->set_color("output-buffer", diagnostics::color(0.0f, 1.0f, 0.0f));
 		graph_->set_text(print());
 		diagnostics::register_graph(graph_);
+		if (!swr_)
+		{
+			
+			int outchannel = (int)av_get_default_channel_layout(channel_layout_.num_channels);
+
+			int intchannel = outchannel;
+			//if (need_.type == type_mid::SDI_TYPE)
+			//{
+			//	intchannel = (int)av_get_default_channel_layout(pjsdicap_->_GetChannels());   //输入参数
+			//}
+			//else
+			//{
+			//	intchannel = (int)av_get_default_channel_layout(pj2022cap_->_GetChannels());   //输入参数
+			//}
+			swr_ = {
+				swr_alloc_set_opts(
+					nullptr,
+					intchannel,
+					AV_SAMPLE_FMT_S32,// 需要配置的
+					in_format_desc_.audio_sample_rate,//需要
+					outchannel,
+					AV_SAMPLE_FMT_S32,
+					48000,//48000hz是matrox默认的暂时只支持这个
+					0,
+					nullptr),
+				[](SwrContext* p)
+			{
+				swr_free(&p);
+			}
+			};
+			swr_init(swr_.get());
+		}
+
 		is_running_ = true;
 		thread_ = boost::thread([this] {run(); });
 	}
@@ -181,10 +218,16 @@ public:
 	}
 	void release()
 	{
+		if (need_.type == type_mid :: SDI_TYPE)
+		{
+			delete pjsdicap_;
+			delete pj2022cap_;
+			pjsdicap_ = nullptr;
+			pj2022cap_ = nullptr;
+		}
 		CASPAR_LOG(info) << L" matrox producer released begin.";
 		is_running_ = false;
 		thread_.join();
-	
 		CASPAR_LOG(info) << L" matrox producer released.";
 	}
 
@@ -197,12 +240,24 @@ public:
 
 
 			auto video_frame = ffmpeg::create_frame();
-			MatroxFrame mframe;
-			if (!pttl_.get_frame(mframe))
+			FrameforProducer mframe;
+			if (need_.type == type_mid::SDI_TYPE)
 			{
-				boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
-				continue;
+				//if (!pjsdicap_.get_frame(mframe))
+				{
+					boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
+					continue;
+				}
 			}
+			else if (need_.type == type_mid::IP_TYPE)
+			{
+				if (!pj2022cap_->get_frame(mframe))
+				{
+					boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
+					continue;
+				}
+			}
+			
 
 			video_frame->data[0] = reinterpret_cast<uint8_t*>((uint8_t*)mframe.pvideo.get());
 
@@ -216,6 +271,7 @@ public:
 			video_frame->top_field_first = mframe.top_field_first==1?true:false;
 			video_frame->key_frame = 1;
 			
+
 			muxer_.push(static_cast<std::shared_ptr<AVFrame>>(video_frame));
 			
 			//audio
@@ -226,28 +282,7 @@ public:
 			const uint8_t **in = const_cast<const uint8_t**>((uint8_t**)& p);
 			uint8_t *out[] = { reinterpret_cast<uint8_t*>(buffer_) };
 			
-			if (!swr_)
-			{
-				int outchannel = av_get_default_channel_layout(channel_layout_.num_channels);
-				int intchannel = av_get_default_channel_layout(audio_channel_);   //输入参数 
-				swr_ = {
-					swr_alloc_set_opts(
-						nullptr,
-						outchannel,
-						AV_SAMPLE_FMT_S32,// 需要配置的
-						out_format_desc_.audio_sample_rate,//需要
-						intchannel,
-						AV_SAMPLE_FMT_S32,
-						48000,//48000hz是matrox默认的暂时只支持这个
-						0,
-						nullptr),
-					[](SwrContext* p)
-				{
-					swr_free(&p);
-				}
-				};
-				swr_init(swr_.get());
-			}
+			
 			const auto channel_samples = swr_convert(
 				swr_.get(),
 				out,
@@ -303,7 +338,18 @@ public:
 
 	std::wstring print() const
 	{
-		return L" [" + boost::lexical_cast<std::wstring>(connector_) + L"|" + in_format_desc_.name + L"]";
+		std::wstring str;
+		if (need_.sdi!=-1)
+		{
+			str = boost::lexical_cast<std::wstring>(need_.sdi);
+		}
+		if (!need_.addr.empty())
+		{
+			str += need_.addr;
+			str += L":";
+			str	+= boost::lexical_cast<std::wstring>(need_.port);
+		}
+		return L" [" + str + L"|" + in_format_desc_.name + L"]";
 	}
 
 	boost::rational<int> get_out_framerate() const
@@ -319,28 +365,21 @@ public:
 class matrox_producer_proxy : public core::frame_producer_base
 {
 	std::unique_ptr<matrox_producer>	producer_;
-	const uint32_t						length_;
 	executor							executor_;
 public:
 	explicit matrox_producer_proxy( 
-		const core::video_format_desc& in_format_desc,
 		const spl::shared_ptr<core::frame_factory>& frame_factory,
-		const core::video_format_desc& out_format_desc,
+		const core::video_format_desc& in_format_desc,
 		const core::audio_channel_layout& channel_layout,
 		const std::wstring& filter_str,
-		uint32_t length,
-		unsigned HardwareIndex,
-		unsigned ChanenlIndex,
-		unsigned AudioChannels,
-		const std::wstring ratio)
-		: executor_(L"matrox_producer[" + boost::lexical_cast<std::wstring>(HardwareIndex)+ L"-" + boost::lexical_cast<std::wstring>(ChanenlIndex) + L"]")
-		,length_(length)
+		producer_need need)
+		: executor_(L"matrox_producer[" + boost::lexical_cast<std::wstring>(need.card)+ L"-" + boost::lexical_cast<std::wstring>(need.sdi) + L"]")
 	{
 		auto ctx = core::diagnostics::call_context::for_thread();
 		executor_.invoke([=]
 		{
 			core::diagnostics::call_context::for_thread() = ctx;
-			producer_.reset(new matrox_producer(in_format_desc, frame_factory, out_format_desc, channel_layout, filter_str, HardwareIndex, ChanenlIndex, AudioChannels,ratio));
+			producer_.reset(new matrox_producer(frame_factory, in_format_desc, channel_layout, filter_str, need));
 		});
 	}
 
@@ -408,37 +447,62 @@ void describe_producer(core::help_sink& sink, const core::help_repository& repo)
 	sink.example(L">> PLAY 1-10 matrox conector 0 device 0", L"Play using decklink device 2 expecting the video signal to have the same video format as the channel.");
 }
 
+
+
 spl::shared_ptr<core::frame_producer> create_producer(const core::frame_producer_dependencies& dependencies, const std::vector<std::wstring>& params)
 {
-	if (params.empty() || !boost::iequals(boost::to_upper_copy(params.at(0)), L"MATROX"))
-		return core::frame_producer::empty();
 
-	if (params.empty() || !boost::iequals(params.at(0), "matrox"))
-		return core::frame_producer::empty();
-
-	auto HardwareIndex = get_param(L"device", params);
-	auto Connectorstr = get_param(L"connector", params);
-	auto InputChannel = get_param(L"channel-layin", params);
-	auto Ratio = get_param(L"ratio",params);
-	//空默认为0
-
-	unsigned int hardwareinx = boost::lexical_cast<int>(HardwareIndex);
-	unsigned int connector = boost::lexical_cast<int>(Connectorstr);
-	if (InputChannel.empty())
+	//过滤条件判断 第一个参数一定是L"MATROX"
+	if((params.empty() ? true : ((boost::iequals(boost::to_upper_copy(params.at(0)), L"MATROX") || boost::iequals(params.at(0), "matrox"))?false:true)))
 	{
-		InputChannel = L"2";
+		return core::frame_producer::empty();
+	}
+	//2022
+	producer_need needs;
+	std::wstring url2022 = get_param(L"2022", params);
+	if (!url2022.empty())
+	{
+		needs.type = type_mid::IP_TYPE;
+		auto urlstr = boost::to_upper_copy(url2022);
+		std::wstring addr = L"";
+		std::wstring port = L"";
+
+		int pos1 = urlstr.find(L"UDP://", 0);
+		int pos2 = urlstr.find(L":", 6);
+
+		if (pos1 == std::wstring::npos || pos2 == std::wstring::npos)
+			return core::frame_producer::empty();
+
+		addr = urlstr.substr(pos1 + 6, pos2 - 6 - pos1);
+		port = urlstr.substr(pos2 + 1, pos2 - 1);
+		if (addr.empty() || port.empty())
+			return core::frame_producer::empty();
+		needs.port = boost::lexical_cast<int>(port);
+		needs.addr = addr;
+	}
+	else
+	{
+		//参数 板卡索引 一个卡默认0
+		needs.type = type_mid::SDI_TYPE;
+	}
+	needs.card = boost::lexical_cast<int>((get_param(L"card", params).empty() ? L"0" : get_param(L"card", params)));
+	if (!get_param(L"ratio", params).empty())
+	{
+		needs.ratio = get_param(L"ratio", params);
+	}
+	if (!get_param(L"sdi", params).empty())
+	{
+		needs.sdi = boost::lexical_cast<int>(get_param(L"sdi", params));
 	}
 	
-	unsigned int in_channel = boost::lexical_cast<int>(InputChannel);
-
-
 	auto filter_str = get_param(L"FILTER", params);
 	auto length = get_param(L"LENGTH", params, std::numeric_limits<uint32_t>::max());
+	//指定信号源给的视频格式，matrox本身能获取到信号源的格式，不需要指定
 	auto in_format_desc = core::video_format_desc(get_param(L"FORMAT", params, L"INVALID"));
 
 	if (in_format_desc.format == core::video_format::invalid)
 		in_format_desc = dependencies.format_desc;
-
+	//指定matrox源声音输出后需要转换的channel类型 ,2022 中这个参数没有用到，matrox能获取到视频源的声音信号的
 	auto channel_layout_spec = get_param(L"CHANNEL_LAYOUT", params);
 	auto channel_layout = *core::audio_channel_layout_repository::get_default()->get_layout(L"stereo");
 
@@ -457,16 +521,11 @@ spl::shared_ptr<core::frame_producer> create_producer(const core::frame_producer
 	boost::ireplace_all(filter_str, L"DEINTERLACE", L"YADIF=0:-1");
 
 	auto producer = spl::make_shared<matrox_producer_proxy>(
-		in_format_desc,
 		dependencies.frame_factory,
-		dependencies.format_desc,
+		in_format_desc,
 		channel_layout,
 		filter_str,
-		length,
-		hardwareinx,
-		connector,
-		in_channel,
-		Ratio);
+		needs);
 
 	auto get_source_framerate = [=] { return producer->get_out_framerate(); };
 	auto target_framerate = dependencies.format_desc.framerate;

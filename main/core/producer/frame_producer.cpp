@@ -241,12 +241,12 @@ std::shared_ptr<executor>& producer_destroyer()
 	static auto destroyer = []
 	{
 		auto result = std::make_shared<executor>(L"Producer destroyer");
-		result->set_capacity(std::numeric_limits<unsigned int>::max());
+		result->set_capacity(20);
 		return result;
-	}();;
-
+	}();
 	return destroyer;
 }
+
 
 tbb::atomic<bool>& destroy_producers_in_separate_thread()
 {
@@ -258,8 +258,9 @@ tbb::atomic<bool>& destroy_producers_in_separate_thread()
 void destroy_producers_synchronously()
 {
 	destroy_producers_in_separate_thread() = false;
-	// Join destroyer, executing rest of producers in queue synchronously.
+	// Join destroyer, executing rest of producers in queue synchronously. 
 	producer_destroyer().reset();
+
 }
 
 class destroy_producer_proxy : public frame_producer
@@ -274,18 +275,16 @@ public:
 
 	virtual ~destroy_producer_proxy()
 	{
-		if (producer_ == core::frame_producer::empty() || !destroy_producers_in_separate_thread())
+		if(producer_ == core::frame_producer::empty() || !destroy_producers_in_separate_thread())
 			return;
 
 		auto destroyer = producer_destroyer();
-
 		if (!destroyer)
 			return;
 
 		CASPAR_VERIFY(destroyer->size() < 8);
 
 		auto producer = new spl::shared_ptr<frame_producer>(std::move(producer_));
-		
 		destroyer->begin_invoke([=]
 		{
 			std::unique_ptr<spl::shared_ptr<frame_producer>> pointer_guard(producer);
@@ -308,6 +307,7 @@ public:
 			{
 				CASPAR_LOG_CURRENT_EXCEPTION();
 			}
+
 		});
 	}
 

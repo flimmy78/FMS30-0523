@@ -2,18 +2,19 @@
 #include "IPStreamAPI.h"
 #include "tinyxml.h"
 #include <atlconv.h>
+#include <map>
 
 void InitParasByXML(
-	LPCWSTR VirtualSourceName, 
-	VideoEncConfPara* videoPara, 
-	AudioEncConfPara* audioPara, 
-	Mp2MuxConfPara* muxPara, 
+	LPCWSTR VirtualSourceName,
+	VideoEncConfPara* videoPara,
+	AudioEncConfParas* audioParas,
+	Mp2MuxConfPara* muxPara,
 	RenderConfPara* renderPara,
 	int *cachetime
-	)
+)
 {
 	TiXmlDocument doc("PushStreamBackGround/stream_configue.xml");
-	
+
 	bool loadOkay = doc.LoadFile();
 	if (loadOkay == false)
 	{
@@ -25,13 +26,13 @@ void InitParasByXML(
 	TiXmlElement* streamnode;// = root->FirstChildElement();
 	TiXmlNode* pTargetStreamNode = NULL;
 	bool findout = false;
-	for (streamnode = root->FirstChildElement(); streamnode != NULL&&!findout; streamnode = streamnode->NextSiblingElement())
+	for (streamnode = root->FirstChildElement(); streamnode != NULL && !findout; streamnode = streamnode->NextSiblingElement())
 	{
-		
+
 		TiXmlNode* child = streamnode->FirstChild();
-		
+
 		USES_CONVERSION;
-		while (child!=NULL)
+		while (child != NULL)
 		{
 
 			if (strcmp(child->Value(), "source_name") != 0)
@@ -47,15 +48,15 @@ void InitParasByXML(
 				}
 				break;
 			}
-			
+
 			child = child->NextSiblingElement();
 		}
 	}
 	if (pTargetStreamNode == NULL)
 	{
 		MessageBoxA(NULL, "Can not find the stream name, please check stream_configue.xml.", "error", MB_OK);
-		
-		return ;
+
+		return;
 	}
 	TiXmlNode* streamchild = pTargetStreamNode->FirstChild();
 	while (streamchild != NULL)
@@ -100,7 +101,7 @@ void InitParasByXML(
 		{
 			TiXmlNode* videolabel = streamchild;
 			TiXmlNode* videochildnode = videolabel->FirstChild();
-			while (videochildnode!=NULL)
+			while (videochildnode != NULL)
 			{
 				if (!strcmp(videochildnode->Value(), "video_format"))
 				{
@@ -146,37 +147,49 @@ void InitParasByXML(
 			}
 
 		}
-		else if (!strcmp(streamchild->Value(), "audio"))
+		else if (!strcmp(streamchild->Value(), "audios"))
 		{
-
-			TiXmlNode* audiolabel = streamchild;
-			TiXmlNode* audiochildnode = audiolabel->FirstChild();
-			while (audiochildnode!=NULL)
+			TiXmlNode* audioslabel = streamchild;
+			TiXmlNode* audioschildnode = audioslabel->FirstChild();
+			int nAudio = 0;
+			while (audioschildnode != NULL)
 			{
-				if (!strcmp(audiochildnode->Value(), "audio_format"))
+				if (!strcmp(audioschildnode->Value(), "audio"))
 				{
-					if (!strcmp(audiochildnode->ToElement()->GetText(), "MPEG1_LAYER2"))
+					TiXmlNode* audiolabel = audioschildnode;
+					TiXmlNode* audiochildnode = audiolabel->FirstChild();
+					AudioEncConfPara audioPara;
+					audioPara.hasMatchPid = false;
+					while (audiochildnode != NULL)
 					{
-						audioPara->audioFormat = MPEG1_LAYER2;
+						if (!strcmp(audiochildnode->Value(), "audio_format"))
+						{
+							if (!strcmp(audiochildnode->ToElement()->GetText(), "MPEG1_LAYER2"))
+							{
+								audioPara.audioFormat = MPEG1_LAYER2;
+							}
+							else if (!strcmp(audiochildnode->ToElement()->GetText(), "AC3"))
+							{
+								audioPara.audioFormat = AC3;
+							}
+							else if (!strcmp(audiochildnode->ToElement()->GetText(), "AAC"))
+							{
+								audioPara.audioFormat = AAC;
+							}
+						}
+						else if (!strcmp(audiochildnode->Value(), "audio_bitrate"))
+						{
+							audioPara.bitrate = atoi(audiochildnode->ToElement()->GetText());
+						}
+						else if (!strcmp(audiochildnode->Value(), "audio_layer"))
+						{
+							audioPara.layer = atoi(audiochildnode->ToElement()->GetText());
+						}
+						audiochildnode = audiochildnode->NextSiblingElement();
 					}
-					else if (!strcmp(audiochildnode->ToElement()->GetText(), "AC3"))
-					{
-						audioPara->audioFormat = AC3;
-					}
-					else if (!strcmp(audiochildnode->ToElement()->GetText(), "AAC"))
-					{
-						audioPara->audioFormat = AAC;
-					}
+					audioParas->AddAudioEncConfPara(nAudio++, audioPara);
 				}
-				else if (!strcmp(audiochildnode->Value(), "audio_bitrate"))
-				{
-					audioPara->bitrate = atoi(audiochildnode->ToElement()->GetText());
-				}
-				else if (!strcmp(audiochildnode->Value(), "audio_layer"))
-				{
-					audioPara->layer = atoi(audiochildnode->ToElement()->GetText());
-				}
-				audiochildnode = audiochildnode->NextSiblingElement();
+				audioschildnode = audioschildnode->NextSiblingElement();
 			}
 		}
 		else if (!strcmp(streamchild->Value(), "mux"))
@@ -188,19 +201,30 @@ void InitParasByXML(
 			{
 				if (!strcmp(muxchildnode->Value(), "padding_enable"))
 				{
-					muxPara->m_paddingOn = atoi(muxchildnode->ToElement()->GetText());
+					muxPara->SetPaddingOn(atoi(muxchildnode->ToElement()->GetText()));
 				}
 				else if (!strcmp(muxchildnode->Value(), "video_pid"))
 				{
-					muxPara->m_videoPID = atoi(muxchildnode->ToElement()->GetText());
+					muxPara->SetVideoPid(atoi(muxchildnode->ToElement()->GetText()));
 				}
-				else if (!strcmp(muxchildnode->Value(), "audio_pid"))
+				else if (!strcmp(muxchildnode->Value(), "audio_pids"))
 				{
-					muxPara->m_audioPID = atoi(muxchildnode->ToElement()->GetText());
+					TiXmlNode* audiopidslabel = muxchildnode;
+					TiXmlNode* audiopidschildnode = audiopidslabel->FirstChild();
+					int nAudio = 0;
+					while (audiopidschildnode != NULL)
+					{
+						if (!strcmp(audiopidschildnode->Value(), "audio_pid"))
+						{
+							int audioPid = atoi(audiopidschildnode->ToElement()->GetText());
+							muxPara->AddAudioPid(nAudio++, audioPid);
+						}
+						audiopidschildnode = audiopidschildnode->NextSiblingElement();
+					}
 				}
 				else if (!strcmp(muxchildnode->Value(), "bit_rate"))
 				{
-					muxPara->m_bitRate = atoi(muxchildnode->ToElement()->GetText());
+					muxPara->SetBitRate(atoi(muxchildnode->ToElement()->GetText()));
 				}
 				muxchildnode = muxchildnode->NextSiblingElement();
 			}
@@ -233,21 +257,21 @@ void InitParasByXML(
 		}
 		streamchild = streamchild->NextSiblingElement();
 	}
-	
+
 }
 
 IPStream_API* IPStreamCreate(LPCWSTR VirtualSourceName)
 {
 	VideoEncConfPara videoPara;
-	AudioEncConfPara audioPara;
+	AudioEncConfParas audioParas;
 	Mp2MuxConfPara muxPara;
 	RenderConfPara renderPara;
-	
+
 	char cIPBuffer[20] = { 0 };
 	char cIPBuffer_bak[20] = { 0 };
 	char cServerNicBuffer[20] = { 0 };
 	char cServerNicBuffer_bak[20] = { 0 };
-    
+
 	char dektec_serial_number[50] = { 0 };
 	char dektec_serial_number_bak[50] = { 0 };
 
@@ -259,27 +283,26 @@ IPStream_API* IPStreamCreate(LPCWSTR VirtualSourceName)
 	renderPara.dektec_serial_number_bak = dektec_serial_number_bak;
 
 	int cachetime = 0;
-	
+
 	InitParasByXML(
 		VirtualSourceName, &videoPara,
-		&audioPara,
+		&audioParas,
 		&muxPara,
 		&renderPara,
 		&cachetime
-		);
+	);
 	if (cachetime > 0)
 	{
 		cachetime = (cachetime + 39) / 40;
 	}
 	IPStream_API* IPStream = CreateInstanceIPStreamAPI(
 		&videoPara,
-		&audioPara,
+		&audioParas,
 		&muxPara,
 		&renderPara,
 		cachetime,
 		VirtualSourceName
 	);
-
 	return IPStream;
 }
 
@@ -288,7 +311,7 @@ int WINAPI wWinMain(
 	HINSTANCE hPrevInstance,
 	LPWSTR lpCmdLine,
 	int nCmdShow
-	)
+)
 {
 	IPStream_API* stream = IPStreamCreate(lpCmdLine);
 	if (stream == NULL)

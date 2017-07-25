@@ -25,6 +25,7 @@
 #include <modules/ndi/ndi.h>
 #include <modules/matrox/matrox.h>
 #include <modules/mainconcept/mainconcept.h>//add by zibj 20170210
+#include <modules/2022/sdiopi.h>
 
 namespace caspar {
 
@@ -83,6 +84,9 @@ static void initialize_modules(const core::module_dependencies& dependencies)
 
 	mainconcept::init(dependencies);
 	CASPAR_LOG(info) << L"Initialized mainconcept module.";
+
+	sdiopi_20226::init(dependencies);
+	CASPAR_LOG(info) << L"Initialized 2022-6 module.";
 }
 
 static void uninitialize_modules()

@@ -148,6 +148,10 @@ struct screen_consumer : boost::noncopyable
 	tbb::atomic<int64_t>								current_presentation_age_;
 
 	ffmpeg::filter										filter_;
+	int                                                 framerate_interval_ = format_desc_.fps > 0 ? format_desc_.fps : 25;
+	int                                                 framerate_count_ = 0;
+	caspar::timer                                       framerate_timer_;
+	double                                              framerate_ = framerate_interval_;
 public:
 	screen_consumer(
 			const configuration& config,
@@ -371,6 +375,14 @@ public:
 
 					render_and_draw_frame(frame);
 
+					if (++framerate_count_ >= framerate_interval_)
+					{
+						framerate_ = framerate_count_ / framerate_timer_.elapsed();
+						framerate_timer_.restart();
+						framerate_count_ = 0;
+					}
+					graph_->set_text(print());
+
 					/*perf_timer_.restart();
 					render(frame);
 					graph_->set_value("frame-time", perf_timer_.elapsed()*format_desc_.fps*0.5);
@@ -498,7 +510,7 @@ public:
 			}
 			else
 			{
-				fast_memcpy(ptr, av_frame->data[0], format_desc_.size);
+				std::memcpy(ptr, av_frame->data[0], format_desc_.size);
 			}
 
 			GL(glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER)); // release the mapped buffer
@@ -530,7 +542,7 @@ public:
 
 	std::wstring channel_and_format() const
 	{
-		return L"[" + boost::lexical_cast<std::wstring>(channel_index_) + L"|" + format_desc_.name + L"]";
+		return L"[" + boost::lexical_cast<std::wstring>(channel_index_) + L"|" + format_desc_.name +  L" | " + boost::lexical_cast<std::wstring>((float)framerate_) + L"]";
 	}
 
 	std::wstring print() const

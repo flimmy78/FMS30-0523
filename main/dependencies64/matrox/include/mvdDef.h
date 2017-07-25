@@ -1086,6 +1086,20 @@ enum EMvMXFFileType
    MXFFileTypeLast
 };
 
+enum EMvFileFormatTypes
+{
+   keFileFormatUnknown = 0,
+   keFileFormatWAV,
+   keFileFormatWAV64,
+   keFileFormatAIFF,
+   keFileFormatAVI,
+   keFileFormatMOVMP4,
+   keFileFormatMXF,
+   keFileFormatGXF,
+   keFileFormatLXF,
+   keFileFormatTS,
+   keFileFormatLast
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -1270,12 +1284,13 @@ struct SMvMPEG4SStPFileInfo
    uint32_t             uiComponentBitCount; // Indicates the number of bits per component of a pixel.
 };
 
-//Describes the Sony XAVC file information.
+// Describes the Sony XAVC file information.
 struct SMvXAVCFileInfo
 {
-   uint32_t             size;                   // Structure size in bytes.
-   uint32_t             ui32XAVCProfile;        // Indicates the Sony XAVC profile to use. For example, Sony XAVC LongGOP 25, 35, 50, or
-                                                // Sony XAVC HD Intra Class 100, etc.
+   uint32_t             size;                                  // Structure size in bytes.
+   uint32_t             ui32XAVCProfile;                       // Indicates the Sony XAVC profile to use. For example, Sony XAVC LongGOP 25, 35, 50, or Sony XAVC HD Intra Class 100, etc.
+   uint32_t             ui32GOPSizeInFrames;                   // Indicates the group of pictures (GOP) size of the given stream.
+   uint32_t             ui32DistanceBetweenReferencesInFrames; // Indicates the distance between references in the given stream.
 };
 
 
@@ -1293,13 +1308,47 @@ struct SMvMovAudioTrackInfo
 // Summary:
 //    Contains the audio and video specific information of a mov/mp4 file. 
 //
+#define	MAX_MOV_AUDIOTRACKINFO	16
 struct SMvMOVSpecificFileInfo
 {
-   uint32_t size;
-   uint64_t ui64VideoFrameCountFromMediaHeader;       // The number of video frame which gets from media header.
-   uint64_t ui64VideoFrameCountFromTrackHeader;       // The number of video frame which gets from video track header.
-   uint32_t ui32CountOfAudioTrackInfo;                     // Number of audio tracks info filled.
-   SMvMovAudioTrackInfo  sMovAudioTrackInfo[16];      // An array of SMvMovAudioTrackInfo
+   uint32_t				size;
+   uint64_t				ui64VideoFrameCountFromMediaHeader;				// The number of video frame which gets from media header.
+   uint64_t				ui64VideoFrameCountFromTrackHeader;				// The number of video frame which gets from video track header.
+   uint32_t				ui32CountOfAudioTrackInfo;						// Number of audio tracks info filled.
+   SMvMovAudioTrackInfo sMovAudioTrackInfo[MAX_MOV_AUDIOTRACKINFO];     // An array of SMvMovAudioTrackInfo
+};
+
+//
+// Summary:
+//    Contains element unit size information of MXF file. 
+//
+struct SMvMXFSpecificFileInfo
+{
+   uint32_t				size;
+   uint32_t				ui32ElementUnitSize;		   // size of one element unit. Only set this value for the file with constant frame size;
+};
+
+//
+// Summary:
+//    The start timecode structure
+//
+struct SMvTimecodeData
+{
+   uint32_t    ui32Size;
+   uint64_t    ui64StartTimecode;         // converted integer frame count from (00:00:00:00)
+   uint32_t    ui32RoundedTimecodeBase;   // Nearest integer frames per sec e.g. 24, 25. 30, 60
+   bool        bDropFrame;                // True = Drop frame timecode in use.
+};
+
+//
+// Summary:
+//    Timecode data packet format
+//
+struct SMvTimecodeDataPacket
+{
+   uint32_t ui32sizeOfPayload;      // large endian size
+   uint8_t  ui8Code;                // must be 0x81
+   UMvSMPTE331TimeCode uSMPTE331TC; // timecode in SMPTE331 format
 };
 
 //
@@ -1368,6 +1417,9 @@ struct SMvAudioVideoFileInfo
    bool                 bIsXAVCFileInfoValid;   // Specifies if data in sXAVCFileInfo is valid.
    SMvXAVCFileInfo      sXAVCFileInfo;          // File information specific to XAVC file types.
 
+   bool                 bHasFileStartTimeCode;  // The file contains a start timecode in the header metadata
+   SMvTimecodeData      sStartTimecode;         // The start timecode from the header
+
    EMvMXFFileType       eMXFFileType;           // Specifies the MXF file types.
    unsigned long        ulVbiStreams;           // Specifies the number of VBI streams.
    unsigned long        ulANCStreams;           // Specifies the number of ANC streams.
@@ -1385,6 +1437,13 @@ struct SMvAudioVideoFileInfo
    uint32_t             ui32NumberOfAudioTypes;       // The number of audio types found in the file.
    
    SMvMOVSpecificFileInfo sMOVSpecificFileInfo;    //Specific file information for MOV file.
+
+   SMvMXFSpecificFileInfo sMXFSpecificFileInfo;    //Specific file information for MXF file.
+
+   double               dAlternateFrameRate;       // contains 0.0 by default, but for files that use non-broadcast standard frame rates, it's original framerate is reported here.
+
+   EMvFileFormatTypes   eFileFormatType;
+
 };
 
 //
@@ -1659,10 +1718,10 @@ struct SMvAVCCaptureProperties
 };
 
 
-/** 
-* Describes H264SWEncoder2 capture properties.
-* @struct
-*/
+//
+// Summary:
+//   Describes the Matrox H.264 SW2 encoder capture properties.
+//
 struct SMvH264CaptureProperties
 {
    /**
@@ -1671,32 +1730,32 @@ struct SMvH264CaptureProperties
    uint32_t size ;
 
    /**
-   * Version of this structure definition. 
+   * Indicates the version of the structure. 
    */
    int    iVersion ;
 
    /**
-   * Resolution information. 
+   * Indicates the resolution information. 
    */
    SMvResolutionInfo smvResolution ;
 
    /**
-   * H.264/AVC software Preset.
+   * Indicates the H.264/AVC software preset.
    */
    EMvH264SWCodecPreset ePreset;
 
    /**
-   *   Requested average bit rate. 
+   * Indicates the requested average bit rate. 
    */
    uint32_t  ui32AverageBitRateInBitsPerSec; 
 
    /**
-   *   Bit rate model to use. 
+   * Indicates the bit rate model to use. 
    */
    EMvBitRateModel eBitRateMode; 
 
    /**
-   *   Indicates is it Intra.  
+   * Indicates the Sony XAVC profile.  
    */
    EMvXAVCProfile  eXAVCProfile;   
 };
@@ -2395,6 +2454,8 @@ struct SMvFileVideoDurationInfo
    uint64_t       ui64Origin;           // Origin
    bool           bSetStartTimecode;    // the flag to adjust TC in Clip's metadata 
    bool           bTrimmed;             // Is trimmed-in or -out during this consolidation
+   uint64_t       ui64GOPSize;
+   uint64_t       ui64DistanceBetweenReferencesInFrames;
 };
 
 /**

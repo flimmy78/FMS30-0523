@@ -331,17 +331,19 @@ public:
 	void run()
 	{
 		//set_priority_of_current_thread(thread_priority::HIGH);
+		int nSize = 2;
 		try
 		{
 			while (is_runing_)
 			{
 				//buffer_mutex_.lock();
-				for (int n = 0; n < 16 && frame_buffer_.size() < 2; ++n)
+				for (int n = 0; n < 16 && frame_buffer_.size() < nSize; ++n)
 				{
 					try_decode_frame();
 				}
 				//buffer_mutex_.unlock();
-				//boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
+				if(frame_buffer_.size() >= nSize)
+					boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
 			}
 		}
 		catch (boost::thread_interrupted&)
@@ -410,12 +412,13 @@ public:
 				graph_->set_tag(diagnostics::tag_severity::WARNING, "underflow");
 				CASPAR_LOG(info) << L"Producer UnderFlow";
 				send_osc();
-				while (frame_buffer_.size() < 1)
+				return std::make_pair(last_frame_, -1);
+				/*while (frame_buffer_.size() < 1)
 				{
 					boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
 					CASPAR_LOG(info) << L"Producer UnderFlow sleep";
 				}
-				CASPAR_LOG(info) << L"Producer UnderFlow end";
+				CASPAR_LOG(info) << L"Producer UnderFlow end";*/
 			}
 			else
 			{

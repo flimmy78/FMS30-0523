@@ -1,6 +1,8 @@
 #ifndef _IPSTREAMAPI_
 #define _IPSTREAMAPI_
 
+#include <map>
+#include "ConfPara.h"
 #ifdef __cplusplus
 extern "C"	{
 #endif    //__cplusplus
@@ -13,21 +15,6 @@ enum VideoFormat
 	HEVC = MPEG2+1,
 };
 
-enum AudioFormat
-{
-	MPEG1_LAYER2 =	   0,
-	AC3 = MPEG1_LAYER2+1,
-	AAC = MPEG1_LAYER2+2,
-};
-
-//编码复用参数定义
-typedef struct _tagMp2MuxConfPara{
-	int  m_videoPID;
-	int  m_audioPID;
-	bool m_paddingOn;
-	long m_bitRate;		
-}Mp2MuxConfPara;
-
 typedef struct  _tagVideoEncConfPara
 {
 	VideoFormat videoFormat;
@@ -39,13 +26,6 @@ typedef struct  _tagVideoEncConfPara
 	int encode_bitrate;
 	int encode_performance;
 }VideoEncConfPara;
-
-typedef struct _tagAudioEncConfPara
-{
-	AudioFormat audioFormat;
-	int layer;
-	int bitrate;
-}AudioEncConfPara;
 
 typedef struct _tagRenderConfPara
 {
@@ -61,6 +41,13 @@ typedef struct _tagRenderConfPara
 	char* cIP_bak;
 	DWORD dwPort_bak;
 }RenderConfPara;
+
+typedef struct _tagNetSourcePara
+{
+	char* cServerNic;
+	char* cIP;
+	DWORD dwPort;
+}NetSourcePara;
 
 enum RenderType
 {
@@ -86,7 +73,8 @@ struct IPStream_API
 	virtual bool vRelease() = 0;
 };
 
-IPStream_API* __stdcall CreateInstanceIPStreamAPI(VideoEncConfPara* videoPara,AudioEncConfPara* audioPara,Mp2MuxConfPara* muxPara,RenderConfPara* renderPara, int nCacheFrames, LPCWSTR virtualSourceName);
+IPStream_API* __stdcall CreateInstanceIPStreamAPI(VideoEncConfPara* videoPara,AudioEncConfParas* audioParas,Mp2MuxConfPara* muxPara,RenderConfPara* renderPara, int nCacheFrames, LPCWSTR virtualSourceName);
+IPStream_API* __stdcall CreateInstanceIPStreamRemuxAPI(NetSourcePara* netsourcePara,Mp2MuxConfPara* muxPara, RenderConfPara* renderPara);
 
 #ifdef __cplusplus
 };

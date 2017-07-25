@@ -338,24 +338,24 @@ public:
 		//logo killer20161229
 		//--------------------------------------
 		
-		av_pix_fmt_count_planes(codec_context_->pix_fmt);
-		if (AV_PIX_FMT_YUV422P != codec_context_->pix_fmt && AV_PIX_FMT_YUV420P != codec_context_->pix_fmt)
-		{
-			spl::shared_ptr<AVFrame> dest_frame(av_frame_alloc(), [](AVFrame* p)
-			{
-				avpicture_free(reinterpret_cast<AVPicture*>(p));
-				av_frame_free(&p);
-			});
-			av_frame_ref(dest_frame.get(), decoded_frame.get());
-			dest_frame->format = AV_PIX_FMT_YUV420P;
-			avpicture_fill(reinterpret_cast<AVPicture*>(dest_frame.get()), nullptr, AV_PIX_FMT_YUV420P, codec_context_->width, codec_context_->height);
-			avpicture_alloc(reinterpret_cast<AVPicture*>(dest_frame.get()), AV_PIX_FMT_YUV420P, codec_context_->width, codec_context_->height);
-			sws_scale(sws_.get(), decoded_frame->data, decoded_frame->linesize, 0, dest_frame->height, dest_frame->data, dest_frame->linesize);
-			av_frame_unref(decoded_frame.get());
-			decoded_frame = dest_frame;
-		}
 		if (logo_killer_enable)
 		{
+			av_pix_fmt_count_planes(codec_context_->pix_fmt);
+			if (AV_PIX_FMT_YUV422P != codec_context_->pix_fmt && AV_PIX_FMT_YUV420P != codec_context_->pix_fmt)
+			{
+				spl::shared_ptr<AVFrame> dest_frame(av_frame_alloc(), [](AVFrame* p)
+				{
+					avpicture_free(reinterpret_cast<AVPicture*>(p));
+					av_frame_free(&p);
+				});
+				av_frame_ref(dest_frame.get(), decoded_frame.get());
+				dest_frame->format = AV_PIX_FMT_YUV420P;
+				avpicture_fill(reinterpret_cast<AVPicture*>(dest_frame.get()), nullptr, AV_PIX_FMT_YUV420P, codec_context_->width, codec_context_->height);
+				avpicture_alloc(reinterpret_cast<AVPicture*>(dest_frame.get()), AV_PIX_FMT_YUV420P, codec_context_->width, codec_context_->height);
+				sws_scale(sws_.get(), decoded_frame->data, decoded_frame->linesize, 0, dest_frame->height, dest_frame->data, dest_frame->linesize);
+				av_frame_unref(decoded_frame.get());
+				decoded_frame = dest_frame;
+			}
 			LogoKiller_YUV(decoded_frame.get(), logo_killer_left, logo_killer_top, logo_killer_width, logo_killer_height, logo_killer_is_smooth, logo_killer_smooth_value);
 		}
 

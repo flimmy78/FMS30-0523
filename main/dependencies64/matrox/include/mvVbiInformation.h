@@ -72,7 +72,7 @@ const SMvVbiSettings kasMvVbiRange[8] =
 // Function name   : MvGetVbiSettings
 // Description     : 
 // ----------------------------------------------------------------------------
-bool inline MvGetVbiSettings(SMvResolutionInfo & i_rsRes, SMvVbiSettings & io_rMvVbiSettings)
+bool inline MvGetVbiSettings(const SMvResolutionInfo & i_rsRes, SMvVbiSettings & io_rMvVbiSettings)
 {
    if ((i_rsRes.ulWidth == 720) && 
        (i_rsRes.ulHeight == 486 || i_rsRes.ulHeight == 480 || i_rsRes.ulHeight == 512))

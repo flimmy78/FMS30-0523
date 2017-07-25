@@ -1022,7 +1022,6 @@ namespace NMvH {
    {
       if(*in_pguidCodec == CLSID_MvcAVCIntra
          || *in_pguidCodec == CLSID_MvcProRes
-         || *in_pguidCodec == CLSID_MvcH264SWDecoder
          || *in_pguidCodec == CLSID_MvcH264SWDecoder2
          || *in_pguidCodec == CLSID_MvcDNxHDCodec
          || *in_pguidCodec == CLSID_MvfAVCH264HardwareCodec

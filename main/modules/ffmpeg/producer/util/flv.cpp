@@ -95,7 +95,7 @@ std::map<std::string, std::string> read_flv_meta_info(const std::string& filenam
 	}
 	catch(...)
 	{
-		CASPAR_LOG_CURRENT_EXCEPTION();
+		//CASPAR_LOG_CURRENT_EXCEPTION();
 	}
 
     return values;

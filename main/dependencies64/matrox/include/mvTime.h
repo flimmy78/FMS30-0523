@@ -29,6 +29,7 @@ namespace com_matrox_vpg_SDK
 {
 #endif
 
+#define kOneSecondInNanoTime   10000000
 
 // DOM-IGNORE-BEGIN
 // Extracted from the HQ System clock specification

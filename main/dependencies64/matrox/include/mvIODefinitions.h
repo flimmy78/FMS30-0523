@@ -250,9 +250,9 @@ enum EMvHardwareProfile
    keMvHardwareProfileDSXmio3        = 0x00000028,   // X.mio3 card.
    keMvHardwareProfileDSXLE4         = 0x00000029,   // DSX LE4 card.
    keMvHardwareProfileDSXCore        = 0x0000002A,   // 
-   keMvHardwareProfileM264           = 0x0000002B,   // M264 card
+   keMvHardwareProfileM264           = 0x0000002B,   // M264 card.
    keMvHardwareProfileLast,                          // End of list indicator.
-   keMvHardwareProfileForceDWord     = 0x7FFFFFFF    // Forces the enumerated values to be 32 bits.
+   keMvHardwareProfileForceDWord     = 0x7FFFFFFF    // Forces the enumerated values to 32 bits.
 };
 // This macro is used to get the string of the enum value EMvColorimetry
 #define MV_HARDWARE_PROFILE_ENUM_TO_STRING(eHWProfile) \
@@ -337,8 +337,8 @@ enum EMvMemoryLocation
    keMvMemoryLocationIOBoard,       // Indicates that the surface is in the local memory of a 
                                        // DSX card with I/O capabilities.
    keMvMemoryLocationUser,          // Indicates that the memory buffer has been allocated by the 
-                                       // user, and the surface has been allocated with the method 
-                                       // CreateUserDataSurface.
+                                       // user, and the surface has been allocated with IMvFlexEngine::CreateSurfaceForUserBuffer 
+                                       // and IMvFlexEngine::CreateAudioSamplesForUserBuffer.
    keMvMemoryLocationHostForGPU,    // Indicates that the surface is in the host (system) memory, but
                                        // can be accessed by the GPU (GPU FX card only).
    keMvMemoryLocationGraphicDXIn,   // Indicates that the surface is in the local memory of the
@@ -598,17 +598,17 @@ enum EMvSurfaceFormat
                                        // and is used for 3D effect processing. The component bit
                                        // count supported for this surface is 8 bits. Can be
                                        // allocated in graphics engine memory only.
-   keMvSurfaceFormatBGRAGraphic,	// This type of surface usually holds graphics.  Each pixel is 
-									// composed of four components in the following order: blue, green, red, and alpha. 
-									// The bit depth of this surface is 4 x 
-									// ComponentBitCount. Can be allocated in host and graphics 
-									// engine memory. Black is 0, white is 255.    
-   keMvSurfaceFormatBGRAVideo,		// This type of surface usually holds graphics. Each pixel is 
-									// composed of four components in the following order: blue, green, red, and alpha. 
-									// The bit depth of this surface is 4 x 
-									// ComponentBitCount. Can be allocated in host and graphics 
-									// engine memory. Black is 16, white is 235. Can contain super 
-									// white and/or super black.     
+   keMvSurfaceFormatBGRAGraphic, // This type of surface usually holds graphics.  Each pixel is 
+                                 // composed of four components in the following order: blue, green, red, and alpha. 
+                                 // The bit depth of this surface is 4 x 
+                                 // ComponentBitCount. Can be allocated in host and graphics 
+                                 // engine memory. Black is 0, white is 255.    
+   keMvSurfaceFormatBGRAVideo,   // This type of surface usually holds graphics. Each pixel is 
+                                 // composed of four components in the following order: blue, green, red, and alpha. 
+                                 // The bit depth of this surface is 4 x 
+                                 // ComponentBitCount. Can be allocated in host and graphics 
+                                 // engine memory. Black is 16, white is 235. Can contain super 
+                                 // white and/or super black.
 
    keMvSurfaceFormatFlexAVClip,        // This type of surface contains compressed data used by the 
                                        // Flex Clip Reader/Writer.
@@ -671,13 +671,16 @@ enum EMvSurfaceFormat
    keMvSurfaceFormatSMPTE436Data, // This type of surface holds SMPTE 436 data. Can be ANC packets or VBI lines.
 
    keMvSurfaceFormatABGRGraphic,  // This type of surface holds ABGR graphics. Each pixel is composed of four components in 
-                                 // the following order: red, green, blue, and alpha.The bit depth of this surface is 16-bit.  
-                                 // Can be allocated in host and graphics engine memory. Black is 0, white is 65535.
+                                  // the following order: red, green, blue, and alpha.The bit depth of this surface is 16-bit.  
+                                  // Can be allocated in host and graphics engine memory. Black is 0, white is 65535.
 
    keMvSurfaceFormatMPEG4SStP,       // This type of surface contains MPEG-4 Simple Studio Profile (SStP) data.
 
+   keMvSurfaceFormatData,  // This type of surface contains a user specified amount of data. It is the responsibility 
+                           // of the application to know what to do with the data. Use IMvFlexEngine::CreateFixedSizeSurface()
+                           // or IMvFlexEngine::CreateSurfaceForUserBufferEx().
 
-   keMvSurfaceFormatLast                        // End of list indicator.
+   keMvSurfaceFormatLast               // End of list indicator.
 };
 
 // This macro is used to get the string of the enum value EMvSurfaceFormat.
@@ -743,6 +746,7 @@ enum EMvSurfaceFormat
    (eSurfaceFormat == keMvSurfaceFormatABGRGraphic) ? ("ABGRGraphic"):\
    (eSurfaceFormat == keMvSurfaceFormatDNxHD_WithAlpha) ? ("DNxHD_WithAlpha") : \
    (eSurfaceFormat == keMvSurfaceFormatMPEG4SStP) ? ("MPEG4SStP") : \
+   (eSurfaceFormat == keMvSurfaceFormatData) ? ("Data") : \
    ("???"))
 
 //
@@ -831,14 +835,16 @@ enum EMvGenlockSource
    keGenlockSourceAnalogVideo             = 0x10,  // Analog video input genlock source.
    keGenlockSourceDVIVideo                = 0x20,  // DVI video input genlock source.
    keGenlockSourceHDMIVideo               = 0x40,  // HDMI video input genlock source.
+   keGenlockSourceSMPTE2059               = 0x80,  // SMPTE 2059 source.
    keGenlockSourceAll                     = keGenlockSourceInvalid  // All defined values.
-   |  keGenlockSourceInternal
-   |  keGenlockSourceBlackBurst
-   |  keGenlockSourceSDIVideo
-   |  keGenlockSourceBlackBurstPoorQuality
-   |  keGenlockSourceAnalogVideo
-   |  keGenlockSourceDVIVideo
-   |  keGenlockSourceHDMIVideo,
+                                         |  keGenlockSourceInternal
+                                         |  keGenlockSourceBlackBurst
+                                         |  keGenlockSourceSDIVideo
+                                         |  keGenlockSourceBlackBurstPoorQuality
+                                         |  keGenlockSourceAnalogVideo
+                                         |  keGenlockSourceDVIVideo
+                                         |  keGenlockSourceHDMIVideo
+                                         |  keGenlockSourceSMPTE2059,
    
    keGenlockSourceLast                    = keGenlockSourceAll+1 // End of list indicator.
 };
@@ -878,15 +884,15 @@ enum EMvTimeCodeSource
 
 //
 // Summary:
-//    Enumerates the analog linear time code sampling clock that can be used.
+//    Enumerates the analog linear time code (LTC) sampling clock that can be used.
 //
 enum EMvALTCSamplingClock
 {
    keMvALTCSamplingClockInvalid,  // Invalid value.
-   keMvALTCSamplingClockDisabled, // Indicates that the sampling of ALTC is disabled.
-   keMvALTCSamplingClockGenlock,  // Indicates that the sampling clock is the genlock clock.
-   keMvALTCSamplingClockInput,    // Indicates that the sampling clock is the input clock.
-                                     // An input stream and a video signal with proper resolution
+   keMvALTCSamplingClockDisabled, // Indicates that the sampling of the analog LTC is disabled.
+   keMvALTCSamplingClockGenlock,  // Indicates that the sampling clock is a genlock clock.
+   keMvALTCSamplingClockInput,    // Indicates that the sampling clock is an input clock.
+                                     // An input stream and a video signal with the correct resolution
                                      // must be present for the input clock to work properly.
    keMvALTCSamplingClockLast,     // End of list indicator.
 };
@@ -969,7 +975,7 @@ struct SMvLockSurfaceDescription
                                           // holds the surface.
    uint32_t ulSlicePitchInBytes;  // Indicates in bytes the offset from the beginning of the memory
                                           // buffer of one slice to the beginning of the memory buffer 
-                                          // of the next deepest slice. Only a "3D" surface type will report a slice pitch other than zero.
+                                          // of the next deepest slice. Only a 3D surface type will report a slice pitch other than zero.
    void 			* pBuffer;            // Pointer to the beginning of the memory where the surface data is located.
 };
 
@@ -1030,8 +1036,9 @@ struct SMvSurfaceDescription
 
 //
 // Summary:
-//    Used to allocate an audio container that encapsulates a host-memory buffer that is provided by the user application. 
-//    This structure should only be used with IMvAudioSamples::AssignUserBufferReference().
+//    Allocates an audio container that encapsulates a host-memory buffer that is provided by the user application. 
+// Remarks:
+//    - This structure should only be used with IMvAudioSamples::AssignUserBufferReference().
 //
 struct SMvUserBufferAudioSamplesDescription
 {
@@ -1047,21 +1054,21 @@ struct SMvUserBufferAudioSamplesDescription
 
 //
 // Summary:
-//    Used to allocate a surface that encapsulates a host-memory buffer already allocated by the user.
+//   Allocates a surface that encapsulates a host-memory buffer already allocated by the user.
 //
 struct SMvUserBufferSurfaceDescription
 {
    uint32_t          size;                   // Structure size in bytes.
    uint32_t     ulWidth;                // Usable width of the surface in pixels.
    uint32_t     ulHeight;               // Usable height of the surface in pixels.
-   uint32_t     ulDepth;                // Indicates the depth of the surface in pixels. Only a "3D" surface type 
+   uint32_t     ulDepth;                // Indicates the depth of the surface in pixels. Only a 3D surface type 
                                              // can have a depth greater than one.
    uint32_t     ulRowPitchInBytes;      // Indicates the true width, in bytes, of the memory 
                                                 // buffer that holds the surface.
    uint32_t     ulSlicePitchInBytes;    // Indicates in bytes the offset from the beginning of 
                                                 // the memory buffer of one slice to the beginning of 
                                                 // the memory buffer of the next deepest slice. Only
-                                                // a "3D" surface type will report 
+                                                // a 3D surface type will report 
                                                 // a slice pitch other than zero.
    uint32_t     ulComponentBitCount;    // Indicates the number of bits per component of a pixel.
    uint32_t     ulBufferSizeInBytes;    // Indicates the size, in bytes, of the memory buffer 

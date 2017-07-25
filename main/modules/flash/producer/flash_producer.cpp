@@ -299,10 +299,10 @@ public:
 			desc.planes.push_back(core::pixel_format_desc::plane(width_, height_, 4));
 			auto frame = frame_factory_->create_frame(this, desc, core::audio_channel_layout::invalid());
 
-			fast_memset(bmp_.data(), 0, width_ * height_ * 4);
+			std::memset(bmp_.data(), 0, width_ * height_ * 4);
 			ax_->DrawControl(bmp_);
 		
-			fast_memcpy(frame.image_data(0).begin(), bmp_.data(), width_*height_*4);
+			std::memcpy(frame.image_data(0).begin(), bmp_.data(), width_*height_*4);
 			head_ = core::draw_frame(std::move(frame));	
 		}		
 

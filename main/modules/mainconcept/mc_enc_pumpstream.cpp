@@ -914,7 +914,7 @@ namespace caspar {
 			uint8_t* tmp_video_buffer = (uint8_t*)malloc(frame.size());
 			if (tmp_video_buffer)
 			{
-				fast_memcpy(
+				std::memcpy(
 					reinterpret_cast<char*>(tmp_video_buffer),
 					frame.image_data().begin(),
 					height * width * 4
@@ -943,7 +943,7 @@ namespace caspar {
 			uint8_t* tmp_audio_buffer = (uint8_t*)malloc(frame.audio_data().size() * sizeof(int16_t));
 			if (tmp_audio_buffer)
 			{
-				fast_memcpy((void*)input_audio_buffer, frame.audio_data().begin(), frame.audio_data().size() * sizeof(int32_t));
+				std::memcpy((void*)input_audio_buffer, frame.audio_data().begin(), frame.audio_data().size() * sizeof(int32_t));
 				//32bit transfer to 16bit
 				const uint8_t **in = const_cast<const uint8_t**>(&input_audio_buffer);
 				uint8_t* out[] = { reinterpret_cast<uint8_t*>(tmp_audio_buffer) };

@@ -108,8 +108,7 @@ interface IMvClock : public IUnknown
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Provides the methods necessary to perform synchronized operations on audio 
-//    sample buffers and video surfaces.
+//    Interface used to synchronize operations on audio sample buffers and video surfaces.
 // Remarks:
 //    This interface can be obtained with the QueryInterface() function on an IMvSurface or 
 //    IMvAudioSamples interface.  
@@ -175,8 +174,7 @@ interface IMvAVContent : public IUnknown
       (   
       const GUID  * in_pCustomObjectGUID, // Pointer to the globally unique identifier (GUID) that 
                                              // identifies the custom data object to be retrieved.
-      IUnknown   ** out_ppICustomObject   // Pointer that receives the desired IUnknown interface's
-                                             // pointer.
+      IUnknown   ** out_ppICustomObject   // Pointer that receives the IUnknown interface's pointer.
       ) = 0;
 
    //
@@ -200,7 +198,7 @@ interface IMvAVContent : public IUnknown
    //    - MV_NOERROR, if completed successfully. 
    //    - MV_E_INVALID_PARAMETER, if the parameter is NULL. 
    // Remarks:
-   //    - If it is not an alias, the alias access type returned is keMvAliasAccessTypeInvalid.
+   //    - If the surface is not an alias, the alias access type returned is keMvAliasAccessTypeInvalid.
    virtual HRESULT __stdcall GetAliasType
       (
       EMvAliasAccessType * out_peAliasType   // Pointer that receives the alias access type.
@@ -319,7 +317,7 @@ interface IMvAVContent : public IUnknown
    //      weren't called properly. 
    // Remarks:
    //    - The stop time returned is the elapsed time (in microseconds) between the last system
-   //      bootup and the the time the last MarkWriteStopTime operation is performed.
+   //      bootup and the time the last MarkWriteStopTime operation is performed.
    //    - The intermediate timings are reset when the Flush() or ResetSynchronization() methods 
    //      are called.  
    virtual HRESULT __stdcall GetIntermediateStopTimeInMicroSeconds
@@ -540,7 +538,7 @@ interface IMvAVContent : public IUnknown
    //    - MV_NOERROR, if completed successfully. 
    //    - MV_E_FAIL, if the count could not be incremented. 
    // Remarks:
-   //    - This method will fail if used with a ReadOnly Alias.
+   //    - This method will fail if used with a read-only alias. That is, if EMvAliasAccessType is keMvAliasAccessTypeReadOnly.
    virtual HRESULT __stdcall IncrementWriteCount ( ) = 0;
 
    //
@@ -595,7 +593,7 @@ interface IMvAVContent : public IUnknown
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    // Remarks:
-   //    - It is used to sequence operations in the stream. The time stamp is expressed in nanotime,  
+   //    - This method is used to sequence operations in the stream. The time stamp is expressed in nanotime,  
    //      where 1 nanotime is 100 nanoseconds.
    virtual HRESULT __stdcall SetTimeStampInfo
       (  
@@ -607,7 +605,7 @@ interface IMvAVContent : public IUnknown
    //    Signals the completion of a read operation on a buffer.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
-   //    - MV_E_FAIL, if it was unable to signal the read operation.
+   //    - MV_E_FAIL, if unable to signal the read operation.
    // Remarks:
    //    - This method decreases the read count of each read operation that has been completed on a buffer by one.
    //      When the read count reaches 0, the read completion event is signaled.
@@ -620,7 +618,7 @@ interface IMvAVContent : public IUnknown
    //    - MV_NOERROR, if completed successfully.  
    //    - MV_E_FAIL, if unable to signal the write operation.  
    // Remarks:
-   //    - This will decrement the write count by one. When the write count reaches 0, the write
+   //    - This method will decrement the write count by one. When the write count reaches 0, the write
    //      completion event is signaled.
    //    - Once a buffer is written to, it becomes ready for reading.
    virtual HRESULT __stdcall SignalWriteCompletion ( ) = 0;
@@ -631,7 +629,10 @@ interface IMvAVContent : public IUnknown
    // Return value:
    //    - MV_NOERROR, if completed successfully.  
    //    - MV_E_FAIL, if an error occurred. 
-   virtual HRESULT __stdcall SetName ( const wchar_t* in_pwchName ) = 0;
+   virtual HRESULT __stdcall SetName 
+      (
+      const wchar_t* in_pwchName    // Pointer to a null-terminated string containing the new name of the buffer.
+      ) = 0;
 
    //
    // Summary:
@@ -641,7 +642,11 @@ interface IMvAVContent : public IUnknown
    //    - MV_E_FAIL, if an error occurred.  
    // Remarks:
    //    - The default name is the string value of the pointer to the buffer.
-   virtual HRESULT __stdcall GetName ( wchar_t* out_pwchName, const uint32_t in_ui32NumberOfCharsInDestString ) = 0;
+   virtual HRESULT __stdcall GetName 
+      (
+      wchar_t* out_pwchName,                             // Pointer to the string that will receive the name of the buffer.
+      const uint32_t in_ui32NumberOfCharsInDestString    // Indicates the number of characters in out_pwchName.
+      ) = 0;
 
    //
    // Summary:
@@ -761,7 +766,7 @@ interface IMvAVContentReceiver : public IUnknown
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Allows you to perform operations on a specific video surface.
+//    Interface used to perform operations on a specific video surface.
 // Remarks:
 //    - This interface supports the following query interfaces: IID_IMvAVContent
 //
@@ -771,16 +776,15 @@ interface IMvSurface : public IMvAVContent
    //
    // Summary:
    //    Assigns the reference surface to a surface alias.
-   // Description:
-   //    The surface alias inherits all the properties of the reference surface. The memory buffer 
-   //    contained in the reference surface is also shared with the surface alias. This method can 
-   //    only be called on alias surfaces.
    // Return value:
    //    - MV_NOERROR, if completed successfully.  
    //    - MV_E_INVALID_PARAMETER, if the input parameters is NULL.  
    //    - MV_E_NOT_SUPPORTED, if the surface is not a surface alias or if the reference surface
    //      specified is an alias surface.  
    // Remarks:
+   //    - The surface alias inherits all the properties of the reference surface. The memory buffer 
+   //      contained in the reference surface is also shared with the surface alias. This method can 
+   //      only be called on alias surfaces.
    //    - The alias and the reference surfaces have separate synchronization objects that are 
    //      linked internally. Each time a component increments the synchronization read or write
    //      count of the alias, the read count of the reference surface is automatically incremented.
@@ -800,28 +804,26 @@ interface IMvSurface : public IMvAVContent
    //      valid reference attached to it.  
    virtual HRESULT __stdcall AssignAliasReference
       ( 
-      IMvSurface       * in_pIReferenceSurface, // Address of an IMvSurface interface that is the
+      IMvSurface       * in_pIReferenceSurface, // Pointer to the IMvSurface interface that is the
                                                    // reference of the surface alias.
       EMvAliasAccessType in_eAccessType         // Access type required for the alias. If the alias 
                                                    // is not intended to be written to any modules,
-                                                   // the access type "ReadOnly" must be used.
-                                                   // Otherwise, "ReadWrite" access type should
-                                                   // be used.
+                                                   // use keMvAliasAccessTypeReadOnly.
+                                                   // Otherwise, use keMvAliasAccessTypeReadWrite.
       ) = 0;
 
    //
    // Summary:
    //    Assigns the reference surface to a surface alias.
-   // Description:
-   //    The surface alias inherits all the properties of the reference surface, except for the 
-   //    specified resolution scan mode. The memory buffer contained in the reference surface is
-   //    also shared with the surface alias. This method can only be called on alias surfaces.
    // Return value:
    //    - MV_NOERROR, if completed successfully.  
    //    - MV_E_INVALID_PARAMETER, if one of the input parameter is invalid.  
    //    - MV_E_NOT_SUPPORTED, if the surface is not a surface alias or if the reference surface
    //      specified is an alias surface.  
    // Remarks:
+   //    - The surface alias inherits all the properties of the reference surface, except for the 
+   //      specified resolution scan mode. The memory buffer contained in the reference surface is
+   //      also shared with the surface alias. This method can only be called on alias surfaces.
    //    - The alias and the reference surfaces have separate synchronization objects that are 
    //      linked internally. Each time a component increments the synchronization read or write
    //      count of the alias, the read count of the reference surface is automatically incremented.
@@ -843,12 +845,12 @@ interface IMvSurface : public IMvAVContent
    //      valid reference attached to it.  
    virtual HRESULT __stdcall AssignAliasReferenceEx
       ( 
-      IMvSurface       * in_pIReferenceSurface, // Address of an IMvSurface interface that is the 
+      IMvSurface       * in_pIReferenceSurface, // Pointer to the IMvSurface interface that is the 
                                                    // reference of the surface alias.
       EMvAliasAccessType in_eAccessType,        // Access type required for the alias. If the alias
                                                    // is not intended to be written to any modules,
-                                                   // the access type 'ReadOnly' must be used.
-                                                   // Otherwise, 'ReadWrite' access type should be used.
+                                                   // use keMvAliasAccessTypeReadOnly.
+                                                   // Otherwise, use keMvAliasAccessTypeReadWrite.
       EMvScanMode        in_eResolutionScanMode // Scan mode of the resolution in which the surface
                                                    // is intended to be used. Internally, this scan
                                                    // mode is used to determine the bIsSurfaceOfTopLine
@@ -954,27 +956,26 @@ interface IMvSurface : public IMvAVContent
    //      For example, a field surface cannot be changed to frame surface unless it was originally
    //      allocated as a frame. 
    // Remarks:
+   //    - * A field can be changed to a frame only if the surface was originally allocated as a frame.
+   // Description:
    //    - The following polarity changes for surfaces in the host or in the I/O memory are supported:
-   //    <table>
-   //    From               To First  To Second  To Interlaced  To Progressive
-   //                        Field     Field      Frame          Frame
-   //    -----------------  --------  ---------  -------------  --------------
-   //    First Field        Y         Y          Y (note 1)     Y (note 1)
-   //    Second Field       Y         Y          Y (note 1)     Y (note 1)
-   //    Interlaced Frame   Y         Y          Y              Y
-   //    Progressive Frame  Y         Y          Y              Y
-   //    </table>
-   //    Note 1: A field can be changed to a frame only if the surface was originally allocated as a frame.<p>
+   //<table>
+   // From                  To first field     To second field     To interlaced frame       To progressive frame  
+   // ------------------    ---------------    ----------------    -----------------------   ------------------------
+   // First field           Y                  Y                   Y *                        Y * 
+   // Second field          Y                  Y                   Y *                        Y * 
+   // Interlaced frame      Y                  Y                   Y                          Y
+   // Progressive frame     Y                  Y                   Y                          Y
+   // </table>
    //    - The following supported polarity changes for surfaces in the graphics memory are supported:
-   //    <table>
-   //    From               To First  To Second  To Interlaced  To Progressive 
-   //                        Field     Field      Frame          Frame
-   //    -----------------  --------  ---------  -------------  --------------
-   //    First Field        Y         Y          N              N
-   //    Second Field       Y         Y          N              N
-   //    Interlaced Frame   N         N          N              N
-   //    Progressive Frame  N         N          N              N
-   //    </table> 
+   // <table>
+   // From                  To first field     To second field     To interlaced frame       To progressive frame  
+   // ------------------    ---------------    ----------------    -----------------------   ------------------------
+   // First field           Y                  Y                   N                         N
+   // Second field          Y                  Y                   N                         N
+   // Interlaced frame      N                  N                   N                         N
+   // Progressive frame     N                  N                   N                         N
+   // </table> 
    virtual HRESULT __stdcall ChangePolarity 
       (
       EMvPolarity in_ePolarity   // Specifies the new polarity. 
@@ -1037,7 +1038,6 @@ interface IMvSurface : public IMvAVContent
    //    on the surface (before a ChangePolarity call for instance). 
    //    The only restrictions are as follows:
    //    - The new surface description needs to be in the same memory location.
-   //    - This method will return an error if called on an alias.
    //    - The new surface description must describe a buffer that is less than, or equal to the 
    //      size of the old buffer. For example, a 32x32 surface cannot be changed to accomodate a
    //      64x64 surface. But, a 64x64 surface can be changed to accomodate a 128x16 surface.
@@ -1055,6 +1055,7 @@ interface IMvSurface : public IMvAVContent
    //    - MV_E_INVALID_STRUCTURE_SIZE, if the field size is invalid. 
    // Remarks:
    //    - The field size of the structure must be set before calling the method. 
+   //    - This method will return an error if called on an alias.
    virtual HRESULT __stdcall ChangeSurfaceDescription
       (
       SMvCreateSurfaceDescription * in_psDescription  // 
@@ -1083,7 +1084,7 @@ interface IMvSurface : public IMvAVContent
    //    Retrieves the CRC (Cyclic Redundancy Check) value associated with the surface.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
-   //    - MV_E_INVALID_PARAMETER, if one of the parameter is NULL. 
+   //    - MV_E_INVALID_PARAMETER, if one of the parameters is NULL. 
    // Remarks:
    //    -  This information can be used for data integrity validation.
    virtual HRESULT __stdcall GetCRC
@@ -1141,7 +1142,7 @@ interface IMvSurface : public IMvAVContent
    //    - MV_E_INVALID_PARAMETER, if the parameter is NULL. 
    //    - MV_E_INVALID_STRUCTURE_SIZE, if the structure size is wrong. 
    // Remarks:
-   // - At this time, only the Field_flg bit of VITC time code for interlaced video is checked
+   // - Currently, only the Field_flg bit of VITC time code for interlaced video is checked.
    virtual HRESULT __stdcall SetIOExtraInfoConform
       (
       SMvIOExtraInfo * in_psExtraInfo  // Pointer to the extra input/output information structure.
@@ -1152,7 +1153,7 @@ interface IMvSurface : public IMvAVContent
    //    Retrieves the information about the surface.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
-   //    - MV_E_INVALID_STRUCTURE_SIZE, if the field Size is invalid. 
+   //    - MV_E_INVALID_STRUCTURE_SIZE, if the field size is invalid. 
    // Remarks:
    //    - The field size of the structure must be filled before calling the method. 
    virtual HRESULT __stdcall GetSurfaceDescription
@@ -1226,9 +1227,9 @@ interface IMvSurface : public IMvAVContent
    //    - MV_E_INVALID_PARAMETER, if the array size is zero or the array size is larger than the maximum allowed GOP size.
    // Remarks:
    //    - The maximum GOP size is currently set to 512 frames.
-   //    - This information is only used when the surface wraps a GOP.
    //    - The caller should do one set for the entire duration of the GOP. For example, if the GOP contains 15 frames,
-   //      in_ulArraySize must be 15.
+   //      in_ulArraySize must be 15. 
+   //    - If an M264 decoder is used, the GOP can only contain one frame. This means that the caller must use 1 for in_ulArraySize.
    virtual HRESULT __stdcall SetGroupOfPicturesFrameInfos
       (
       SMvGroupOfPicturesFrame * in_psArray,     // Pointer to the array describing each frame.
@@ -1254,11 +1255,11 @@ interface IMvSurface : public IMvAVContent
    //    - MV_NOERROR, if completed successfully.
    //    - MV_E_PARAMETER_ARRAY_TOO_BIG, if the input array size is larger than the GOP's media duration (in frames).
    // Remarks:
-   //    - This information is only used when the surface wraps a GOP.
    //    - The caller must know the GOP's frame count before calling this method. The array size of this method must be less than or equal to
    //      the GOP size (in_ulArraySize) specified in SetGroupOfPicturesFrameInfos. For example, if the GOP size is 15, the user application must 
    //      call SetGroupOfPicturesFrameInfos with in_ulArraySize set to 15. When GetGroupOfPicturesFrameInfos is called, in_ulArraySize (for GetGroupOfPicturesFrameInfos) must  
-   //      be less than or equal to 15.
+   //      be less than or equal to 15. 
+   //    - When using M264 or SW2 encoders, the GOP can only contain one frame. This means that in_ulArraySize must be set to 1.
    virtual HRESULT __stdcall GetGroupOfPicturesFrameInfos
       ( 
       SMvGroupOfPicturesFrame * io_pArray,      // Pointer to the array describing each frame.
@@ -1276,7 +1277,7 @@ interface IMvSurface : public IMvAVContent
    //          first field, second field, or progressive frame.
    //    - MV_E_INVALID_PARAMETER, if one of the parameters is not valid.
    //    - MV_E_ORIGIN_NOT_ALIGNED_WITH_FORMAT_GRANULARITY, if origin horizontal coordinate 
-   //          does not respect the granularity of the surface format (i.e. YUV422 always 
+   //          does not respect the granularity of the surface format (for example, YUV422 always 
    //          requires groups of 2 pixels).
    //    - MV_E_NOT_SUPPORTED, if this method is called on a surface which is not an alias or if a
    //          combination of parameters is not supported.
@@ -1291,8 +1292,8 @@ interface IMvSurface : public IMvAVContent
    // Remarks:
    //    - This method will return an error if called on a surface which is not an alias.
    //    - At all times, the region must be contained within the limits of the reference surface.
-   //    - Asked origin offset must respect format granularity (for instance, YUAYVA 8-bit surfaces
-   //      must have 16 pixel groups only)
+   //    - Asked origin offset must respect format granularity (for example, YUAYVA 8-bit surfaces
+   //      must have 16 pixel groups only).
    //    - For IO surfaces, horizontal origin offset must always be 0.
    //    - For IO surfaces, the requested width (in_ulWidth) must always be a full line.
    //    - There are some hardware specific limitations to the origin that can be passed to this
@@ -1333,9 +1334,9 @@ interface IMvSurface : public IMvAVContent
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Allows the management of an audio sample container. The container encapsulates an audio data 
-//    buffer and all related information. 
+//    Interface used to manage an audio sample container. 
 // Remarks:
+//    - The container encapsulates an audio data buffer and all related information. 
 //    - This interface supports the following query interfaces: IID_IMvAVContent. 
 //
 //////////////////////////////////////////////////////////////////////////////////
@@ -1347,7 +1348,7 @@ interface IMvAudioSamples : public IMvAVContent
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //    - MV_E_INVALID_PARAMETER, if the input parameter is NULL. 
-   //    - MV_E_NOT_SUPPORTED, if the surface is not a surface alias (created with CreateSurfaceAlias()). 
+   //    - MV_E_NOT_SUPPORTED, if the surface is not a surface alias (created with IMvFlexEngine::CreateSurfaceAlias()). 
    // Remarks:
    //    - The container alias inherits all the properties of the reference container. The memory 
    //      contained in the reference surface is also shared with the surface alias. This method can
@@ -1359,7 +1360,7 @@ interface IMvAudioSamples : public IMvAVContent
    //      SignalReadCompletion() method on the reference. Also, each SignalWriteCompletion 
    //      operation performed on the alias automatically calls the SignalWriteCompletion() method
    //      on the reference. 
-   //    - If the alias access type is ReadOnly (keMvAliasAccessTypeReadOnly), the write completion on the alias event will be 
+   //    - If the alias access type is read-only (keMvAliasAccessTypeReadOnly), the write completion on the alias event will be 
    //      signaled automatically when the write completion event of the reference is signaled. 
    //    - It is possible to change the alias reference by calling this method more than once.
    //      However, the alias must be flushed before assigning a new reference. 
@@ -1399,26 +1400,25 @@ interface IMvAudioSamples : public IMvAVContent
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //    - MV_E_INVALID_PARAMETER, if the polarity specified is not a valid one. 
-   //    - MV_E_NOT_SUPPORTED, if the polarity of the surface cannot be changed to the desired 
+   //    - MV_E_NOT_SUPPORTED, if the polarity of the surface cannot be changed to the new 
    //      polarity. For example, a field surface cannot be recycled into a frame. 
    // Remarks:
+   //    - * When capturing audio using DSX hardware, only the difference between first field and second field values are significant. All other values are ignored.
+   //    - ** A field can be changed to a frame only if the audio samples were originally allocated as a frame.
+   // Description:
    //    - The supported polarity changes for surfaces in host or I/O memory are as follows:
    //<table>
-   // From               To First  To Second  To Interlaced    To Progressive
-   //                     Field     Field      Frame (note 2)   Frame (note 2)
-   // -----------------  --------  ---------  ---------------  ---------------
-   // FirstField         Y         Y          Y (note 1)       Y (note 1)
-   // SecondField        Y         Y          Y (note 1)       Y (note 1)
-   // InterlacedFrame    Y         Y          Y                Y
-   // ProgressiveFrame   Y         Y          Y                Y
+   // From                  To first field     To second field     To interlaced frame *     To progressive frame *
+   // ------------------    ---------------    ----------------    -----------------------   ------------------------
+   // First field           Y                  Y                   Y **                       Y **
+   // Second field          Y                  Y                   Y **                       Y **
+   // Interlaced frame      Y                  Y                   Y                          Y
+   // Progressive frame     Y                  Y                   Y                          Y
    // </table>
-   // Note 1: A field can be changed to a frame only if the audio samples were originally allocated as a
-   //         frame.<p>
-   // Note 2: When capturing audio using the DSX hardware, only the difference between 'FirstField' and 'SecondField' values
-   //         are significant. All other values are ignored. 
+   //         
    virtual HRESULT __stdcall ChangePolarity
       (
-      EMvPolarity in_ePolarity   // Specifies the new polarity wanted. 
+      EMvPolarity in_ePolarity   // Specifies the new polarity. 
       ) = 0;
    
    //
@@ -1436,7 +1436,7 @@ interface IMvAudioSamples : public IMvAVContent
    virtual HRESULT __stdcall ChangeWaveFormat
       (
       SMvaWaveFormatInfo * in_psWaveFormat // Pointer to the SMvaWaveFormatInfo structure that
-                                          // specifies the new wave format wanted.
+                                          // specifies the new wave format.
       )=0;
 
    //

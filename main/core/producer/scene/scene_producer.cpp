@@ -36,8 +36,8 @@
 namespace caspar { namespace core { namespace scene {
 
 layer::layer(const std::wstring& name, const spl::shared_ptr<frame_producer>& producer)
-	: name(name)
-	, producer(producer)
+	: name(name) 
+	,producer(producer)
 	,volume(1.0)
 {
 	crop.lower_right.x.bind(producer.get()->pixel_constraints().width);
@@ -145,16 +145,16 @@ struct scene_producer::impl
 	mutable tbb::atomic<int64_t>							m_y_;
 	binding<int64_t>										mouse_x_;
 	binding<int64_t>										mouse_y_;
-	double													frame_fraction_ = 0.0;
+	double													frame_fraction_		= 0.0;
 	std::map<void*, timeline>								timelines_;
 	std::map<std::wstring, std::shared_ptr<core::variable>>	variables_;
 	std::vector<std::wstring>								variable_names_;
 	std::multimap<int64_t, marker>							markers_by_frame_;
 	std::vector<std::shared_ptr<void>>						task_subscriptions_;
 	monitor::subject										monitor_subject_;
-	bool													paused_ = true;
-	bool													removed_ = false;
-	bool													going_to_mark_ = false;
+	bool													paused_				= true;
+	bool													removed_			= false;
+	bool													going_to_mark_		= false;
 
 	impl(
 		std::wstring producer_name,
@@ -401,21 +401,21 @@ struct scene_producer::impl
 
 	draw_frame render_frame()
 	{
-		if (format_desc_.field_count == 1)
+		//if (format_desc_.field_count == 1)
 			return render_progressive_frame();
-		else
-		{
-			prec_timer timer;
-			timer.tick_millis(0);
-			
-			auto field1 = render_progressive_frame();
-			
-			timer.tick(0.5 / format_desc_.fps);
+			/*else
+			{
+				prec_timer timer;
+				timer.tick_millis(0);
 
-			auto field2 = render_progressive_frame();
+				auto field1 = render_progressive_frame();
 
-			return draw_frame::interlace(field1, field2, format_desc_.field_mode);
-		}
+				timer.tick(0.5 / format_desc_.fps);
+
+				auto field2 = render_progressive_frame();
+
+				return draw_frame::interlace(field1, field2, format_desc_.field_mode);
+			}*/
 	}
 
 	void advance()

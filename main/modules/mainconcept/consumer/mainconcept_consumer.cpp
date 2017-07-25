@@ -64,6 +64,11 @@ namespace caspar {
 			executor									video_encoder_executor_;
 			executor									audio_encoder_executor_;
 
+			int                                                 framerate_interval_ = in_video_format_.fps > 0 ? in_video_format_.fps : 25;
+			int                                                 framerate_count_ = 0;
+			caspar::timer                                       framerate_timer_;
+			double                                              framerate_ = framerate_interval_;
+			
 		public:
 
 			std::future<bool> send(core::const_frame frame)
@@ -80,7 +85,7 @@ namespace caspar {
 		
 			std::wstring print() const
 			{
-				return L"mainconcept_consumer[" + u16(path_) + L"|" + boost::lexical_cast<std::wstring>(frame_buffer_.size()) + L"]";
+				return L"mainconcept_consumer[" + u16(path_) + L"|" + boost::lexical_cast<std::wstring>(frame_buffer_.size()) + L"|" + boost::lexical_cast<std::wstring>((float)framerate_) + L"]";
 			}
 
 			mainconcept_consumer(
@@ -113,6 +118,7 @@ namespace caspar {
 			{
 				in_video_format_ = format_desc;
 				in_channel_layout_ = channel_layout;
+				framerate_ = framerate_interval_ = in_video_format_.fps;
 
 				graph_->set_color("tick-time", diagnostics::color(0.0f, 0.6f, 0.9f));
 				graph_->set_color("pushframe-time", diagnostics::color(0.1f, 1.0f, 0.1f));
@@ -186,6 +192,14 @@ namespace caspar {
 					video_encoder_executor_.begin_invoke([=]() mutable
 					{
 						enc_pumpstream->encode_video(frame);
+
+						if (++framerate_count_ >= framerate_interval_)
+						{
+							framerate_ = framerate_count_ / framerate_timer_.elapsed();
+							framerate_timer_.restart();
+							framerate_count_ = 0;
+						}
+						graph_->set_text(print());
 					});
 
 					audio_encoder_executor_.begin_invoke([=]() mutable

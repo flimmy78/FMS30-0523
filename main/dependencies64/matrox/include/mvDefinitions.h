@@ -1887,7 +1887,8 @@ enum EMvTemperatureSensorID
    keTemperatureSensorIDMio3lpFPGA = keTemperatureSensorIDMio3FamilyFPGA, // Temperature sensor ID for the temperature sensor of the FPGA chip on the X.mio3 LP card.
    keTemperatureSensorIDVS4PROBoardBackPlane,   // Temperature sensor ID for the VS4Pro card.
    keTemperatureSensorIDMojito2,                // Temperature sensor ID for the Mojito2 card.
-   keTemperatureSensorIDM264,    
+   keTemperatureSensorIDM264,                   // Temperature sensor ID for the M264 line of cards processor chip 
+   keTemperatureSensorIDM264SSwitch,            // Temperature sensor ID for the switch on the M264S2 and M264S3
    keTemperatureSensorIDLast                    // End of list indicator.
 };
 
@@ -2927,13 +2928,17 @@ struct SMvXScalerParameters
 //   It is the responsibility of the user application to propagate the information through its sequencing 
 //   pipeline. 
 //
+// - If you are using the M264 decoder in access unit aligned mode, you will need to initialize the ulDisplayPosition member
+//   in order for the decoder to accurately report the number of skipped pictures when there is corruption in the stream.  
+//   If the surfaces are obtained from the Matrox MPEG2 TS Demuxer then this value will already be set.  
 struct SMvGroupOfPicturesFrame
 {
    public:
    uint32_t          size;                // Specifies the structure size, in bytes.
-   unsigned long     ulDisplayPosition;   // Frame's relative position inside the GOP, in chronological order.
-   unsigned long     ulCodedOrder;        // Frame's encoded position inside the GOP, may differ from 
-                                             // the chronological order
+   unsigned long     ulDisplayPosition;   // For AVC, this is an absolute display position from stream start. 
+                                             // For MPEG-2, this is Frame's relative position inside the GOP, in chronological order.
+   unsigned long     ulCodedOrder;        // For AVC, this is an absolute coded order from stream start. 
+                                             // For MPEG-2, Frame's encoded position inside the GOP, may differ from. the chronological order
    unsigned long     ulByteOffset;        // Frame's offset in bytes inside the GOP.
    unsigned long     ulSize;              // Frame's size in bytes inside the GOP.
    EMvMpegFrameType  eType;               // Type of frame (I, B, or P frame).
@@ -3078,7 +3083,7 @@ enum EMvVideoConnectorLabel
    keMvVideoConnectorLabelSdiInJ,   // The video connector is SDI input J.
    keMvVideoConnectorLabelSdiInK,   // The video connector is SDI input K.
    keMvVideoConnectorLabelSdiInL,   // The video connector is SDI input L.
-   keMvVideoConnectorLabelLastInput,// End of list indicator for the input labels.
+   keMvVideoConnectorLabelLastInput,// End of list indicator for the SDI input labels.
 
    keMvVideoConnectorLabelSdiOutA=1000, // The video connector is SDI output A.
    keMvVideoConnectorLabelSdiOutB,      // The video connector is SDI output B.
@@ -3092,7 +3097,7 @@ enum EMvVideoConnectorLabel
    keMvVideoConnectorLabelSdiOutJ,      // The video connector is SDI output J.
    keMvVideoConnectorLabelSdiOutK,      // The video connector is SDI output K.
    keMvVideoConnectorLabelSdiOutL,      // The video connector is SDI output L.
-   keMvVideoConnectorLabelLast,          // End of list indicator.
+   keMvVideoConnectorLabelLast,          // End of list indicator for the SDI output labels.
 
    keMvVideoConnectorLabelSdiIpInA = 2000,   // The video connector is SDI IP input A.
    keMvVideoConnectorLabelSdiIpInB,          // The video connector is SDI IP input B.
@@ -3110,7 +3115,7 @@ enum EMvVideoConnectorLabel
    keMvVideoConnectorLabelSdiIpInN,          // The video connector is SDI IP input N.
    keMvVideoConnectorLabelSdiIpInO,          // The video connector is SDI IP input O.
    keMvVideoConnectorLabelSdiIpInP,          // The video connector is SDI IP input P.
-   keMvVideoConnectorLabelSdiIpInLast,       // End of list indicator
+   keMvVideoConnectorLabelSdiIpInLast,       // End of list indicator for the SDI IP input labels.
 
    keMvVideoConnectorLabelSdiIpOutA = 3000,  // The video connector is SDI IP output A.
    keMvVideoConnectorLabelSdiIpOutB,         // The video connector is SDI IP output B.
@@ -3128,9 +3133,115 @@ enum EMvVideoConnectorLabel
    keMvVideoConnectorLabelSdiIpOutN,         // The video connector is SDI IP output N.
    keMvVideoConnectorLabelSdiIpOutO,         // The video connector is SDI IP output O.
    keMvVideoConnectorLabelSdiIpOutP,         // The video connector is SDI IP output P.
-   keMvVideoConnectorLabelSdiIpOutLast
+   keMvVideoConnectorLabelSdiIpOutLast,      // End of list indicator for the SDI IP output labels.
 
+   keMvVideoConnectorLabelAspenVideoInA = 4000,   // The video connector is ASPEN video input A.
+   keMvVideoConnectorLabelAspenVideoInB,          // The video connector is ASPEN video input B.
+   keMvVideoConnectorLabelAspenVideoInC,          // The video connector is ASPEN video input C.
+   keMvVideoConnectorLabelAspenVideoInD,          // The video connector is ASPEN video input D.
+   keMvVideoConnectorLabelAspenVideoInE,          // The video connector is ASPEN video input E.
+   keMvVideoConnectorLabelAspenVideoInF,          // The video connector is ASPEN video input F.
+   keMvVideoConnectorLabelAspenVideoInG,          // The video connector is ASPEN video input G.
+   keMvVideoConnectorLabelAspenVideoInH,          // The video connector is ASPEN video input H.
+   keMvVideoConnectorLabelAspenVideoInI,          // The video connector is ASPEN video input I.
+   keMvVideoConnectorLabelAspenVideoInJ,          // The video connector is ASPEN video input J.
+   keMvVideoConnectorLabelAspenVideoInK,          // The video connector is ASPEN video input K.
+   keMvVideoConnectorLabelAspenVideoInL,          // The video connector is ASPEN video input L.
+   keMvVideoConnectorLabelAspenVideoInM,          // The video connector is ASPEN video input M.
+   keMvVideoConnectorLabelAspenVideoInN,          // The video connector is ASPEN video input N.
+   keMvVideoConnectorLabelAspenVideoInO,          // The video connector is ASPEN video input O.
+   keMvVideoConnectorLabelAspenVideoInP,          // The video connector is ASPEN video input P.
+   keMvVideoConnectorLabelAspenVideoInLast,       // End of list indicator for the ASPEN video input labels.
 
+   keMvVideoConnectorLabelAspenVideoOutA = 4100,  // The video connector is ASPEN video output A.
+   keMvVideoConnectorLabelAspenVideoOutB,         // The video connector is ASPEN video output B.
+   keMvVideoConnectorLabelAspenVideoOutC,         // The video connector is ASPEN video output C.
+   keMvVideoConnectorLabelAspenVideoOutD,         // The video connector is ASPEN video output D.
+   keMvVideoConnectorLabelAspenVideoOutE,         // The video connector is ASPEN video output E.
+   keMvVideoConnectorLabelAspenVideoOutF,         // The video connector is ASPEN video output F.
+   keMvVideoConnectorLabelAspenVideoOutG,         // The video connector is ASPEN video output G.
+   keMvVideoConnectorLabelAspenVideoOutH,         // The video connector is ASPEN video output H.
+   keMvVideoConnectorLabelAspenVideoOutI,         // The video connector is ASPEN video output I.
+   keMvVideoConnectorLabelAspenVideoOutJ,         // The video connector is ASPEN video output J.
+   keMvVideoConnectorLabelAspenVideoOutK,         // The video connector is ASPEN video output K.
+   keMvVideoConnectorLabelAspenVideoOutL,         // The video connector is ASPEN video output L.
+   keMvVideoConnectorLabelAspenVideoOutM,         // The video connector is ASPEN video output M.
+   keMvVideoConnectorLabelAspenVideoOutN,         // The video connector is ASPEN video output N.
+   keMvVideoConnectorLabelAspenVideoOutO,         // The video connector is ASPEN video output O.
+   keMvVideoConnectorLabelAspenVideoOutP,         // The video connector is ASPEN video output P.
+   keMvVideoConnectorLabelAspenVideoOutLast,      // End of list indicator for the ASPEN video output labels.
+
+   keMvVideoConnectorLabelAspenAudioInA = 4200,   // The video connector is ASPEN audio input A.
+   keMvVideoConnectorLabelAspenAudioInB,          // The video connector is ASPEN audio input B.
+   keMvVideoConnectorLabelAspenAudioInC,          // The video connector is ASPEN audio input C.
+   keMvVideoConnectorLabelAspenAudioInD,          // The video connector is ASPEN audio input D.
+   keMvVideoConnectorLabelAspenAudioInE,          // The video connector is ASPEN audio input E.
+   keMvVideoConnectorLabelAspenAudioInF,          // The video connector is ASPEN audio input F.
+   keMvVideoConnectorLabelAspenAudioInG,          // The video connector is ASPEN audio input G.
+   keMvVideoConnectorLabelAspenAudioInH,          // The video connector is ASPEN audio input H.
+   keMvVideoConnectorLabelAspenAudioInI,          // The video connector is ASPEN audio input I.
+   keMvVideoConnectorLabelAspenAudioInJ,          // The video connector is ASPEN audio input J.
+   keMvVideoConnectorLabelAspenAudioInK,          // The video connector is ASPEN audio input K.
+   keMvVideoConnectorLabelAspenAudioInL,          // The video connector is ASPEN audio input L.
+   keMvVideoConnectorLabelAspenAudioInM,          // The video connector is ASPEN audio input M.
+   keMvVideoConnectorLabelAspenAudioInN,          // The video connector is ASPEN audio input N.
+   keMvVideoConnectorLabelAspenAudioInO,          // The video connector is ASPEN audio input O.
+   keMvVideoConnectorLabelAspenAudioInP,          // The video connector is ASPEN audio input P.
+   keMvVideoConnectorLabelAspenAudioInLast,       // End of list indicator for the ASPEN audio input labels.
+
+   keMvVideoConnectorLabelAspenAudioOutA = 4300,  // The video connector is ASPEN audio output A.
+   keMvVideoConnectorLabelAspenAudioOutB,         // The video connector is ASPEN audio output B.
+   keMvVideoConnectorLabelAspenAudioOutC,         // The video connector is ASPEN audio output C.
+   keMvVideoConnectorLabelAspenAudioOutD,         // The video connector is ASPEN audio output D.
+   keMvVideoConnectorLabelAspenAudioOutE,         // The video connector is ASPEN audio output E.
+   keMvVideoConnectorLabelAspenAudioOutF,         // The video connector is ASPEN audio output F.
+   keMvVideoConnectorLabelAspenAudioOutG,         // The video connector is ASPEN audio output G.
+   keMvVideoConnectorLabelAspenAudioOutH,         // The video connector is ASPEN audio output H.
+   keMvVideoConnectorLabelAspenAudioOutI,         // The video connector is ASPEN audio output I.
+   keMvVideoConnectorLabelAspenAudioOutJ,         // The video connector is ASPEN audio output J.
+   keMvVideoConnectorLabelAspenAudioOutK,         // The video connector is ASPEN audio output K.
+   keMvVideoConnectorLabelAspenAudioOutL,         // The video connector is ASPEN audio output L.
+   keMvVideoConnectorLabelAspenAudioOutM,         // The video connector is ASPEN audio output M.
+   keMvVideoConnectorLabelAspenAudioOutN,         // The video connector is ASPEN audio output N.
+   keMvVideoConnectorLabelAspenAudioOutO,         // The video connector is ASPEN audio output O.
+   keMvVideoConnectorLabelAspenAudioOutP,         // The video connector is ASPEN audio output P.
+   keMvVideoConnectorLabelAspenAudioOutLast,      // End of list indicator for the ASPEN audio output labels.
+
+   keMvVideoConnectorLabelAspenVancInA = 4400,   // The video connector is ASPEN VANC input A.
+   keMvVideoConnectorLabelAspenVancInB,          // The video connector is ASPEN VANC input B.
+   keMvVideoConnectorLabelAspenVancInC,          // The video connector is ASPEN VANC input C.
+   keMvVideoConnectorLabelAspenVancInD,          // The video connector is ASPEN VANC input D.
+   keMvVideoConnectorLabelAspenVancInE,          // The video connector is ASPEN VANC input E.
+   keMvVideoConnectorLabelAspenVancInF,          // The video connector is ASPEN VANC input F.
+   keMvVideoConnectorLabelAspenVancInG,          // The video connector is ASPEN VANC input G.
+   keMvVideoConnectorLabelAspenVancInH,          // The video connector is ASPEN VANC input H.
+   keMvVideoConnectorLabelAspenVancInI,          // The video connector is ASPEN VANC input I.
+   keMvVideoConnectorLabelAspenVancInJ,          // The video connector is ASPEN VANC input J.
+   keMvVideoConnectorLabelAspenVancInK,          // The video connector is ASPEN VANC input K.
+   keMvVideoConnectorLabelAspenVancInL,          // The video connector is ASPEN VANC input L.
+   keMvVideoConnectorLabelAspenVancInM,          // The video connector is ASPEN VANC input M.
+   keMvVideoConnectorLabelAspenVancInN,          // The video connector is ASPEN VANC input N.
+   keMvVideoConnectorLabelAspenVancInO,          // The video connector is ASPEN VANC input O.
+   keMvVideoConnectorLabelAspenVancInP,          // The video connector is ASPEN VANC input P.
+   keMvVideoConnectorLabelAspenVancInLast,       // End of list indicator for the ASPEN VANC input labels.
+
+   keMvVideoConnectorLabelAspenVancOutA = 4500,  // The video connector is ASPEN VANC output A.
+   keMvVideoConnectorLabelAspenVancOutB,         // The video connector is ASPEN VANC output B.
+   keMvVideoConnectorLabelAspenVancOutC,         // The video connector is ASPEN VANC output C.
+   keMvVideoConnectorLabelAspenVancOutD,         // The video connector is ASPEN VANC output D.
+   keMvVideoConnectorLabelAspenVancOutE,         // The video connector is ASPEN VANC output E.
+   keMvVideoConnectorLabelAspenVancOutF,         // The video connector is ASPEN VANC output F.
+   keMvVideoConnectorLabelAspenVancOutG,         // The video connector is ASPEN VANC output G.
+   keMvVideoConnectorLabelAspenVancOutH,         // The video connector is ASPEN VANC output H.
+   keMvVideoConnectorLabelAspenVancOutI,         // The video connector is ASPEN VANC output I.
+   keMvVideoConnectorLabelAspenVancOutJ,         // The video connector is ASPEN VANC output J.
+   keMvVideoConnectorLabelAspenVancOutK,         // The video connector is ASPEN VANC output K.
+   keMvVideoConnectorLabelAspenVancOutL,         // The video connector is ASPEN VANC output L.
+   keMvVideoConnectorLabelAspenVancOutM,         // The video connector is ASPEN VANC output M.
+   keMvVideoConnectorLabelAspenVancOutN,         // The video connector is ASPEN VANC output N.
+   keMvVideoConnectorLabelAspenVancOutO,         // The video connector is ASPEN VANC output O.
+   keMvVideoConnectorLabelAspenVancOutP,         // The video connector is ASPEN VANC output P.
+   keMvVideoConnectorLabelAspenVancOutLast       // End of list indicator for the ASPEN VANC output labels.
 };
 
 #define MV_VIDEO_CONNECTOR_LABEL_ENUM_TO_STRING(eLabel) \
@@ -3160,18 +3271,18 @@ enum EMvVideoConnectorLabel
    (eLabel == keMvVideoConnectorLabelSdiOutJ) ? ("SDI OUT J") : \
    (eLabel == keMvVideoConnectorLabelSdiOutK) ? ("SDI OUT K") : \
    (eLabel == keMvVideoConnectorLabelSdiOutL) ? ("SDI OUT L") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInA)  ? ("SDI IP IN A") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInB)  ? ("SDI IP IN B") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInC)  ? ("SDI IP IN C") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInD)  ? ("SDI IP IN D") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInE)  ? ("SDI IP IN E") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInF)  ? ("SDI IP IN F") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInG)  ? ("SDI IP IN G") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInH)  ? ("SDI IP IN H") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInI)  ? ("SDI IP IN I") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInJ)  ? ("SDI IP IN J") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInK)  ? ("SDI IP IN K") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInL)  ? ("SDI IP IN L") : \
+   (eLabel == keMvVideoConnectorLabelSdiIpInA)   ? ("SDI IP IN A") : \
+   (eLabel == keMvVideoConnectorLabelSdiIpInB)   ? ("SDI IP IN B") : \
+   (eLabel == keMvVideoConnectorLabelSdiIpInC)   ? ("SDI IP IN C") : \
+   (eLabel == keMvVideoConnectorLabelSdiIpInD)   ? ("SDI IP IN D") : \
+   (eLabel == keMvVideoConnectorLabelSdiIpInE)   ? ("SDI IP IN E") : \
+   (eLabel == keMvVideoConnectorLabelSdiIpInF)   ? ("SDI IP IN F") : \
+   (eLabel == keMvVideoConnectorLabelSdiIpInG)   ? ("SDI IP IN G") : \
+   (eLabel == keMvVideoConnectorLabelSdiIpInH)   ? ("SDI IP IN H") : \
+   (eLabel == keMvVideoConnectorLabelSdiIpInI)   ? ("SDI IP IN I") : \
+   (eLabel == keMvVideoConnectorLabelSdiIpInJ)   ? ("SDI IP IN J") : \
+   (eLabel == keMvVideoConnectorLabelSdiIpInK)   ? ("SDI IP IN K") : \
+   (eLabel == keMvVideoConnectorLabelSdiIpInL)   ? ("SDI IP IN L") : \
    (eLabel == keMvVideoConnectorLabelSdiIpOutA)  ? ("SDI IP OUT A") : \
    (eLabel == keMvVideoConnectorLabelSdiIpOutB)  ? ("SDI IP OUT B") : \
    (eLabel == keMvVideoConnectorLabelSdiIpOutC)  ? ("SDI IP OUT C") : \
@@ -3184,6 +3295,82 @@ enum EMvVideoConnectorLabel
    (eLabel == keMvVideoConnectorLabelSdiIpOutJ)  ? ("SDI IP OUT J") : \
    (eLabel == keMvVideoConnectorLabelSdiIpOutK)  ? ("SDI IP OUT K") : \
    (eLabel == keMvVideoConnectorLabelSdiIpOutL)  ? ("SDI IP OUT L") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoInA)   ? ("ASPEN video IN A") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoInB)   ? ("ASPEN video IN B") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoInC)   ? ("ASPEN video IN C") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoInD)   ? ("ASPEN video IN D") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoInE)   ? ("ASPEN video IN E") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoInF)   ? ("ASPEN video IN F") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoInG)   ? ("ASPEN video IN G") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoInH)   ? ("ASPEN video IN H") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoInI)   ? ("ASPEN video IN I") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoInJ)   ? ("ASPEN video IN J") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoInK)   ? ("ASPEN video IN K") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoInL)   ? ("ASPEN video IN L") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoOutA)  ? ("ASPEN video OUT A") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoOutB)  ? ("ASPEN video OUT B") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoOutC)  ? ("ASPEN video OUT C") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoOutD)  ? ("ASPEN video OUT D") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoOutE)  ? ("ASPEN video OUT E") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoOutF)  ? ("ASPEN video OUT F") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoOutG)  ? ("ASPEN video OUT G") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoOutH)  ? ("ASPEN video OUT H") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoOutI)  ? ("ASPEN video OUT I") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoOutJ)  ? ("ASPEN video OUT J") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoOutK)  ? ("ASPEN video OUT K") : \
+   (eLabel == keMvVideoConnectorLabelAspenVideoOutL)  ? ("ASPEN video OUT L") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioInA)   ? ("ASPEN audio IN A") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioInB)   ? ("ASPEN audio IN B") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioInC)   ? ("ASPEN audio IN C") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioInD)   ? ("ASPEN audio IN D") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioInE)   ? ("ASPEN audio IN E") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioInF)   ? ("ASPEN audio IN F") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioInG)   ? ("ASPEN audio IN G") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioInH)   ? ("ASPEN audio IN H") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioInI)   ? ("ASPEN audio IN I") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioInJ)   ? ("ASPEN audio IN J") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioInK)   ? ("ASPEN audio IN K") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioInL)   ? ("ASPEN audio IN L") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutA)  ? ("ASPEN audio OUT A") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutB)  ? ("ASPEN audio OUT B") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutC)  ? ("ASPEN audio OUT C") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutD)  ? ("ASPEN audio OUT D") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutE)  ? ("ASPEN audio OUT E") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutF)  ? ("ASPEN audio OUT F") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutG)  ? ("ASPEN audio OUT G") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutH)  ? ("ASPEN audio OUT H") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutI)  ? ("ASPEN audio OUT I") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutJ)  ? ("ASPEN audio OUT J") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutK)  ? ("ASPEN audio OUT K") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutL)  ? ("ASPEN audio OUT L") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutM)  ? ("ASPEN audio OUT M") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutN)  ? ("ASPEN audio OUT N") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutO)  ? ("ASPEN audio OUT O") : \
+   (eLabel == keMvVideoConnectorLabelAspenAudioOutP)  ? ("ASPEN audio OUT P") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancInA)    ? ("ASPEN VANC IN A") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancInB)    ? ("ASPEN VANC IN B") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancInC)    ? ("ASPEN VANC IN C") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancInD)    ? ("ASPEN VANC IN D") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancInE)    ? ("ASPEN VANC IN E") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancInF)    ? ("ASPEN VANC IN F") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancInG)    ? ("ASPEN VANC IN G") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancInH)    ? ("ASPEN VANC IN H") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancInI)    ? ("ASPEN VANC IN I") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancInJ)    ? ("ASPEN VANC IN J") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancInK)    ? ("ASPEN VANC IN K") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancInL)    ? ("ASPEN VANC IN L") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancOutA)   ? ("ASPEN VANC OUT A") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancOutB)   ? ("ASPEN VANC OUT B") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancOutC)   ? ("ASPEN VANC OUT C") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancOutD)   ? ("ASPEN VANC OUT D") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancOutE)   ? ("ASPEN VANC OUT E") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancOutF)   ? ("ASPEN VANC OUT F") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancOutG)   ? ("ASPEN VANC OUT G") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancOutH)   ? ("ASPEN VANC OUT H") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancOutI)   ? ("ASPEN VANC OUT I") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancOutJ)   ? ("ASPEN VANC OUT J") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancOutK)   ? ("ASPEN VANC OUT K") : \
+   (eLabel == keMvVideoConnectorLabelAspenVancOutL)   ? ("ASPEN VANC OUT L") : \
    ("???"))
 
 
@@ -3282,7 +3469,7 @@ enum EMvTransformProcessing
 enum EMvTransformFilterCoefficients
 {
    keMvTransformFilterCoeffInvalid   = -1, // Invalid value.
-   keMvTransformFilterCoeffStandard  = 0,  // Uses the normal filtering coefficients.
+   keMvTransformFilterCoeffStandard  = 0,  // Uses the normal filtering coefficients. This is the default value.
    keMvTransformFilterCoeffAlternate = 1,  // Uses the alternate filtering coefficients.
    keMvTransformFilterCoeffLast            // End of list indicator.
 };
@@ -3379,36 +3566,131 @@ enum EMvQuadrant
 
 //
 // Summary:
-//    Specifies the type of the connector.
+//    Specifies the type of connector.
 //
 enum EMvConnectorType
 {
    keMvconnectorTypeInvalid = 0,                // Invalid value.
-   keMvconnectorTypeSdiVideoInput,              // Sdi video input connector.
-   keMvconnectorTypeSdiVideoOutput,             // Sdi video output connector.
-   keMvconnectorTypeEmbeddedAudioInputPair,     // Sdi embedded audio input pair connector.
-   keMvconnectorTypeEmbeddedAudioOutputPair,    // Sdi embedded audio output pair connector.
-   keMvconnectorTypeAesEbuAudioInputPair,       // AesEbu audio input pair connector.
-   keMvconnectorTypeAesEbuAudioOutputPair,      // AesEbu audio output pair connector.
-   keMvconnectorTypeSdiIpInput,                 // SdiIp input connector.
-   keMvconnectorTypeSdiIpOutput,                // SdiIp output connector.
-   keMvconnectorTypeSdiIpAudioInputPair,        // SdiIp audio input pair connector.
-   keMvconnectorTypeSdiIpAudioOutputPair,       // SdiIp audio output pair connector.
+   keMvconnectorTypeSdiVideoInput,              // SDI video input connector.
+   keMvconnectorTypeSdiVideoOutput,             // SDI video output connector.
+   keMvconnectorTypeEmbeddedAudioInputPair,     // SDI embedded audio input pair connector.
+   keMvconnectorTypeEmbeddedAudioOutputPair,    // SDI embedded audio output pair connector.
+   keMvconnectorTypeAesEbuAudioInputPair,       // AES/EBU audio input pair connector.
+   keMvconnectorTypeAesEbuAudioOutputPair,      // AES/EBU audio output pair connector.
+   keMvconnectorTypeSdiIpInput,                 // SDI IP input connector.
+   keMvconnectorTypeSdiIpOutput,                // SDI IP output connector.
+   keMvconnectorTypeSdiIpAudioInputPair,        // SDI IP audio input pair connector.
+   keMvconnectorTypeSdiIpAudioOutputPair,       // SDI IP audio output pair connector.
+   keMvconnectorTypeAspenVideoOutput,           // ASPEN video output connector.
+   keMvconnectorTypeAspenAudioOutput,           // ASPEN audio output connector.
+   keMvconnectorTypeAspenVancOutput,            // ASPEN vanc output connector.
    keMvconnectorTypeLast                        // End of list indicator.
+};
+
+#define MV_CONNECTOR_TYPE_ENUM_TO_STRING(eValue) \
+   ((eValue == keMvconnectorTypeInvalid)                    ? ("Invalid")      : \
+    (eValue == keMvconnectorTypeSdiVideoInput)              ? ("Sdi video input") : \
+    (eValue == keMvconnectorTypeSdiVideoOutput)             ? ("Sdi video output") : \
+    (eValue == keMvconnectorTypeEmbeddedAudioInputPair)     ? ("Embedded audio input pair") : \
+    (eValue == keMvconnectorTypeEmbeddedAudioOutputPair)    ? ("Embedded audio output pair") : \
+    (eValue == keMvconnectorTypeAesEbuAudioInputPair)       ? ("Aes/Ebu audio input pair") : \
+    (eValue == keMvconnectorTypeAesEbuAudioOutputPair)      ? ("Aes/Ebu audio output pair") : \
+    (eValue == keMvconnectorTypeSdiIpInput)                 ? ("SDI IP input") : \
+    (eValue == keMvconnectorTypeSdiIpOutput)                ? ("SDI IP putput") : \
+    (eValue == keMvconnectorTypeSdiIpAudioInputPair)        ? ("SDI IP audio input pair") : \
+    (eValue == keMvconnectorTypeSdiIpAudioOutputPair)       ? ("SDI IP audio output pair") : \
+    (eValue == keMvconnectorTypeAspenVideoOutput)           ? ("Aspen video output") : \
+    (eValue == keMvconnectorTypeAspenAudioOutput)           ? ("Aspen audio output") : \
+    (eValue == keMvconnectorTypeAspenVancOutput)            ? ("Aspen VANC output") : \
+    (eValue == keMvconnectorTypeLast)                       ? ("Last") : \
+    ("???"))
+
+//
+// Summary:
+//    Describes the properties of a seat.
+//
+struct SMvSeatInfoPublic
+{
+   uint32_t       uiFirmCode;             // Seat firm code.
+   uint32_t       uiProductCode;          // Seat product code.
+   wchar_t        szSerialNumber[32];     // Seat serial number.
+   unsigned char  acLeasedBy[6];          // Mac address of the machine that reserved this machine.
+   uint32_t       uiUntil;                // Seat reservation end time.
+   wchar_t        szLicenseExpiry[32];    // Seat service date expiration.
+   uint32_t       uiNumberOfCores;        // Number of cores supported by this seat.
+   bool           bSeatInUse;             // If true, indicates that the seat is currently being used by a process.
 };
 
 //
 // Summary:
-//    Describes the properties of a seat
-//
-struct SMvSeatInfoPublic
-{
-   uint32_t       uiProductCode;          // Seat product code
-   wchar_t        szSerialNumber[32];     // Seat serial number
-   unsigned char  acLeasedBy[6];          // Mac address of the machine that has reserved this machine
-   uint32_t       uiUntil;                // Seat reservation end time
-   wchar_t        szLicenseExpiry[32];    // Seat service date expiration
-   uint32_t       uiNumberOfCores;        // Number of core supported by this seat
-   bool           bSeatInUse;             // The seat is currently being used by a process
+//    Describes the SFP+ transceiver MultiSource Agreement (MSA) serial ID data fields.
+// Remarks:
+//    - This is derived from the SFF Committee, INF-8074i Specification for SFP (Small Form-factor Pluggable) Tranceiver, Table 3.1. Serial ID: Data Fields.
+// Description:
+//<table>
+// Members                          Data address      Field size (bytes)      Description
+// ----------------------------     ------------      ------------------      ------------------------------------------------------------------------------------------------
+// ui8Identifier                    0                 1                       Type of serial transceiver.
+// ui8ExtIdentifier                 1                 1                       Extended identifier of the type of serial transceiver.
+// ui8ConnectorType                 2                 1                       Code for the connector type.
+// aui8TransceiverCode              3 to 10           8                       Code for the electronic or optical compatibility.
+// ui8EncodingCode                  11                1                       Code for the serial encoding algorithm.
+// ui8BitRateNominal                12                1                       Nominal bit rate, units of 100 MBits/sec.
+// Reserved                         13                1                       Reserved.
+// ui8Length9mKm                    14                1                       Link length supported for 9/125 mm fiber, units of km.
+// ui8Length9m100m                  15                1                       Link length supported for 9/125 mm fiber, units of 100 m.
+// ui8Length50m                     16                1                       Link length supported for 50/125 mm fiber, units of 10 m.
+// ui8Length625m                    17                1                       Link length supported for 62.5/125 mm fiber, units of 10 m.
+// ui8LengthCopper                  18                1                       Link length supported for copper, units of meters.
+// Reserved                         19                1                       Reserved.
+// szVendorName                     20 to 35          16                      SFP transceiver vendor name (ASCII). Zero-terminated string.
+// Reserved                         36                1                       Reserved.
+// aui8VendorOUI                    37 to 39          3                       SFP transceiver vendor IEEE company ID.
+// szVendorPartNumber               40 to 55          16                      Part number provided by the SFP transceiver vendor (ASCII). Zero-terminated string.
+// szVendorRevision                 56 to 59          4                       Revision level for part number provided by the vendor (ASCII).
+// Reserved                         60 to 62          3                       Reserved.
+// Not published                    63                1                       Check code for data addresses 0 to 62. Not published.
+// aui8Options                      64 to 65          2                       Indicates which optional SFP signals are implemented.
+// ui8BitRatMax                     66                1                       Upper bit rate margin percentage.
+// ui8BitRatMin                     67                1                       Lower bit rate margin percentage.
+// szVendorSerialNumber             68 to 83          16                      Serial number provided by vendor (ASCII). Zero-terminated string.
+// aui8ManufacturingDateYear        84 to 85          2                       ASCII code indicating the year of manufacture. (00 = 2000).
+// aui8ManufacturingDateMonth       86 to 87          2                       ASCII code indicating the month of manufacture. (01 = Jan through 12 = Dec).
+// aui8ManufacturingDateDay         88 to 89          2                       ASCII code indicating the day of manufacture. The values are from 01 to 31.
+// aui8ManufacturingDateLot         90 to 91          2                       ASCII code indicating the vendor specific lot code of manufacture. May be blank.
+// Reserved                         92 to 94          3                       Reserved.
+// Not published                    95                1                       Check code for data addresses 64 to 94. Not published.
+//</table>
+struct SMvSfpSerialId
+{ 
+   uint8_t ui8Identifier;                   
+   uint8_t ui8ExtIdentifier;                
+   uint8_t ui8ConnectorType;                
+   uint8_t aui8TransceiverCode[8];          
+   uint8_t ui8EncodingCode;                 
+   uint8_t ui8BitRateNominal;               
+  
+   uint8_t ui8Length9mKm;                  
+   uint8_t ui8Length9m100m;                
+   uint8_t ui8Length50m;                    
+   uint8_t ui8Length625m;                   
+   uint8_t ui8LengthCopper;  
+
+   char    szVendorName[17];                
+   uint8_t aui8VendorOUI[3];                
+   char    szVendorPartNumber[17];          
+   char    szVendorRevision[5];             
+   
+
+   uint8_t aui8Options[2];                  
+   uint8_t ui8BitRatMax;                    
+   uint8_t ui8BitRatMin;                    
+   char    szVendorSerialNumber[17];       
+   uint8_t aui8ManufacturingDateYear[2];    
+   uint8_t aui8ManufacturingDateMonth[2];   
+   uint8_t aui8ManufacturingDateDay[2];     
+   uint8_t aui8ManufacturingDateLot[2];  
+
 };
+
 

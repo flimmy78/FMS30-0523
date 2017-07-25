@@ -308,7 +308,7 @@ struct device::impl : public std::enable_shared_from_this<impl>
 			buf = create_buffer(source.size(), buffer::usage::write_only);
 			tbb::parallel_for(tbb::blocked_range<std::size_t>(0, source.size()), [&](const tbb::blocked_range<std::size_t>& r)
 			{
-				A_memcpy(buf->data() + r.begin(), source.data() + r.begin(), r.size());
+				std::memcpy(buf->data() + r.begin(), source.data() + r.begin(), r.size());
 			});
 		}
 

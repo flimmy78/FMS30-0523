@@ -211,7 +211,7 @@ private:
 			pixel_desc.planes.push_back(
 				core::pixel_format_desc::plane(width, height, 4));
 		auto frame = frame_factory_->create_frame(this, pixel_desc, core::audio_channel_layout::invalid());
-		fast_memcpy(frame.image_data().begin(), buffer, width * height * 4);
+		std::memcpy(frame.image_data().begin(), buffer, width * height * 4);
 
 		lock(frames_mutex_, [&]
 		{

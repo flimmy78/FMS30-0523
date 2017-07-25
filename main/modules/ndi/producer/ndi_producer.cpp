@@ -115,7 +115,8 @@ class ndi_producer : boost::noncopyable
 	NDIlib_recv_instance_t							pNDI_recv;
 	core::monitor::subject							monitor_subject_;
 	spl::shared_ptr<diagnostics::graph>				graph_;
-	caspar::timer									tick_timer_;
+	
+	
 
 	const std::wstring								filter_;
 
@@ -174,7 +175,7 @@ public:
 		diagnostics::register_graph(graph_);
 
 		const NDIlib_find_create_t NDI_find_create_desc = { params.ndi_showlocal,u8(params.ndi_groups).c_str(),u8(params.p_extra_ips).c_str() };
-		NDIlib_find_instance_t pNDI_find = NDIlib_find_create(&NDI_find_create_desc);
+		NDIlib_find_instance_t pNDI_find = NDIlib_find_create2(&NDI_find_create_desc);
 		
 
 		int no_sources = 0;
@@ -303,7 +304,8 @@ public:
 	//收到Meta之后开始收视音频 
 	void run()
 	{
-
+		caspar::timer			frame_timer;
+		caspar::timer			recv_timer_;
 		bool meta = false;
 		//统计包数量
 		//int count = 0;
@@ -323,7 +325,6 @@ public:
 				// Video data
 			case NDIlib_frame_type_video:
 			{
-
 				core::field_mode dd = core::field_mode::empty;
 				switch (ndi_video_frame.frame_format_type)
 				{
@@ -373,12 +374,15 @@ public:
 				video_frame->top_field_first = in_format_desc_.field_mode == dd ? 1 : 0;
 				video_frame->key_frame = 1;
 
+				graph_->set_value("tick-time", ndi_video_frame.frame_rate_N / ndi_video_frame.frame_rate_D * recv_timer_.elapsed()  * 0.5);
+				recv_timer_.restart();
 				
 				if (meta)
 				{
 					muxer_.push(static_cast<std::shared_ptr<AVFrame>>(video_frame));
 				}
-
+				
+				
 				NDIlib_recv_free_video(pNDI_recv, &ndi_video_frame);
 			}
 				break;
@@ -476,21 +480,13 @@ public:
 					frame_buffer_.try_pop(dummy);
 
 					frame_buffer_.try_push(frame);
-
 					graph_->set_tag(diagnostics::tag_severity::WARNING, "dropped-frame");
+					
 				}
 			}
-
-			/*graph_->set_value("frame-time", frame_timer.elapsed()*out_format_desc_.fps*0.5);
-			monitor_subject_ << core::monitor::message("/profiler/time") % frame_timer.elapsed() % out_format_desc_.fps;
-
+			graph_->set_value("frame-time", frame_timer.elapsed()*ndi_video_frame.frame_rate_N/ndi_video_frame.frame_rate_D*0.5);
 			graph_->set_value("output-buffer", static_cast<float>(frame_buffer_.size()) / static_cast<float>(frame_buffer_.capacity()));
-			monitor_subject_ << core::monitor::message("/buffer") % frame_buffer_.size() % frame_buffer_.capacity();
-
-			graph_->set_value("tick-time", tick_timer_.elapsed()*out_format_desc_.fps*0.5);
-			tick_timer_.restart();*/
-
-			caspar::timer frame_timer;
+			frame_timer.restart();
 		}
 		NDIlib_recv_destroy(pNDI_recv);
 		
@@ -510,14 +506,14 @@ public:
 		else
 			last_frame_ = frame;
 
-		graph_->set_value("output-buffer", static_cast<float>(frame_buffer_.size()) / static_cast<float>(frame_buffer_.capacity()));
+		//graph_->set_value("output-buffer", static_cast<float>(frame_buffer_.size()) / static_cast<float>(frame_buffer_.capacity()));
 
 		return frame;
 	}
 
 	std::wstring print() const
 	{
-		return L" [" + boost::lexical_cast<std::wstring>(ndi_source_) + L"|" + in_format_desc_.name + L"]";
+		return L"ndi producer [" + boost::lexical_cast<std::wstring>(ndi_source_) + L"|" + in_format_desc_.name + L"]";
 	}
 
 	boost::rational<int> get_out_framerate() const
@@ -595,13 +591,13 @@ public:
 
 	std::wstring name() const override
 	{
-		return L"decklink";
+		return L"ndi";
 	}
 
 	boost::property_tree::wptree info() const override
 	{
 		boost::property_tree::wptree info;
-		info.add(L"type", L"decklink");
+		info.add(L"type", L"ndi");
 		return info;
 	}
 
@@ -613,13 +609,19 @@ public:
 
 void describe_producer(core::help_sink& sink, const core::help_repository& repo)
 {
-	sink.short_description(L"Allows video sources to be input from BlackMagic Design cards.");
-	sink.syntax(L"ndi [source:string]");
-	sink.para()->text(L"Allows video sources to be input from BlackMagic Design cards. Parameters:");
+	sink.short_description(L"Allows video sources to be input from NDI");
+	sink.syntax(L"NDI [source:string],{[grops:string] [ips:ip,ip] [showlocal: 1 or 0] [colorformat : rgb or yuv]}");
+	sink.para()->text(L"Allows video sources to be input from NDI. Parameters:");
 	sink.definitions()
-		->item(L"source", L"The ndi source to stream the input from.");
+		->item(L"source", L"The NDI stream from Local Area Network,name as unique identifier")
+		->item(L"machine", L"pc name ,ndi name is pc name (ndiname)")
+		->item(L"grops", L" Jone Group.Use it easy to find the source,but it don't work current, No use it")
+		->item(L"ips", L"Search range , But it doesn't work")
+		->item(L"showlocal", L"value is 0 or 1.show  local ndi")
+		->item(L"colorformat", L"Indicates the video storage format");
 	sink.para()->text(L"Examples:");
-	sink.example(L">> PLAY 1-10 NDI source ndivideo grops fcl ips 192.168.1.14,172.16.3.0.0.0 showlocal 1 colorformat RGB(YUV)", L"Play using decklink device 2 expecting the video signal to have the same video format as the channel.");
+	sink.example(L">> PLAY 1-10 NDI source ndivideo", L"rgb formats, and find source name is ndivideo");
+	sink.example(L">> PLAY 1-10 NDI source ndivideo maachine ZQVideo grops fcl ips 192.168.1.14,172.16.3.0.0.0 showlocal 1 colorformat RGB(YUV)", L"Play using decklink device 2 expecting the video signal to be in PAL and deinterlace it.");
 }
 
 spl::shared_ptr<core::frame_producer> create_producer(const core::frame_producer_dependencies& dependencies, const std::vector<std::wstring>& params)

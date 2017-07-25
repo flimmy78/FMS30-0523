@@ -216,12 +216,12 @@ bool frame_up_convert_left_right_add(
 		tbb::parallel_for<size_t>(0, des_plane.height, [&](size_t y)
 		{
 			int offs = (des_plane.linesize - src_plane.linesize) / 2;
-			fast_memcpy(des + y*des_plane.linesize + offs, src + y*decoded_linesize, src_plane.linesize);
+			std::memcpy(des + y*des_plane.linesize + offs, src + y*decoded_linesize, src_plane.linesize);
 		});
 	}
 	else
 	{
-		fast_memcpy(des, src, des_plane.size);
+		std::memcpy(des, src, des_plane.size);
 	}
 
 	return true;
@@ -247,12 +247,12 @@ bool frame_up_convert_bottom_cut(
 		// Copy line by line since ffmpeg sometimes pads each line.
 		tbb::parallel_for<size_t>(0, des_plane.height, [&](size_t y)
 		{
-			fast_memcpy(des + y*des_plane.linesize, src + y*decoded_linesize, src_plane.linesize);
+			std::memcpy(des + y*des_plane.linesize, src + y*decoded_linesize, src_plane.linesize);
 		});
 	}
 	else
 	{
-		fast_memcpy(des, src, des_plane.size);
+		std::memcpy(des, src, des_plane.size);
 	}
 
 	return true;
@@ -279,12 +279,12 @@ bool frame_up_convert_up_down_cut(
 		// Copy line by line since ffmpeg sometimes pads each line.
 		tbb::parallel_for<size_t>(0, des_plane.height, [&](size_t y)
 		{
-			fast_memcpy(des + y*des_plane.linesize, src + (y + offs)*decoded_linesize, src_plane.linesize);
+			std::memcpy(des + y*des_plane.linesize, src + (y + offs)*decoded_linesize, src_plane.linesize);
 		});
 	}
 	else
 	{
-		fast_memcpy(des, src, des_plane.size);
+		std::memcpy(des, src, des_plane.size);
 	}
 
 	return true;
@@ -311,12 +311,12 @@ bool frame_down_convert_left_right_cut(
 		// Copy line by line since ffmpeg sometimes pads each line.
 		tbb::parallel_for<size_t>(0, des_plane.height, [&](size_t y)
 		{
-			fast_memcpy(des + y*des_plane.linesize, src + (y*decoded_linesize + offs), des_plane.linesize);
+			std::memcpy(des + y*des_plane.linesize, src + (y*decoded_linesize + offs), des_plane.linesize);
 		});
 	}
 	else
 	{
-		fast_memcpy(des, src, des_plane.size);
+		std::memcpy(des, src, des_plane.size);
 	}
 
 	return true;
@@ -342,12 +342,12 @@ bool frame_convert_stretch(
 		// Copy line by line since ffmpeg sometimes pads each line.
 		tbb::parallel_for<size_t>(0, des_plane.height, [&](size_t y)
 		{
-			fast_memcpy(des + y*des_plane.linesize, src + y*decoded_linesize, des_plane.linesize);
+			std::memcpy(des + y*des_plane.linesize, src + y*decoded_linesize, des_plane.linesize);
 		});
 	}
 	else
 	{
-		fast_memcpy(des, src, des_plane.size);
+		std::memcpy(des, src, des_plane.size);
 	}
 
 	return true;
@@ -1094,12 +1094,12 @@ core::mutable_frame make_frame(const void* tag, const spl::shared_ptr<AVFrame>& 
 				tbb::parallel_for(tbb::blocked_range<int>(0, desc.planes[n].height), [&](const tbb::blocked_range<int>& r)
 				{
 					for (int y = r.begin(); y != r.end(); ++y)
-						A_memcpy(result + y*plane.linesize, decoded + y*decoded_linesize, plane.linesize);
+						std::memcpy(result + y*plane.linesize, decoded + y*decoded_linesize, plane.linesize);
 				}, ap);
 			}
 			else
 			{
-				fast_memcpy(result, decoded, plane.size);
+				std::memcpy(result, decoded, plane.size);
 			}
 		}
 
@@ -1427,27 +1427,19 @@ std::shared_ptr<AVFrame> empty_video()
 
 spl::shared_ptr<AVCodecContext> open_codec(AVFormatContext& context, enum AVMediaType type, int& index, bool single_threaded)
 {
-	//AVCodec* decoder1;
-	//	index = av_find_best_stream(&context, type, index, -1, nullptr, 0);
 	index = THROW_ON_ERROR2(av_find_best_stream(&context, type, index, -1, nullptr, 0), "");
-	AVCodecContext* pAVCodecContext;
-	pAVCodecContext = avcodec_alloc_context3(NULL);
+	AVCodec* decoder = avcodec_find_decoder(context.streams[index]->codecpar->codec_id);
+	AVCodecContext* pAVCodecContext = avcodec_alloc_context3(decoder);
 	int ret = 0;
 	ret = avcodec_parameters_to_context(pAVCodecContext, context.streams[index]->codecpar);
 	if (ret < 0)
 	{
-		pAVCodecContext = nullptr;
-	}
-	av_codec_set_pkt_timebase(pAVCodecContext, context.streams[index]->time_base);
-	AVCodec* decoder = avcodec_find_decoder(pAVCodecContext->codec_id);
-	if (!decoder)
-	{
 		avcodec_free_context(&pAVCodecContext);
 		pAVCodecContext = nullptr;
 	}
+	av_codec_set_pkt_timebase(pAVCodecContext, context.streams[index]->time_base);
 
 	THROW_ON_ERROR2(tbb_avcodec_open(pAVCodecContext, decoder, single_threaded), "");
-	//	context.streams[index]->codec = pAVCodecContext;
 	return spl::shared_ptr<AVCodecContext>(pAVCodecContext, tbb_avcodec_close);
 }
 

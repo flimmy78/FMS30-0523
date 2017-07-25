@@ -259,7 +259,7 @@ public:
 				if (needs_to_copy_)
 				{
 					data_.resize(frame_.image_data().size());
-					fast_memcpy(data_.data(), *buffer, frame_.image_data().size());
+					std::memcpy(data_.data(), *buffer, frame_.image_data().size());
 					*buffer = data_.data();
 				}
 			}
@@ -402,9 +402,12 @@ struct decklink_consumer : public IDeckLinkVideoOutputCallback, boost::noncopyab
 	tbb::atomic<int64_t>								scheduled_frames_completed_;
 	std::unique_ptr<key_video_context<Configuration>>	key_context_;
 
-	bool                                        vanc_output_;//config vanc
-	std::shared_ptr<V210Encoder>                V210Encoder_;//modify vanc
-
+	bool                                                vanc_output_;//config vanc
+	std::shared_ptr<V210Encoder>						V210Encoder_;//modify vanc
+	int                                                 framerate_interval_ = format_desc_.fps > 0 ? format_desc_.fps : 25;
+	int                                                 framerate_count_ = 0;
+	caspar::timer                                       framerate_timer_;
+	double                                              framerate_ = framerate_interval_;
 public:
 	decklink_consumer(
 			const configuration& config,
@@ -548,45 +551,35 @@ public:
 		return S_OK;
 	}
 
-	virtual HRESULT STDMETHODCALLTYPE ScheduledFrameCompleted(IDeckLinkVideoFrame* completed_frame, BMDOutputFrameCompletionResult result)
+	HRESULT ProcessMutabledecklinkFrameCompleted(mutable_decklink_frame* dframe, BMDOutputFrameCompletionResult result)
 	{
-		if(!is_running_)
-			return E_FAIL;
-
 		try
 		{
-			auto tick_time = tick_timer_.elapsed()*format_desc_.fps * 0.5;
-			graph_->set_value("tick-time", tick_time);
-			tick_timer_.restart();
-
-			reference_signal_detector_.detect_change([this]() { return print(); });
-
-			auto dframe = reinterpret_cast<decklink_frame*>(completed_frame);
 			current_presentation_delay_ = dframe->get_age_millis();
 			++scheduled_frames_completed_;
 
 			if (key_context_)
 				graph_->set_value(
-						"key-offset",
-						static_cast<double>(
-								scheduled_frames_completed_
-								- key_context_->scheduled_frames_completed_)
-						* 0.1 + 0.5);
+					"key-offset",
+					static_cast<double>(
+						scheduled_frames_completed_
+						- key_context_->scheduled_frames_completed_)
+					* 0.1 + 0.5);
 
-			if(result == bmdOutputFrameDisplayedLate)
+			if (result == bmdOutputFrameDisplayedLate)
 			{
 				graph_->set_tag(diagnostics::tag_severity::WARNING, "late-frame");
 				video_scheduled_ += format_desc_.duration;
 				/*CASPAR_LOG(info) << "WARNING late-frame";
 				CASPAR_LOG(info) << "WARNING late-frame dframe->audio_data().size() = "<< dframe->audio_data().size();
 				CASPAR_LOG(info) << "WARNING late-frame in_channel_layout_.num_channels = " << in_channel_layout_.num_channels;*/
-				//audio_scheduled_ += dframe->audio_data().size() / in_channel_layout_.num_channels;
-				audio_scheduled_ += static_cast<long long>(format_desc_.audio_sample_rate / format_desc_.fps);//上面这句话audio 的size可能不正确，是一个比较大的值，从而造成audio_scheduled值很大，所以decklink会卡住不动，所以更新为下面的语句通过sample rate和视频帧率来计算
+				audio_scheduled_ += dframe->audio_data().size() / in_channel_layout_.num_channels;
+				//	audio_scheduled_ += static_cast<long long>(format_desc_.audio_sample_rate / format_desc_.fps);//上面这句话audio 的size可能不正确，是一个比较大的值，从而造成audio_scheduled值很大，所以decklink会卡住不动，所以更新为下面的语句通过sample rate和视频帧率来计算
 				//CASPAR_LOG(info) << "WARNING late-frame audio_scheduled_ = " << audio_scheduled_;
 			}
-			else if(result == bmdOutputFrameDropped)
+			else if (result == bmdOutputFrameDropped)
 				graph_->set_tag(diagnostics::tag_severity::WARNING, "dropped-frame");
-			else if(result == bmdOutputFrameFlushed)
+			else if (result == bmdOutputFrameFlushed)
 				graph_->set_tag(diagnostics::tag_severity::WARNING, "flushed-frame");
 
 			UINT32 buffered;
@@ -609,10 +602,10 @@ public:
 
 			if (config_.embedded_audio)
 				schedule_next_audio(channel_remapper_.mix_and_rearrange(frame.audio_data()));
-			vanc_output_ ? schedule_next_video_vanc(frame) : schedule_next_video(frame);;//config vanc
-			//schedule_next_video(frame);
+			vanc_output_ ? schedule_next_video_vanc(frame) : schedule_next_video(frame);//config vanc
+																						//schedule_next_video(frame);
 		}
-		catch(...)
+		catch (...)
 		{
 			lock(exception_mutex_, [&]
 			{
@@ -622,6 +615,183 @@ public:
 		}
 
 		return S_OK;
+	}
+
+	HRESULT ProcessDecklinkFrameCompleted(decklink_frame* dframe, BMDOutputFrameCompletionResult result)
+	{
+		try
+		{
+			current_presentation_delay_ = dframe->get_age_millis();
+			++scheduled_frames_completed_;
+
+			if (key_context_)
+				graph_->set_value(
+					"key-offset",
+					static_cast<double>(
+						scheduled_frames_completed_
+						- key_context_->scheduled_frames_completed_)
+					* 0.1 + 0.5);
+
+			if (result == bmdOutputFrameDisplayedLate)
+			{
+				graph_->set_tag(diagnostics::tag_severity::WARNING, "late-frame");
+				video_scheduled_ += format_desc_.duration;
+				/*CASPAR_LOG(info) << "WARNING late-frame";
+				CASPAR_LOG(info) << "WARNING late-frame dframe->audio_data().size() = "<< dframe->audio_data().size();
+				CASPAR_LOG(info) << "WARNING late-frame in_channel_layout_.num_channels = " << in_channel_layout_.num_channels;*/
+				audio_scheduled_ += dframe->audio_data().size() / in_channel_layout_.num_channels;
+				//	audio_scheduled_ += static_cast<long long>(format_desc_.audio_sample_rate / format_desc_.fps);//上面这句话audio 的size可能不正确，是一个比较大的值，从而造成audio_scheduled值很大，所以decklink会卡住不动，所以更新为下面的语句通过sample rate和视频帧率来计算
+				//CASPAR_LOG(info) << "WARNING late-frame audio_scheduled_ = " << audio_scheduled_;
+			}
+			else if (result == bmdOutputFrameDropped)
+				graph_->set_tag(diagnostics::tag_severity::WARNING, "dropped-frame");
+			else if (result == bmdOutputFrameFlushed)
+				graph_->set_tag(diagnostics::tag_severity::WARNING, "flushed-frame");
+
+			UINT32 buffered;
+			output_->GetBufferedVideoFrameCount(&buffered);
+			graph_->set_value("buffered-video", static_cast<double>(buffered) / (config_.buffer_depth()));
+
+			if (config_.embedded_audio)
+			{
+				output_->GetBufferedAudioSampleFrameCount(&buffered);
+				graph_->set_value("buffered-audio", static_cast<double>(buffered) / (format_desc_.audio_cadence[0] * config_.buffer_depth()));
+			}
+
+			auto frame = core::const_frame::empty();
+
+			frame_buffer_.pop(frame);
+			ready_for_new_frames_.release();
+
+			if (!is_running_)
+				return E_FAIL;
+
+			if (config_.embedded_audio)
+				schedule_next_audio(channel_remapper_.mix_and_rearrange(frame.audio_data()));
+			vanc_output_ ? schedule_next_video_vanc(frame) : schedule_next_video(frame);//config vanc
+																						//schedule_next_video(frame);
+		}
+		catch (...)
+		{
+			lock(exception_mutex_, [&]
+			{
+				exception_ = std::current_exception();
+			});
+			return E_FAIL;
+		}
+
+		return S_OK;
+	}
+
+	virtual HRESULT STDMETHODCALLTYPE ScheduledFrameCompleted(IDeckLinkVideoFrame* completed_frame, BMDOutputFrameCompletionResult result)
+	{
+		if (!is_running_)
+			return E_FAIL;
+
+		auto tick_time = tick_timer_.elapsed()*format_desc_.fps * 0.5;
+		graph_->set_value("tick-time", tick_time);
+		tick_timer_.restart();
+
+		reference_signal_detector_.detect_change([this]() { return print(); });
+
+		if (++framerate_count_ >= framerate_interval_)
+		{
+			framerate_ = framerate_count_ / framerate_timer_.elapsed();
+			framerate_timer_.restart();
+			framerate_count_ = 0;
+		}
+		graph_->set_text(print());
+
+		if (vanc_output_)
+		{
+			auto dframe = reinterpret_cast<mutable_decklink_frame*>(completed_frame);
+			return ProcessMutabledecklinkFrameCompleted(dframe, result);
+		}
+		else
+		{
+			auto dframe = reinterpret_cast<decklink_frame*>(completed_frame);
+			return ProcessDecklinkFrameCompleted(dframe, result);
+		}
+
+
+		//try
+		//{
+		//	auto tick_time = tick_timer_.elapsed()*format_desc_.fps * 0.5;
+		//	graph_->set_value("tick-time", tick_time);
+		//	tick_timer_.restart();
+
+		//	reference_signal_detector_.detect_change([this]() { return print(); });
+
+		//	/*auto dframe = reinterpret_cast<decklink_frame*>(completed_frame);*/
+		//	auto dframe = reinterpret_cast<mutable_decklink_frame*>(completed_frame);
+		//	current_presentation_delay_ = dframe->get_age_millis();
+		//	++scheduled_frames_completed_;
+
+		//	if (key_context_)
+		//		graph_->set_value(
+		//				"key-offset",
+		//				static_cast<double>(
+		//						scheduled_frames_completed_
+		//						- key_context_->scheduled_frames_completed_)
+		//				* 0.1 + 0.5);
+
+		//	if(result == bmdOutputFrameDisplayedLate)
+		//	{
+		//		graph_->set_tag(diagnostics::tag_severity::WARNING, "late-frame");
+		//		video_scheduled_ += format_desc_.duration;
+		//		/*CASPAR_LOG(info) << "WARNING late-frame";
+		//		CASPAR_LOG(info) << "WARNING late-frame dframe->audio_data().size() = "<< dframe->audio_data().size();
+		//		CASPAR_LOG(info) << "WARNING late-frame in_channel_layout_.num_channels = " << in_channel_layout_.num_channels;*/
+		//		audio_scheduled_ += dframe->audio_data().size() / in_channel_layout_.num_channels;
+		//	//	audio_scheduled_ += static_cast<long long>(format_desc_.audio_sample_rate / format_desc_.fps);//上面这句话audio 的size可能不正确，是一个比较大的值，从而造成audio_scheduled值很大，所以decklink会卡住不动，所以更新为下面的语句通过sample rate和视频帧率来计算
+		//		//CASPAR_LOG(info) << "WARNING late-frame audio_scheduled_ = " << audio_scheduled_;
+		//	}
+		//	else if(result == bmdOutputFrameDropped)
+		//		graph_->set_tag(diagnostics::tag_severity::WARNING, "dropped-frame");
+		//	else if(result == bmdOutputFrameFlushed)
+		//		graph_->set_tag(diagnostics::tag_severity::WARNING, "flushed-frame");
+
+		//	UINT32 buffered;
+		//	output_->GetBufferedVideoFrameCount(&buffered);
+		//	graph_->set_value("buffered-video", static_cast<double>(buffered) / (config_.buffer_depth()));
+
+		//	if (config_.embedded_audio)
+		//	{
+		//		output_->GetBufferedAudioSampleFrameCount(&buffered);
+		//		graph_->set_value("buffered-audio", static_cast<double>(buffered) / (format_desc_.audio_cadence[0] * config_.buffer_depth()));
+		//	}
+
+		//	auto frame = core::const_frame::empty();
+
+		//	frame_buffer_.pop(frame);
+
+		//	{
+		//		boost::lock_guard<boost::mutex> lock(send_completion_mutex_);
+
+		//		if (send_completion_.valid())
+		//		{
+		//			send_completion_();
+		//			send_completion_ = std::packaged_task<bool()>();
+		//		}
+		//	}
+		//	if (!is_running_)
+		//		return E_FAIL;
+
+		//	if (config_.embedded_audio)
+		//		schedule_next_audio(channel_remapper_.mix_and_rearrange(frame.audio_data()));
+		//	vanc_output_ ? schedule_next_video_vanc(frame) : schedule_next_video(frame);;//config vanc
+		//	//schedule_next_video(frame);
+		//}
+		//catch(...)
+		//{
+		//	lock(exception_mutex_, [&]
+		//	{
+		//		exception_ = std::current_exception();
+		//	});
+		//	return E_FAIL;
+		//}
+
+		//return S_OK;
 	}
 
 	template<typename T>
@@ -670,7 +840,7 @@ public:
 		//CComPtr<IDeckLinkVideoFrame> fill_frame(mut_frame);
 		//com_ptr<IDeckLinkVideoFrame> fill_frame(mut_frame);
 		//auto fill_frame = wrap_raw<com_ptr, IDeckLinkVideoFrame>(new decklink_frame(frame, format_desc_, config_.key_only, will_attempt_dma_));
-		auto fill_frame = wrap_raw<com_ptr, IDeckLinkVideoFrame>(mut_frame);   //new mutable_decklink_frame(std::make_shared<core::const_frame>(frame), format_desc_, config_.key_only, V210Encoder_));
+		//auto fill_frame = wrap_raw<com_ptr, IDeckLinkVideoFrame>(mut_frame);   //new mutable_decklink_frame(std::make_shared<core::const_frame>(frame), format_desc_, config_.key_only, V210Encoder_));
 		if (frame.afd_command())
 		{
 			int nAR = frame.afd_command()->afd_aspect_ratio_;
@@ -726,15 +896,15 @@ public:
 	std::wstring print() const
 	{
 		if (config_.keyer == configuration::keyer_t::external_separate_device_keyer)
-			return model_name_ + L" [" + boost::lexical_cast<std::wstring>(channel_index_)+L"-" +
-				boost::lexical_cast<std::wstring>(config_.device_index) +
-				L"&&" +
-				boost::lexical_cast<std::wstring>(config_.key_device_index()) +
-				L"|" +
-				format_desc_.name + L"]";
+			return model_name_ + L" [" + boost::lexical_cast<std::wstring>(channel_index_) + L"-" +
+			boost::lexical_cast<std::wstring>(config_.device_index) +
+			L"&&" +
+			boost::lexical_cast<std::wstring>(config_.key_device_index()) +
+			L"|" +
+			format_desc_.name + L"|" + boost::lexical_cast<std::wstring>((float)framerate_) + L"]";
 		else
-			return model_name_ + L" [" + boost::lexical_cast<std::wstring>(channel_index_)+L"-" +
-				boost::lexical_cast<std::wstring>(config_.device_index) + L"|" + format_desc_.name + L"]";
+			return model_name_ + L" [" + boost::lexical_cast<std::wstring>(channel_index_) + L"-" +
+			boost::lexical_cast<std::wstring>(config_.device_index) + L"|" + format_desc_.name + L"|" + boost::lexical_cast<std::wstring>((float)framerate_) + L"]";
 	}
 };
 

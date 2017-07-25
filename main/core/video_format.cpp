@@ -162,8 +162,8 @@ std::vector<int> find_audio_cadence(const boost::rational<int>& framerate, bool 
 	if (exact_match != CADENCES_BY_FRAMERATE.end())
 		return exact_match->second;
 
-	boost::rational<int> closest_framerate_diff	= std::numeric_limits<int>::max();
-	boost::rational<int> closest_framerate		= 0;
+	boost::rational<int> closest_framerate_diff = std::numeric_limits<int>::max();
+	boost::rational<int> closest_framerate = 0;
 
 	for (auto format_framerate : CADENCES_BY_FRAMERATE | boost::adaptors::map_keys)
 	{
@@ -178,15 +178,16 @@ std::vector<int> find_audio_cadence(const boost::rational<int>& framerate, bool 
 
 	if (log_quiet)
 		CASPAR_LOG(debug) << "No exact audio cadence match found for framerate " << to_string(framerate)
-			<< "\nClosest match is " << to_string(closest_framerate)
-			<< "\nwhich is a " << to_string(closest_framerate_diff) << " difference.";
+		<< "\nClosest match is " << to_string(closest_framerate)
+		<< "\nwhich is a " << to_string(closest_framerate_diff) << " difference.";
 	else
 		CASPAR_LOG(warning) << "No exact audio cadence match found for framerate " << to_string(framerate)
-			<< "\nClosest match is " << to_string(closest_framerate)
-			<< "\nwhich is a " << to_string(closest_framerate_diff) << " difference.";
+		<< "\nClosest match is " << to_string(closest_framerate)
+		<< "\nwhich is a " << to_string(closest_framerate_diff) << " difference.";
 
 	return CADENCES_BY_FRAMERATE[closest_framerate];
 }
+
 
 }}
 

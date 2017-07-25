@@ -98,8 +98,8 @@ public:
 	struct command_interpreter_result
 	{
 		std::shared_ptr<caspar::IO::lock_container>	lock;
-		std::wstring								request_id;
 		std::wstring								command_name;
+		std::wstring								request_id;
 		AMCPCommand::ptr_type						command;
 		error_state									error			= error_state::no_error;
 		std::shared_ptr<AMCPCommandQueue>			queue;
@@ -286,7 +286,6 @@ private:
 			// Discard GetSwitch
 			if (!tokens.empty() && tokens.front().at(0) == L'/')
 				tokens.pop_front();
-
 
 			if (!tokens.empty() && boost::iequals(tokens.front(), L"REQ"))
 			{

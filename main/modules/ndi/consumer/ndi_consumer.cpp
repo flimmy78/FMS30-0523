@@ -4,15 +4,18 @@
 #include "ndi_consumer.h"
 #include <Processing.NDI.Lib.h>
 
-
+#include <common/diagnostics/graph.h>
 #include <common/memcpy.h>
 #include <common/future.h>
 #include <common/param.h>
 
 #include <common/os/general_protection_fault.h>
+
+extern "C"
+{
 #include <libavcodec/avcodec.h>
 #include <libswresample/swresample.h>
-#include <libswscale/swscale.h>
+}
 #include <libavutil/channel_layout.h>
 #include <core/frame/frame.h>
 #include <core/video_format.h>
@@ -80,38 +83,19 @@ namespace caspar {
 			core::audio_channel_layout get_adjusted_layout(const core::audio_channel_layout& in_layout) const
 			{
 				auto adjusted = out_channel_layout == core::audio_channel_layout::invalid() ? in_layout : out_channel_layout;
-
-				if (adjusted.num_channels == 1) // Duplicate mono-signal into both left and right.
-				{
-					adjusted.num_channels = 2;
-					adjusted.channel_order.push_back(adjusted.channel_order.at(0)); // Usually FC -> FC FC
-				}
-				else if (adjusted.num_channels == 2)
-				{
-					adjusted.num_channels = 2;
-				}
-				else if (adjusted.num_channels <= 8)
-				{
-					adjusted.num_channels = 8;
-				}
-				else // Over 8 always pad to 16 or drop >16
-				{
-					adjusted.num_channels = 16;
-				}
-
 				return adjusted;
 			}
 		};
-
-		//std::vector<HANDLE>		stream_exes_handles;
-		//bool					run_time_check_thread = false;
-		//tbb::mutex				stream_exe_mutex;
 
 		struct ndi_consumer : boost::noncopyable
 		{
 			NDIlib_send_instance_t								pNDI_send;
 			const configuration									config_;
 			core::video_format_desc								format_desc_;
+			const spl::shared_ptr<diagnostics::graph>			graph_;
+			caspar::timer										tick_timer_;
+			caspar::timer										frame_timer_;
+
 
 			tbb::atomic<bool>									is_running_;
 			tbb::concurrent_bounded_queue<core::const_frame>	frame_buffer_;
@@ -124,12 +108,15 @@ namespace caspar {
 
 			std::future<bool> send(core::const_frame frame)
 			{
-				frame_buffer_.try_push(frame);
+				graph_->set_value("tick-time", tick_timer_.elapsed()*format_desc_.fps*0.5);
+				if (!frame_buffer_.try_push(frame))
+					graph_->set_tag(diagnostics::tag_severity::WARNING, "dropped-frame");
+				tick_timer_.restart();
 				return make_ready_future(is_running_.load());
 			}
 			std::wstring print() const
 			{
-				return config_.name;// +L" " + channel_and_format();
+				return L"ndi consumer[" + config_.name + L"|" + format_desc_.name + L"]";
 			}
 
 			ndi_consumer(const configuration& config,
@@ -139,30 +126,36 @@ namespace caspar {
 				, format_desc_(format_desc)
 				, in_channel_layout_(in_channel_layout)
 			{
-				//int intype = av_get_default_channel_layout(in_channel_layout.num_channels);//AV_CH_LAYOUT_MONO
-				//int outtype = av_get_default_channel_layout(out_channel_layout_.num_channels);//输入声道
-				//swr_ = {
-				//	swr_alloc_set_opts(
-				//		nullptr,
-				//		outtype,
-				//		AV_SAMPLE_FMT_S32,
-				//		format_desc_.audio_sample_rate,
-				//		intype ,
-				//		AV_SAMPLE_FMT_S32,
-				//		format_desc_.audio_sample_rate,
-				//		0,
-				//		nullptr),
-				//	[](SwrContext* p)
-				//{
-				//	swr_free(&p);
-				//}
-				//};
-				//swr_init(swr_.get());
+				graph_->set_color("tick-time", diagnostics::color(0.0f, 0.6f, 0.9f));
+				graph_->set_color("dropped-frame", diagnostics::color(0.3f, 0.6f, 0.3f));
+				graph_->set_text(print());
+				diagnostics::register_graph(graph_);
+				
 
-				frame_buffer_.set_capacity(1);
+				int intype = av_get_default_channel_layout(in_channel_layout.num_channels);//AV_CH_LAYOUT_MONO
+				int outtype = av_get_default_channel_layout(out_channel_layout_.num_channels);//输入声道
+				swr_ = {
+					swr_alloc_set_opts(
+						nullptr,
+						outtype,
+						AV_SAMPLE_FMT_S32,
+						format_desc_.audio_sample_rate,
+						intype ,
+						AV_SAMPLE_FMT_S32,
+						format_desc_.audio_sample_rate,
+						0,
+						nullptr),
+					[](SwrContext* p)
+				{
+					swr_free(&p);
+				}
+				};
+				swr_init(swr_.get());
+
+				frame_buffer_.set_capacity(4);
 				is_running_ = false;
 
-				/////ndi
+				
 				std::string s = u8(config_.name);
 				const NDIlib_send_create_t NDI_send_create_desc = { s.c_str(), NULL, true, true };
 				pNDI_send = NDIlib_send_create(&NDI_send_create_desc);
@@ -200,8 +193,6 @@ namespace caspar {
 						boost::this_thread::sleep_for(boost::chrono::milliseconds(10));
 						continue;
 					}
-
-
 					
 					int Samples = m_audCalc.NextSamples(format_desc_.fps, format_desc_.audio_sample_rate);
 					
@@ -233,16 +224,7 @@ namespace caspar {
 						// The line to line stride of this image
 						format_desc_.width * 4
 					};
-
-					/*tbb::parallel_for(0, (int)format_desc_.height, 1, [&](int y)
-					{
-						fast_memcpy(
-							reinterpret_cast<char*>(NDI_video_frame.p_data) + y * format_desc_.width * 4,
-							(frame.image_data().begin()) + y * format_desc_.width * 4,
-							format_desc_.width * 4
-						);
-					});*/
-					fast_memcpy(
+					std::memcpy(
 						reinterpret_cast<char*>(NDI_video_frame.p_data),
 						(frame.image_data().begin()),
 						format_desc_.height * format_desc_.width * 4
@@ -258,39 +240,38 @@ namespace caspar {
 						// The timecode of this frame in 10ns intervals
 						0LL,
 						// The audio data
-						(float*)malloc(Samples * frame.audio_channel_layout().num_channels * sizeof(float)),
+						(float*)malloc(Samples * out_channel_layout_.num_channels * sizeof(float)),
 						// The audio channel stride
 						Samples * (int)sizeof(float)
 					};
-					//int audio_frame_size = ((boost::iterator_range<const int32_t*>)frame.audio_data()).size() * sizeof(int32_t);
 
 
-					void * source = (char *)malloc(frame.audio_data().size() * 4);
-					void *outbuf = (char *)malloc(frame.audio_data().size() * 4);
-					/*caspar::array<const int32_t>::iterator it;
+					int audio_frame_size = ((boost::iterator_range<const int32_t*>)frame.audio_data()).size() * sizeof(int32_t);
 
-					it = frame.audio_data().begin();
-					int* p_ch = (int *)source;
-					for (int sample_no = 0; sample_no < frame.audio_data().size();sample_no++)
+					void * source = (char *)malloc(audio_frame_size);
+
+					array<const int32_t>::iterator it = frame.audio_data().begin();
+					int *pch = (int *)source;
+					int i = 0;
+					for (;it<frame.audio_data().end();it++,i++)
 					{
-						p_ch[sample_no] = (int)*it;
-						if (*it != 0)
-						{
-							int s = *it;
-						}
-						it++;
-					}*/
-					/*const uint8_t **in = const_cast<const uint8_t**>((uint8_t**)&source);
-					uint8_t *out[] = { reinterpret_cast<uint8_t*>((uint8_t*)outbuf) };*/
+						pch[i] = *it;
+					}
 
-					/*const auto channel_samples = swr_convert(
+					void *outbuf = (char *)malloc(out_channel_layout_.num_channels* Samples * sizeof(int32_t));
+					
+					const uint8_t **in = const_cast<const uint8_t**>((uint8_t**)&source);
+					uint8_t *out[] = { reinterpret_cast<uint8_t*>((uint8_t*)outbuf) };
+
+					const auto channel_samples = swr_convert(
 						swr_.get(),
 						out,
 						audio_frame_size,
 						in,
-						Samples);*/
-					/*int *pch = (int *)source;
-					int i = 0;
+						Samples);
+
+					pch = (int *)outbuf;
+					i = 0;
 					for (int ch = 0; ch < out_channel_layout_.num_channels; ch++)
 					{
 						i = 0;
@@ -301,28 +282,14 @@ namespace caspar {
 							p_ch[sample_no] = (float)pch[i] / (float)AUDIO32_t;
 							i += out_channel_layout_.num_channels;
 						}
-					}*/
-
-					array<const int32_t>::iterator it;
-
-
-
-					for (int ch = 0; ch < out_channel_layout_.num_channels; ch++)
-					{
-						it = frame.audio_data().begin();
-						it += ch;
-						float* p_ch = (float*)((uint8_t*)NDI_audio_frame.p_data + ch*NDI_audio_frame.channel_stride_in_bytes);
-						for (int sample_no = 0; sample_no < Samples;sample_no++)
-						{
-							p_ch[sample_no] = (float)*it / (float)AUDIO32_t;
-							it += frame.audio_channel_layout().num_channels;
-						}
 					}
 
 					free(source);
 					free(outbuf);
 					NDIlib_send_send_audio(pNDI_send, &NDI_audio_frame);
 					NDIlib_send_send_video(pNDI_send, &NDI_video_frame);
+					graph_->set_value("frame-time", frame_timer_.elapsed()*format_desc_.fps*0.5);
+					frame_timer_.restart();
 					free((void*)NDI_video_frame.p_data);
 					free((void*)NDI_audio_frame.p_data);
 				}
@@ -472,7 +439,7 @@ namespace caspar {
 			config.ratio = ptree.get(L"ratio", config.ratio);
 			//config.groups = ptree.get(L"groups",config.groups);
 			auto channel_layout = ptree.get_optional<std::wstring>(L"channel-layout");
-
+			//NDI 对于输出声音必须配置，不配置默认为立体声
 			if (channel_layout)
 			{
 				CASPAR_SCOPED_CONTEXT_MSG("/channel-layout")
@@ -483,6 +450,10 @@ namespace caspar {
 					CASPAR_THROW_EXCEPTION(user_error() << msg_info(L"Channel layout " + *channel_layout + L" not found."));
 
 				config.out_channel_layout = *found_layout;
+			}
+			else
+			{
+				config.out_channel_layout = *core::audio_channel_layout_repository::get_default()->get_layout(L"stereo");
 			}
 			return spl::make_shared<ndi_consumer_proxy>(config);
 		}

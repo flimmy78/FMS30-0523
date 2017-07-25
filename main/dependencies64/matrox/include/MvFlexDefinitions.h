@@ -46,6 +46,7 @@ const unsigned long kulMvMaxSupportedUncompressedResolutions   = 32;
 const unsigned long kulMvMaxSupportedCompressedResolutions     = 32;
 const uint32_t      kui32MaxNumberOfAudioTracks                = 16;
 const uint32_t      kui32MaxConnectorQuadrants                 = 4;
+const uint32_t      kui32MaxAudioFlow                          = 4;
 
 #define AVCINTRA_HEADER_SIZE 512         //by AVCIntra spec.
 
@@ -176,12 +177,12 @@ enum EMvPCMMovAudioStreamSaveType
 enum EMvCodecOption
 {
    keMvCodecOptionInvalid,                               // Invalid value.
-   keMvCodecOptionDvFilteringPAL420_b,                   // Sets the DV codec PAL 4:2:0 decode to filter (used when chroma key is applied to the output buffer).
-   keMvCodecOptionReturnErrorOnCorruption_b,             // Enables error reporting when the data to decode 
+   keMvCodecOptionDvFilteringPAL420_b,                   // If true, sets the DV codec PAL 4:2:0 decode to filter (used when chroma key is applied to the output buffer).
+   keMvCodecOptionReturnErrorOnCorruption_b,             // If true, enables error reporting when the data to decode 
    // is corrupted. By default, the codec handles the 
    // corruption and does not put an error in the output surface.
    keMvCodecOptionMpeg2CompressionOptions_st,            // Used to pass the compression configuration structure for the MPEG-2 codec.
-   keMvCodecOptionIbpDecodeLastFrame_b,                  // Indicates if the last IBP frame has to be decoded.
+   keMvCodecOptionIbpDecodeLastFrame_b,                  // If true, indicates that the last IBP frame has to be decoded.
    keMvCodecOptionAspectRatio_e,                         // Sets the aspect ratio if it is different from the usual default for the current settings.
    keMvCodecOptionAACDecompressionOptionInit_st,         // Provides the information necessary to initialize the AAC codec during decompression.
    keMvCodecOptionAACCompressionOptionInit_st,           // Sets the options that will be used by the AAC codec during compression.
@@ -209,20 +210,20 @@ enum EMvCodecOption
    keMvCodecOptionDolbyECompressionOptionInit_st,        // Provides compression options for the Dolby E encoder.
    keMvCodecOptionDolbyEUserInterface_h,                 // Provides the parent window with a handle to display the Dolby E configuration window.
    keMvCodecOptionDolbyESettings_st,                     // Sets or gets the current Dolby E settings.
-   keMvCodecOptionProRes4444CaptureWithAlpha_b,          // Indicates whether or not ProRes 4444 capture will include alpha (alpha is optional).
+   keMvCodecOptionProRes4444CaptureWithAlpha_b,          // If true, indicates that ProRes 4444 capture will include alpha (alpha is optional).
    KeMvCodecOptionTargetCompressedFrameSizeByBytes_ui32, // Provides the target size of a compressed frame from the video encoder.
-   keMvCodecOptionH264CompressionOptions_st,             // Provides compression options for the H.264/AVC software and QSV (Intel Quick Sync Video) encoders.
-   keMvCodecOptionMPEG4SStPCompressionOptions_st,        // Provides compression options for the Sony MPEG-4 Simple Studio Profile encoder.
-   keMvCodecOptionMPEG4SStPDecompressionOptions_st,      // Provides decompression options for the the Sony MPEG-4 Simple Studio Profile decoder.
-   keMvCodecOptionCompletionObserver_pI,                 // Provides a completion observer object to be notified when an operation is completed (e.g. close decompression stream)
+   keMvCodecOptionH264CompressionOptions_st,             // Provides compression options for the H.264/AVC QSV (Intel Quick Sync Video) encoder.
+   keMvCodecOptionMPEG4SStPCompressionOptions_st,        // Provides compression options for the Sony MPEG-4 Simple Studio Profile (SStP) encoder.
+   keMvCodecOptionMPEG4SStPDecompressionOptions_st,      // Provides decompression options for the Sony MPEG-4 SStP decoder.
+   keMvCodecOptionCompletionObserver_pI,                 // Provides a completion observer object to be notified when an operation is completed, such as when a decompression stream is closed.
    keMvCodecOptionH264SWCompressionOptions_st,           // Provides compression options for the H.264/AVC software encoder.
    keMvCodecOptionM264CompressionOptions_st,             // Provides compression options for the M264 hardware encoder.
-   keMvCodecOptionCodecReturnsCompressedFields_b,        // Indicates if the codec returns compressed fields(true) or frames (false)
-   keMvCodecOptionExtraH264CompressionOptions_st,        // Gets extra settings from the codec which are not in the regular compression options
-   keMvCodecOptionM264DecompressionOptions_st,        // Provides options for the H.264 hardware decoder (SV2).
+   keMvCodecOptionCodecReturnsCompressedFields_b,        // If true, the codec returns compressed fields. Otherwise, it returns compressed frames.
+   keMvCodecOptionExtraH264CompressionOptions_st,        // Gets additional settings from the codec which are not in the regular compression options
+   keMvCodecOptionM264DecompressionOptions_st,           // Provides decompression options for the M264 hardware decoder.
    keMvCodecOptionForceOutputObserver_pI,                // Provides an observer object to be notified when the all the frames have been output.
-   keMvCodecOptionFlushObserver_pI,                      // Provides an observer object to be notified when the all the frames have been output from the decoder after calling Flush()
-   keMvCodecOptionAsyncErrorCallback_pI,                 // Provides a callback for asynchronous errors from the codec
+   keMvCodecOptionFlushObserver_pI,                      // Provides an observer object to be notified when the all the frames have been output from the decoder after calling Flush().
+   keMvCodecOptionAsyncErrorCallback_pI,                 // Provides a callback for asynchronous errors from the codec.
    keMvCodecOptionLast                                   // Number of codec options + 1.  End of list indicator.
 };
 
@@ -697,7 +698,7 @@ struct SMvMpegStreamEncoderSettings
                                                          // - Main Profile, High Level-1440 4:2:0 = 60 000 000
                                                          // - Main Profile, Main Level 4:2:0, MPEG-1 = 15 000 000
    unsigned long     ulMaxBitRateVBROnly;                // If the bit rate is variable, specifies the maximum bit rate. For bit rate limits, 
-                                                         // see the description for member ulConstantBitRate.
+                                                         // see ulConstantBitRate.
    unsigned long     ulAvgBitRateVBROnly;                // If the bit rate is variable, specifies the average bit rate. Set this value to 0 
                                                          // for VBR constant quantization.
    unsigned long     ulMinBitRateVBROnly;                // If the bit rate is variable, specifies the minimum bit rate. Set this value to 0 
@@ -705,12 +706,12 @@ struct SMvMpegStreamEncoderSettings
    unsigned long     ulMQuant;                           // Macroblock quantization value used in VBR constant quantization. Valid range is [1, 31].
    unsigned long     ulFirstGopStartTimeCodeInFrames;    // Specifies the time code, expressed in frames, encoded into the first GOP header.
    bool              bOffline;                           // If true, quality is maintained at the expense of speed. Otherwise, speed is maintained at the expense of quality.
-   unsigned long     ulQFactor;                          // Specifies the desired balance between quality and performance. Valid range is [1, 31]. 0 
+   unsigned long     ulQFactor;                          // Specifies the balance between quality and performance. Valid range is [1, 31]. 0 
                                                          // favors performance, 31 favors quality.
    bool              bZigZagScan;                        // Specifies the entropy scanning pattern defining the order in which quantized DCT (discrete 
                                                          // cosine transform) coefficients are run-length coded. <p> If true, the scan is zig-zag. Otherwise, the scan is alternate. 
                                                          // The default setting is false. Must be true for MPEG-1.
-   unsigned long     ulDCPrecision;                      // Specifies the DC coefficient precision in intra-coded macroblocks. Valid range is [8, 10]. Default 
+   unsigned long     ulDCPrecision;                      // Specifies the DC coefficient precision in Intra-coded macroblocks. Valid range is [8, 10]. Default 
                                                          // value is 9. Value must be 8 for MPEG-1.
    bool              bMotionSearchHalfPel;               // If true, half-pel motion searching is used. Otherwise, false.
    unsigned long     ulMotionSearchType;                 // Specifies the type of motion searching used. Valid range is [0, 15]. 0 disables motion searching and 
@@ -2326,7 +2327,7 @@ struct SMvAVCCompressionOptions
    // Indicates the distance between two IDR frames.  This must be a multiple of the distance between I-frames.  This is also the GOP size.  This is used in simple GOPs only. Otherwise, it is ignored.
    uint32_t             ui32DistanceBetweenIDRFrames;                      
 
-   // Indicates the distance between two I-frames.  (IDR frames are considered I-frames).  This is used in Simple GOPs only, otherwise, it is ignored.
+   // Indicates the distance between two I-frames.  (IDR frames are considered I-frames).  This is used in Simple GOPs only. Otherwise, it is ignored.
    uint32_t             ui32DistanceBetweenIFrames;                        
 
    // Indicates the distance between 2 reference frames (P, I, or IDR).  That number minus one indicates the number of B-frames.  This is used in simple GOPs only. Otherwise, it is ignored.
@@ -2399,7 +2400,7 @@ struct SMvAVCCompressionOptionsV4 : public SMvAVCCompressionOptionsV3
 //    parameters of the H.264 hardware encoder.
 struct SMvAVCCompressionOptionsV5 : SMvAVCCompressionOptionsV4
 {
-   // Specifies the noise filtering strength that is applied before encoding.  Value range from 0% (no filtering) to 
+   // Specifies the noise filtering strength that is applied before encoding.  The value range is from 0% (no filtering) to 
    // 100% (strongest filtering).  Default value is 0%.
    uint32_t          ui32NoiseFilterStrength;
 
@@ -2410,30 +2411,30 @@ struct SMvAVCCompressionOptionsV5 : SMvAVCCompressionOptionsV4
    EMvH264SampleRate eSampleRate;
 
    // Specifies how quickly the current data rate is adjusted to reach the target data rate. 
-   // A gradual adjustment produces smoother transitions than a quick adjustment. Value range from 0% (slowest speed) 
+   // A gradual adjustment produces smoother transitions than a quick adjustment. The value range is from 0% (slowest speed) 
    // to 100% (highest speed). Used only for keMvBitRateModelCBR and keMvBitRateModelVBR bit rate models.
    // Default value is 50%.
    uint32_t          ui32DataRateAdustment;
 
-   // Specifies the video data complexity.  Value range from from 0 (very complex) to 255 (Not complex at all).  Used 
+   // Specifies the video data complexity.  The value range is from 0 (very complex) to 255 (Not complex at all).  Used 
    // only for keMvBitRateModelVBR bit rate model. Default value is 14.
    // <b>Note:</b> The default value is applicable to a wide range of video complexity, but is unsuitable for low complexity and 
    // very high complexity video.  The encoder will not be able to obtain the requested data rate resulting in lower 
    // or higher values than expected.
    uint32_t          ui32VideoComplexity;
 
-   // Specifies the minimum data rate in percentage of the average data rate.  Value range from 0% to 100%.  For good 
+   // Specifies the minimum data rate in percentage of the average data rate.  The value range is from 0% to 100%.  For good 
    // general results, use 25% of the average data rate.  Used only for keMvBitRateModelVBR bit rate model. 
    uint32_t          ui32VbrMinDataRate;
 
-   // Specifies the maximum data rate in percentage of the average data rate.  Value range from 100% to 800%.  For
-   // good general results, use 300% when average data rate is over 3Mb/seconds otherwise compute the percentage to 
-   // make the maximum data rate be 3Mb/seconds (without going go over 800%). Used only for keMvBitRateModelVBR bit rate 
+   // Specifies the maximum data rate in percentage of the average data rate.  The value range is from 100% to 800%.  For
+   // good general results, use 300% when the average data rate is over 3 Mb/seconds. Otherwise, compute the percentage so 
+   // that the maximum data rate is 3 Mb/seconds (without going over 800%). Used only for keMvBitRateModelVBR bit rate 
    // model. 
    uint32_t          ui32VbrMaxDataRate;
 
-   // Specifies the quality of the encoding.  This will give a video compression with constant quality but with unpredictable
-   // data rate as it will completely depend on video data. Value range from 0 (lowest quality) to 100 (highest quality).
+   // Specifies the quality of the encoding.  This will give a video compression with constant quality, but with unpredictable
+   // data rate as it will completely depend on video data. The value range is from 0 (lowest quality) to 100 (highest quality).
    // Used only for keMvBitRateModelConstantQuality bit rate model.
    uint32_t          ui32QualityFactor;
 };
@@ -2526,24 +2527,28 @@ enum EMvH264SWCodecPreset
    keMvH264SWCodecPresetLast           // End of list indicator.
 };
 
-//Enumeration used in the SMvH264SWAVCUltraCompressionOptions structure to configure the H.264/AVC software encoder
+// Configures the speed and quality of the H.264/AVC software encoder.
+// Note:
+//    Used in SMvH264SWAVCUltraCompressionOptions.
 enum EMvH264SWCodecTargetUsage
 {
-   keMvH264SWCodecTargetUsageInvalid,
-   keMvH264SWCodecTargetUsageDefault,      // Default values
-   keMvH264SWCodecTargetUsageBestSpeed,     // Faster but lower quality
-   keMvH264SWCodecTargetUsageLast
+   keMvH264SWCodecTargetUsageInvalid,        // Invalid value.
+   keMvH264SWCodecTargetUsageDefault,        // Indicates that the default values are used for the speed and quality of the encoder.
+   keMvH264SWCodecTargetUsageBestSpeed,      // Indicates that the speed of the encoder is faster, but that the quality is reduced.
+   keMvH264SWCodecTargetUsageLast            // End of list indicator.
 };
 
-// enumeration in SMvH264SWAVCUltraCompressionOptions structure to select the preset for H.264 AVC Ultra
+// Selects the preset for the H.264 Panasonic AVC Ultra software encoder.
+// Note:
+//    Used in SMvH264SWAVCUltraCompressionOptions.
 enum EMvAVCUltraProfile
 {
-   keMvAVCUltraProfileInvalid  = 0,
-   keMvAVCUltraProfileLongG25,     // Panasonic LongG 25
-   keMvAVCUltraProfileLast
+   keMvAVCUltraProfileInvalid  = 0,    // Invalid value.
+   keMvAVCUltraProfileLongG25,         // Indicates that the preset is Panasonic AVC-LongG25.
+   keMvAVCUltraProfileLast             // End of list indicator.
 };
 
-// Selects the preset for H.264 Sony XAVC compression.
+// Selects the preset for the H.264 Sony XAVC compression.
 // Note:
 //    Used in SMvH264SWXAVCCompressionOptions.
 enum EMvXAVCProfile
@@ -2552,7 +2557,7 @@ enum EMvXAVCProfile
    keMvXAVCProfileLongGOP25,     // Indicates that the preset is Sony XAVC LongGOP 25.
    keMvXAVCProfileLongGOP35,     // Indicates that the preset is Sony XAVC LongGOP 35.
    keMvXAVCProfileLongGOP50,     // Indicates that the preset is Sony XAVC LongGOP 50.
-   keMvXAVCProfileHDIntra100CBG,    // Indicates that the preset is Sony XAVC HD Intra Class 100.
+   keMvXAVCProfileHDIntra100CBG, // Indicates that the preset is Sony XAVC HD Intra Class 100.
    keMvXAVCProfile4KIntra300CBG, // Indicates that the preset is Sony XAVC 4K Intra Class 300 CBG.
    keMvXAVCProfile4KIntra480CBG, // Indicates that the preset is Sony XAVC 4K Intra Class 480 CBG.
    keMvXAVCProfile4KIntra300VBR, // Indicates that the preset is Sony XAVC 4K Intra Class 300 VBR.
@@ -2564,18 +2569,17 @@ enum EMvXAVCProfile
 // Summary:
 //    Describes a header for the H.264/AVC software codec compression options.
 // Note:
-//    This structure will be derived from the H.264/AVC software codec compression options structures.
-//    That is, SMvH264SWAVCUltraCompressionOptions, SMvH264SWXAVCCompressionOptions, or SMvH264SWGenericCompressionOptions. This means that 
-//    the ui32size parameter must be set to the size of the structure from which this structure is derived, not to the size of the header 
-//    structure (this structure).
+//    This structure is the base class of the H.264/AVC software codec compression options structures.
+//    That is, SMvH264SWAVCUltraCompressionOptions, SMvH264SWXAVCCompressionOptions, or SMvH264SWGenericCompressionOptions will be derived from it.  
+//    This means that the ui32size parameter must be set to the size of the derived structure, not to the size of this structure.
 struct SMvH264SWCompressionOptionsHeader 
 {   
    uint32_t             ui32size;            // Structure size in bytes of the structure from which this structure is derived (see note).   
-   EMvH264SWCodecPreset ePreset;             // H.264 SW Codec preset
-   SMvResolutionInfo    sResolutionInput;    // Input resolution of the encoder (resolution of received uncompressed buffers).
-   SMvResolutionInfo    sResolutionOutput;   // Output resolution of the encoder (resolution of "file" compressed buffers).
+   EMvH264SWCodecPreset ePreset;             // Indicates the H.264/AVC software encoder preset.
+   SMvResolutionInfo    sResolutionInput;    // Input resolution of the encoder. That is, the resolution of uncompressed buffers that are received.
+   SMvResolutionInfo    sResolutionOutput;   // Output resolution of the encoder. That is, the resolution of the compressed buffers.
  
-
+   // Indicates the values to use for the members of this structure.
    SMvH264SWCompressionOptionsHeader()
    {
       ui32size = sizeof(SMvH264SWCompressionOptionsHeader);
@@ -2584,6 +2588,7 @@ struct SMvH264SWCompressionOptionsHeader
       ZeroMemory(&sResolutionOutput, sizeof(sResolutionOutput));
    }
 
+   // If true, indicates that the input resolution is interlaced.
    bool isInputResolutionScanModeInterlaced()
    {
       if (ui32size == sizeof(SMvH264SWCompressionOptionsHeader))
@@ -2597,6 +2602,7 @@ struct SMvH264SWCompressionOptionsHeader
             sResolutionInput.eScanMode == keMvScanModeInterlacedFieldsInAFrame;
       }
    }
+   // Indicates the scan mode for the input resolution.
    void setInputResolutionScanMode(EMvScanMode in_eScanMode)
    {
       if (in_eScanMode > keMvScanModeInvalid && in_eScanMode < keMvScanModeLast)
@@ -2611,7 +2617,7 @@ struct SMvH264SWCompressionOptionsHeader
 //    Describes the H.264/AVC software generic codec compression options.
 // Note:
 //    This structure derives from the SMvH264SWCompressionOptionsHeader. The preset used should be 
-//    SMvH264SWCompressionOptionsHeader::ePrest=keMvH264SWCodecPresetGeneric.
+//    SMvH264SWCompressionOptionsHeader::ePreset=keMvH264SWCodecPresetGeneric.
 struct SMvH264SWGenericCompressionOptions : public SMvH264SWCompressionOptionsHeader
 {
    // Indicates the H.264/AVC profile.
@@ -2620,7 +2626,7 @@ struct SMvH264SWGenericCompressionOptions : public SMvH264SWCompressionOptionsHe
    // Indicates the H.264/AVC level.
    EMvH264Level            eLevel;    
 
-   // If this value is 0 only the first frame is IDR, if it is 1 every I-frame is IDR, etc.
+   // If this value is 0, only the first frame is IDR. If it is 1, every I-frame is IDR, etc.
    uint32_t                ui32IdrFrequency;
 
    // Indicates the distance between two I-frames (IDR frames are considered I-frames).
@@ -2647,9 +2653,10 @@ struct SMvH264SWGenericCompressionOptions : public SMvH264SWCompressionOptionsHe
    uint32_t                ui32QPB;
 
    // For constant quality encoding only.
-   // Quantization Parameter for P-frames. Values are between 0 and 51.
+   // Quantization parameter for P-frames. Values are between 0 and 51.
    uint32_t                ui32QPP;
 
+   // Indicates the values to use for the members of this structure.
    SMvH264SWGenericCompressionOptions()
    {
       ui32size = sizeof(SMvH264SWGenericCompressionOptions);
@@ -2667,6 +2674,7 @@ struct SMvH264SWGenericCompressionOptions : public SMvH264SWCompressionOptionsHe
       ePreset = keMvH264SWCodecPresetGeneric;
    }
 
+   // Tests for equality. <p>If both structures contain the same parameters, returns true.
    bool operator==(SMvH264SWGenericCompressionOptions& sOpt2)
    {
       return ui32size == sOpt2.ui32size
@@ -2712,10 +2720,11 @@ struct SMvH264SWAVCUltraCompressionOptions : public SMvH264SWCompressionOptionsH
    // Specifies the Panasonic AVC Ultra preset to use.
    EMvAVCUltraProfile eAVCUltraProfile; 
 
-   // Specifies the desired behavior of the encoder in terms of quality and speed. It exposes a
+   // Specifies the behavior of the encoder in terms of quality and speed. It exposes a
    // trade-off between these two characteristics. That is, if the speed is increased, the quality is reduced.
    EMvH264SWCodecTargetUsage  eTargetUsage; 
 
+   // Indicates the values to use for the members of this structure.
    SMvH264SWAVCUltraCompressionOptions()
    {
       ui32size = sizeof(SMvH264SWAVCUltraCompressionOptions);
@@ -2736,6 +2745,7 @@ struct SMvH264SWXAVCCompressionOptions : public SMvH264SWCompressionOptionsHeade
 {
    EMvXAVCProfile eXAVCProfile;  // Specifies the Sony XAVC preset to use.
 
+   // Indicates the values to use for the members of this structure.
    SMvH264SWXAVCCompressionOptions()
    {
       ui32size = sizeof(SMvH264SWXAVCCompressionOptions);
@@ -2743,6 +2753,7 @@ struct SMvH264SWXAVCCompressionOptions : public SMvH264SWCompressionOptionsHeade
       ePreset = keMvH264SWCodecPresetXAVC;
    }
 
+   // Tests for equality. <p>If both structures contain the same parameters, returns true.
    bool operator==(SMvH264SWXAVCCompressionOptions& sOpt2)
    {
       return ui32size == sOpt2.ui32size
@@ -2768,30 +2779,34 @@ struct SMvH264SWXAVCCompressionOptions : public SMvH264SWCompressionOptionsHeade
 
 //
 // Summary:
-//    Enumeration used in the SMvM264CompressionOptionsHeader structure to configure the M264 encoder.
+//    Configures the Matrox M264 hardware encoder preset. 
+// Note:
+//    Used in SMvM264CompressionOptionsHeader.
 enum EMvM264CompressionPreset
 {
-   keMvM264CompressionPresetInvalid,
-   keMvM264CompressionPresetGeneric,      // Generic, all purpose H.264
-   keMvM264CompressionPresetXAVC,         // Sony XAVC
-   keMvM264CompressionPresetLast
+   keMvM264CompressionPresetInvalid,      // Invalid value.
+   keMvM264CompressionPresetGeneric,      // Indicates that the Matrox M264 hardware encoder preset is for generic H.264 footage.
+   keMvM264CompressionPresetXAVC,         // Indicates that the Matrox M264 hardware encoder preset is for Sony XAVC footage.
+   keMvM264CompressionPresetLast          // End of list indicator.
 };
 
 //
 // Summary:
-//    Describes a header for the M264 encoder compression options.
-// Description:
-//    This structure will be derived by the M264 compression options structures.
-//    The ui32size parameter should be set to the size of the derived structure, not to the size of the header structure (this structure).
+//    Describes a header for the Matrox M264 hardware encoder compression options.
+// Note:
+//    This structure is the base class of the Matrox M264 hardware encoder compression options structures.
+//    That is, SMvM264GenericCompressionOptions and SMvM264XAVCCompressionOptions will derive from it. This means that 
+//    the ui32size parameter must be set to the size of the derived structure, not to the size of this structure.
 struct SMvM264CompressionOptionsHeader
 {
-   uint32_t                  ui32size;                 // Structure size in bytes.
-   EMvM264CompressionPreset  ePreset;                  // M264 compression preset
-   SMvResolutionInfo         sResolutionInput;         // Resolution of received uncompressed buffers.
-   SMvResolutionInfo         sResolutionOutput;        // Resolution of compressed stream.
-   EMvHardwareProfile        eHardwareProfileType;     // Indicates which hardware profile to use.
-   uint32_t                  ulHardwareProfileIndex;   // Specifies the index of the hardware profile to use.
+   uint32_t                  ui32size;                 // Structure size in bytes of the structure from which this structure is derived (see note).
+   EMvM264CompressionPreset  ePreset;                  // Indicates the Matrox M264 hardware encoder compression preset.
+   SMvResolutionInfo         sResolutionInput;         // Input resolution of the hardware encoder. That is, the resolution of the uncompressed buffers that are received.
+   SMvResolutionInfo         sResolutionOutput;        // Output resolution of the hardware encoder. That is, the resolution of the compressed stream.
+   EMvHardwareProfile        eHardwareProfileType;     // Indicates the Matrox M264 profile to use.
+   uint32_t                  ulHardwareProfileIndex;   // Indicates the index of the Matrox M264 profile to use.
 
+   // Indicates the values to use for the members of this structure.
    SMvM264CompressionOptionsHeader()
    {
       ui32size = sizeof(SMvM264CompressionOptionsHeader);
@@ -2805,30 +2820,30 @@ struct SMvM264CompressionOptionsHeader
 
 //
 // Summary:
-//    Describes the M264 generic compression options.
-// Description:
-//    This structure derives from the SMvM264CompressionOptionsHeader. The preset used should be keMvM264CompressionPresetGeneric.
+//    Describes the Matrox M264 hardware encoder generic compression options.
+// Note:
+//    This structure derives from the SMvM264CompressionOptionsHeader. The preset used should be SMvM264CompressionOptionsHeader::ePreset=keMvM264CompressionPresetGeneric.
 struct SMvM264GenericCompressionOptions : public SMvM264CompressionOptionsHeader
 {
-   // H.264/AVC Profile.
+   // Indicates the H.264/AVC profile.
    EMvH264Profile          eProfile;
 
-   // H.264/AVC Level.
+   // Indicates the H.264/AVC level.
    EMvH264Level            eLevel;
 
-   // Indicates the distance between two IDR or I frames, must be a multiple of ui32DistanceBetweenReferences or, (multiple of ui32DistanceBetweenReferences) + 1.
+   // Indicates the distance between two IDR or I-frames, must be a multiple of ui32DistanceBetweenReferences, or (multiple of ui32DistanceBetweenReferences + 1).
    uint32_t                ui32GopPictureSize;
 
-   //Indicated the frequency IDR frames are inserted (0: Only first frame, 1: every frame, etc)
+   //Indicated the frequency at which IDR frames are inserted. 0: Only first frame, 1: every frame, etc.
    uint32_t                ui32IdrFrequency;
 
-   // Indicates the distance between two reference frames (P, I, or IDR), maximum value is 8.
+   // Indicates the distance between two reference frames (P, I, or IDR). Maximum value is 8.
    uint32_t                ui32DistanceBetweenReferences;
 
-   // Indicates the entropy coding mode
+   // Indicates the entropy coding mode.
    EMvEntropyCodingMode    eEntropyCodingMode;
 
-   // Bit rate mode to use.
+   // Indicates the bit rate mode to use.
    EMvBitRateModel         eBitRateMode;
 
    // Indicates the target bit rate in bits per second. For constant bit rate (CBR) and variable bit rate (VBR) modes.
@@ -2838,17 +2853,17 @@ struct SMvM264GenericCompressionOptions : public SMvM264CompressionOptionsHeader
    uint32_t                ui32VbrMaxBitRateInBitsPerSec;
 
    // For constant quality encoding only.
-   // Quantization parameter. Values are between -12 and 51.
+   // Quantization parameter. Values are between -12 and 51 for 10 bits, 0 and 51 for 8 bits.
    int32_t                 i32QP;
 
-   // Number of slices to be used in encode sequence. 0 is auto. SD and HD 1-12, QuadHD 2-16
+   // Indicates the number of slices to be used in the encode sequence. 0 is auto. SD and HD 1-12. QuadHD 2-16.
    uint32_t                ui32NbSlices;
 
    // Coded Picture Buffer (CPB) size in bits for the Hypothetical Reference Decoder (HRD).
    // Setting to 0 will use default value. Must be aligned to 64 bits.
-   // Not implemented yet. Setting this will have no effect.
    uint32_t                ui32CPBSizeInBits;
 
+   // Initializes the structure to known values (not neccessarily valid for encoding).
    SMvM264GenericCompressionOptions()
    {
       ui32size = sizeof(SMvM264GenericCompressionOptions);
@@ -2867,6 +2882,7 @@ struct SMvM264GenericCompressionOptions : public SMvM264CompressionOptionsHeader
       ui32CPBSizeInBits = 0;
    }
 
+   // Tests for equality. <p>If both structures conatin the same parameter values, returns true.
    bool operator==(SMvM264GenericCompressionOptions& sOpt2)
    {
       return ui32size == sOpt2.ui32size
@@ -2903,13 +2919,14 @@ struct SMvM264GenericCompressionOptions : public SMvM264CompressionOptionsHeader
 
 //
 // Summary:
-//    Describes the M264 XAVC compression options.
+//    Describes the Matrox M264 hardware encoder XAVC compression options.
 // Description:
-//    This structure derives from the SMvM264CompressionOptionsHeader. The preset used should be keMvM264CompressionPresetXAVC.
+//    This structure derives from the SMvM264CompressionOptionsHeader. The preset used should be SMvM264CompressionOptionsHeader::ePreset=keMvM264CompressionPresetXAVC.
 struct SMvM264XAVCCompressionOptions : public SMvM264CompressionOptionsHeader
 {
    EMvXAVCProfile eXAVCProfile;  // Specifies the Sony XAVC preset to use.
 
+   // Indicates the values to use for the members of this structure.
    SMvM264XAVCCompressionOptions()
    {
       ui32size = sizeof(SMvM264XAVCCompressionOptions);
@@ -2917,6 +2934,7 @@ struct SMvM264XAVCCompressionOptions : public SMvM264CompressionOptionsHeader
       ePreset = keMvM264CompressionPresetXAVC;
    }
 
+   // Tests for equality. <p>If both structures contain the same parameters, returns true.
    bool operator==(SMvM264XAVCCompressionOptions& sOpt2)
    {
       return ui32size == sOpt2.ui32size
@@ -3033,14 +3051,27 @@ struct SMvTSEncoderMuxerOptionSettings
 
 //
 // Summary:
-//    Describes the structure used to set the M264 decoder options.
+//    Describes the options for the Matrox M264 hardware decoder.
+// Note:
+//    The value selected for eHardwareProfileType must correspond to a hardware that supports the Matrox M264 hardware encoder.
 struct SMvM264DecompressionOptions
 {   
    uint32_t                    ui32size;                 // Structure size in bytes.   
-   SMvResolutionInfo           sResolutionInput;         // Resolution of the input compressed stream.
-   SMvResolutionInfo           sResolutionOutput;        // Desired resolution of the uncompressed frame.
-   EMvHardwareProfile          eHardwareProfileType;     // Indicates which hardware profile to use.
-   uint32_t                    ulHardwareProfileIndex;   // Specifies the index of the hardware profile to use.
+   SMvResolutionInfo           sResolutionInput;         // Input resolution of the compressed stream.
+   SMvResolutionInfo           sResolutionOutput;        // Output resolution of the uncompressed frames.
+   EMvHardwareProfile          eHardwareProfileType;     // Indicates the hardware profile to use.
+   uint32_t                    ulHardwareProfileIndex;   // Indicates the index of the hardware profile to use.
+   bool                        bAccessUnitAlignedInput;  // If true, the user application provides the decoder with data that is aligned on an access unit. 
+
+   SMvM264DecompressionOptions()
+   {
+      ui32size = sizeof(SMvM264DecompressionOptions);
+      ZeroMemory(&sResolutionInput, sizeof(sResolutionInput));
+      ZeroMemory(&sResolutionOutput, sizeof(sResolutionOutput));
+      eHardwareProfileType = keMvHardwareProfileInvalid;
+      ulHardwareProfileIndex = 0;
+      bAccessUnitAlignedInput = false;
+   }
 };
 
 
@@ -3060,9 +3091,11 @@ struct SMvM264DecompressionOptions
 //
 enum EMvVideoCodecType
 {
-   keVideoCodecTypeInvalid           = 0,    // Invalid value.
-   keVideoCodecTypeH264,                     // H.264/AVC.
-   keVideoCodecTypeLast                      // End of list indicator.
+   keVideoCodecTypeInvalid = 0,  // Invalid value.
+   keVideoCodecTypeNone,         // No video.
+   keVideoCodecTypeH264,         // H.264/AVC.
+   keVideoCodecTypeMPEG2IBP,     // MPEG2 IBP
+   keVideoCodecTypeLast          // End of list indicator.
 };
 
 //
@@ -3072,7 +3105,9 @@ enum EMvVideoCodecType
 enum EMvAudioCodecType
 {
    keAudioCodecTypeInvalid = 0,  // Invalid value.
-   keAudioCodecTypeAAC,          // AAC.   
+   keAudioCodecTypeNone,         // No audio
+   keAudioCodecTypeAAC,          // AAC.
+   keAudioCodecTypePCM,          // PCM
    keAudioCodecTypeLast          // End of list indicator.
 };
 
@@ -3100,6 +3135,29 @@ struct SMvMPEG2TSMuxerSettings
    bool                          bProcessSCTE35;            //If true, the muxer inserts SCTE 35 splice information.
    EMvH264Profile                eH264Profile;              //Profile of the H.264 encoding video.
    uint16_t                      ui16SpliceInfoSectionPID;  //Packet ID (13-bit) of the splice.
+
+   SMvMPEG2TSMuxerSettings()
+   {
+      size = sizeof(SMvMPEG2TSMuxerSettings);
+      ZeroMemory(&sVideoResolution, sizeof(sVideoResolution));
+      eAudioChannelType          = keChannelTypeInvalid;
+      eVideoCodecType            = keVideoCodecTypeInvalid;
+      eAudioCodecType            = keAudioCodecTypeInvalid;
+      ui32VideoBitRate           = 0;
+      ui32VideoMaxBitRate        = 0;
+      ui32AudioBitRate           = 0;
+      ui32AudioMaxBitRate        = 0;
+      ui16ProgramPID             = 0;
+      ui16VideoPID               = 0;
+      ui16AudioPID               = 0;
+      ui16PCRPID                 = 0;
+      eMPEG2MuxerBitRateOption   = keMvMPEG2MuxerBitRateOptionInvalid;
+      bProcessSCTE35             = false;
+      eH264Profile               = keMvH264ProfileInvalid;
+      ui16SpliceInfoSectionPID   = 0;
+   }
+
+   virtual ~SMvMPEG2TSMuxerSettings() {};
 };
 
 
@@ -3131,9 +3189,6 @@ typedef struct in_addr {
 } IN_ADDR, *PIN_ADDR, FAR *LPIN_ADDR;
 
 #endif // #ifndef s_addr
-#else //LINUX_PLATFORM
-#include <netinet/in.h> 
-#endif 
 
 struct SMvIPOutputSession
 {
@@ -3160,7 +3215,6 @@ struct SMvIPOutputSessionH264Information
    unsigned long     ulPPSSizeInBytes;                   // PPS size.
 };
 
-
 struct SMvIPInputSession
 {
    uint32_t          size;                               // Structure size in bytes.
@@ -3170,6 +3224,7 @@ struct SMvIPInputSession
    unsigned short    usRTSPPort;                         // The port number used by the RTSP server. If the value is 0, the default value used will be 554. 
    uint64_t          ui64Reserved[8];                    // Ignored.
 };
+#endif
 
 //
 // Summary:
@@ -3255,16 +3310,15 @@ enum EMvAesEbuGroup
 
 //
 // Summary:
-//    Describes the type of audio.
+//    Describes the type of connector for the audio data.
 //
 enum EMvAudioType
 {
    keMvAudioTypeInvalid,         // Invalid value.
-   keMvAudioTypeAesEbu,          // The audio is AES/EBU.
-   keMvAudioTypeEmbedded,        // The audio is SDI embedded
+   keMvAudioTypeAesEbu,          // The audio data is embedded in an AES/EBU connector.
+   keMvAudioTypeEmbedded,        // The audio data is embedded in an SDI connector.
    keMvAudioTypeSdiEmbedded = keMvAudioTypeEmbedded,
-   keMvAudioTypeSdiIpEmbedded,   // The audio is SDIIP 
-   keMvAudioTypeLast             // End of list indicator.
+   keMvAudioTypeSdiIpEmbedded,   // The audio data is embedded in a SMPTE 2022-6 stream over an SFP+ transceiver.
 };
 
 //
@@ -3284,7 +3338,7 @@ enum EMvNodeContent
    keMvNodeContentVideoVanc = 5,       // Binary value used to test if the node contains video and VANC data.
    keMvNodeContentAudioVanc = 6,       // Binary value used to test if the node contains audio and VANC data.
    keMvNodeContentVideoAudioVanc = 7,  // The node contains audio, video, and VANC data.
-   keMvNodeContentMPEG2_TS = 8,        // Binary value used to test if the node contains MPEG2 transport stream data.
+   keMvNodeContentMPEG2_TS = 8,        // Binary value used to test if the node contains MPEG-2 program transport stream (SPTS) data.
    keMvNodeContentLast                 // End of list indicator.
 };
 
@@ -3376,7 +3430,7 @@ struct SMvAudioInputStreamSettings
    bool abCapturePairMute[8]; // If true, the selected audio pair is muted in the node connected to the input stream.
                               // This means that the selected audio pair will be muted in a capture or passthrough topology.<p>
                               // Refer to the <i>Matrox DSX Topology API User Guide</i> to verify if your DSX hardware supports this parameter.
-                              // <b>Note:</b> Can only mute the audio from SDI and AES/EBU input connectors.
+                              // <b>Note:</b> Can only mute the audio from SDI, SDI IP, and AES/EBU input connectors.
 };
 
 //
@@ -3387,22 +3441,23 @@ struct SMvAudioInputStreamSettings
 //
 struct SMvVideoInputStreamSettings
 {
-   double dBrightness;           // Indicates the brightness value.  The range is from -92.5 to 92.5.
-   double dLumaGain;             // Indicates the luma gain value.  The range is from 0 to 2.
-   double dHue;                  // Indicates the hue value.  The range is from 0 to 360.
-   double dSaturation;           // Indicates the saturation value.  The range is from 0 to 2.
-   bool bAllowSuperBlack;        // If true, allows an input video signal that is below 7.5 IRE.
-   bool bAllowSuperWhite;        // If true, allows an input video signal that is above 100 IRE.
-   bool bEnableChromaClipping;   // If true, clips over-saturated chroma levels in the active portion of the input video signal.
-   bool bUpscaleKeyLuma;         // If true, upscales the luminance range of the input key signal from 16-235 to 0-255.
-                                    // If the video's input stream is connected to a node containing YUV 4:2:2, bUpscaleKeyLuma is ignored.
-   bool bInvertKeyLuma;          // If true, inverts the luminance part of the key signal and inverts the key value.
-                                    // If the video's input stream is connected to a node containing YUV 4:2:2, bInvertKeyLuma is ignored.
-   bool bApplyKeyLumaOffset;     // If true, applies an offset to the luminance values so that the inverted 
-                                    // result falls within the 0-255 range. The offset can only be applied if 
-                                    // the luminance part of the key signal is inverted (bInvertKeyLuma = true), and the luminance range of the 
-                                    // key signal is upscaled (bUpscaleKeyLuma = true).
-                                    // If the video's input stream is connected to a node containing YUV 4:2:2, bApplyKeyLumaOffset is ignored.
+   double dBrightness;                        // Indicates the brightness value.  The range is from -92.5 to 92.5.
+   double dLumaGain;                          // Indicates the luma gain value.  The range is from 0 to 2.
+   double dHue;                               // Indicates the hue value.  The range is from 0 to 360.
+   double dSaturation;                        // Indicates the saturation value.  The range is from 0 to 2.
+   bool bAllowSuperBlack;                     // If true, allows an input video signal that is below 7.5 IRE.
+   bool bAllowSuperWhite;                     // If true, allows an input video signal that is above 100 IRE.
+   bool bEnableChromaClipping;                // If true, clips over-saturated chroma levels in the active portion of the input video signal.
+   bool bUpscaleKeyLuma;                      // If true, upscales the luminance range of the input key signal from 16-235 to 0-255.
+                                              // If the video's input stream is connected to a node containing YUV 4:2:2, bUpscaleKeyLuma is ignored.
+   bool bInvertKeyLuma;                       // If true, inverts the luminance part of the key signal and inverts the key value.
+                                              // If the video's input stream is connected to a node containing YUV 4:2:2, bInvertKeyLuma is ignored.
+   bool bApplyKeyLumaOffset;                  // If true, applies an offset to the luminance values so that the inverted 
+                                                 // result falls within the 0-255 range. The offset can only be applied if 
+                                                 // the luminance part of the key signal is inverted (bInvertKeyLuma = true), and the luminance range of the 
+                                                 // key signal is upscaled (bUpscaleKeyLuma = true).
+                                              // If the video's input stream is connected to a node containing YUV 4:2:2, bApplyKeyLumaOffset is ignored.
+   bool bForceOpaqueKey;                      // If true, the RGBA conversion will generate an opaque key. If false, it will generate a transparent key.
 };
 
 //
@@ -3413,29 +3468,33 @@ struct SMvVideoInputStreamSettings
 //
 struct SMvVideoOutputStreamSettings
 {
-   bool bAllowSuperBlack;              // If true, allows an output video signal that is below 7.5 IRE.
-   bool bAllowSuperWhite;              // If true, allows an output video signal that is above 100 IRE.
-   bool bEnableChromaClipping;         // If true, clips over-saturated chroma levels in the active portion of the output video signal.
-   bool bDownscaleKeyLuma;             // If true, downscales the luminance range of the output key signal from 0-255 to 16-235.
-                                          // If the video's output stream is connected to a node containing YUV 4:2:2, bDownscaleKeyLuma is ignored.
-   bool bInvertKeyLuma;                // If true, inverts the luminance part of the output key signal and inverts the key value.
-                                          // If the video's output stream is connected to a node containing YUV 4:2:2, bInvertKeyLuma is ignored.
-   bool bApplyKeyLumaOffset;           // If true, applies an offset to the luminance values so that the inverted result 
-                                          // falls within the 16-235 range. The offset can only be applied if the
-                                          // luminance part of the key signal is inverted (bInvertKeyLuma = true), and the luminance range of the 
-                                          // key signal is downscaled (bDownscaleKeyLuma = true).
-                                          // If the video's output stream is connected to a node containing YUV 4:2:2, bApplyKeyLumaOffset is ignored.
-   bool bEnableEdgeSharpeningFilter;   // If true, enables an edge sharpening filter to the digital output video. The filter reduces
-                                       // ringing artifacts that appear as a result of high amplitude transitions in the digital signal.
-   bool bEnableVideoMixer;             // If true, enables the in-line video mixer.
-   bool bIsVideoShaped;                // If true and the video mixer is enabled, the video signal to the in-line video mixer from the auxiliary input (video from the output stream's node) 
-                                          // is already multiplied by its alpha plane.
+   bool bAllowSuperBlack;                // If true, allows an output video signal that is below 7.5 IRE.
+   bool bAllowSuperWhite;                // If true, allows an output video signal that is above 100 IRE.
+   bool bEnableChromaClipping;           // If true, clips over-saturated chroma levels in the active portion of the output video signal.
+   bool bDownscaleKeyLuma;               // If true, downscales the luminance range of the output key signal from 0-255 to 16-235.
+                                            // If the video's output stream is connected to a node containing YUV 4:2:2, bDownscaleKeyLuma is ignored.
+   bool bInvertKeyLuma;                  // If true, inverts the luminance part of the output key signal and inverts the key value.
+                                            // If the video's output stream is connected to a node containing YUV 4:2:2, bInvertKeyLuma is ignored.
+   bool bApplyKeyLumaOffset;             // If true, applies an offset to the luminance values so that the inverted result 
+                                            // falls within the 16-235 range. The offset can only be applied if the
+                                            // luminance part of the key signal is inverted (bInvertKeyLuma = true), and the luminance range of the 
+                                            // key signal is downscaled (bDownscaleKeyLuma = true).
+                                            // If the video's output stream is connected to a node containing YUV 4:2:2, bApplyKeyLumaOffset is ignored.
+   bool bEnableEdgeSharpeningFilter;     // If true, enables an edge sharpening filter to the digital output video. The filter reduces
+                                         // ringing artifacts that appear as a result of high amplitude transitions in the digital signal.
+   bool bEnableVideoMixer;               // If true, enables the in-line video mixer.
+   bool bIsVideoShaped;                  // If true and the video mixer is enabled, the video signal to the in-line video mixer from the auxiliary input (video from the output stream's node) 
+                                            // is already multiplied by its alpha plane.
    uint64_t ui64AdvancedDelayInNanoTime; // Indicates the delay (in nanotime) that will be applied to an output stream's input. The value must be frame aligned.
-                                         // The advanced delay must be less than the node depth minus the node's write-to-read delay minus three frames. That is, <p>
-                                         // <i> Advance delay < node depth - node's write-to-read delay - 3 frames </i>
-   EMvVideoMixerVancSource           eVideoMixerVancSource;          // Indicates the source for the vertical ancillary data. Only valid if the video mixer is enabled (bEnableVideoMixer = true)
-   EMvVideoMixerAudioAndHancSource   eVideoMixerAudioAndHancSource;  // Indicates the source for the audio and horizontal ancillary data. Only valid if the video mixer is enabled (bEnableVideoMixer = true)
-   bool bEnableMechanicalBypass;       //If true, the mechanical bypass is activated. For more information on the mechanical bypass input to output connections depending on the card, see the <i>Matrox DSX Topology API User Guide</i>.
+                                            // The advanced delay must be less than the node depth minus the node's write-to-read delay minus three frames. That is, <p>
+                                            // <i> Advance delay < node depth - node's write-to-read delay - 3 frames </i>
+   EMvVideoMixerVancSource           eVideoMixerVancSource;         // Indicates the source for the vertical ancillary data. Only valid if the video mixer is enabled (bEnableVideoMixer = true)
+   EMvVideoMixerAudioAndHancSource   eVideoMixerAudioAndHancSource; // Indicates the source for the audio and horizontal ancillary data. Only valid if the video mixer is enabled (bEnableVideoMixer = true)
+   bool bEnableMechanicalBypass;         // If true, the mechanical bypass is activated. For more information on the mechanical bypass input to output connections depending on the card, see the <i>Matrox DSX Topology API User Guide</i>.
+   double dVideoMixerNodeTransparency;   // Indicates the transparency that will be applied to the images coming from the node if the inline mixer is enabled.
+                                            // The range is from zero (completely transparent) to one (completely opaque).
+   bool bEnableARGBChromaFiltering;      // If true, apply filtering on the generated chroma when converting from ARGB to YUYV color space.
+                                            // Applies only to ARGB nodes.
 };
 
 //
@@ -3452,28 +3511,28 @@ struct SMvAudioPairStatus
 
 //
 // Summary:
-//    Enumerates each Sfp on the card.
+//    Identifies each SFP+ transceiver on the card.
 //
 enum EMvSfpLabel
 {
-   keMvSfpLabelInvalid = 0,
-   keMvSfpLabelA,
-   keMvSfpLabelB,
-   keMvSfpLabelC,
-   keMvSfpLabelD,
-   keMvSfpLabelE,
-   keMvSfpLabelF,
-   keMvSfpLabelG,
-   keMvSfpLabelH,
-   keMvSfpLabelI,
-   keMvSfpLabelJ,
-   keMvSfpLabelK,
-   keMvSfpLabelL,
-   keMvSfpLabelM,
-   keMvSfpLabelN,
-   keMvSfpLabelO,
-   keMvSfpLabelP,
-   keMvSfpLabelLast
+   keMvSfpLabelInvalid = 0,   // Invalid value.
+   keMvSfpLabelA,             // Indicates SFP transceiver A.
+   keMvSfpLabelB,             // Indicates SFP transceiver B.
+   keMvSfpLabelC,             // Indicates SFP transceiver C.
+   keMvSfpLabelD,             // Indicates SFP transceiver D.
+   keMvSfpLabelE,             // Indicates SFP transceiver E.
+   keMvSfpLabelF,             // Indicates SFP transceiver F.
+   keMvSfpLabelG,             // Indicates SFP transceiver G.
+   keMvSfpLabelH,             // Indicates SFP transceiver H.
+   keMvSfpLabelI,             // Indicates SFP transceiver I.
+   keMvSfpLabelJ,             // Indicates SFP transceiver J.
+   keMvSfpLabelK,             // Indicates SFP transceiver K.
+   keMvSfpLabelL,             // Indicates SFP transceiver L.
+   keMvSfpLabelM,             // Indicates SFP transceiver M.
+   keMvSfpLabelN,             // Indicates SFP transceiver N.
+   keMvSfpLabelO,             // Indicates SFP transceiver O.
+   keMvSfpLabelP,             // Indicates SFP transceiver P.
+   keMvSfpLabelLast           // End of list indicator.
 };
 
 #define MV_SFP_LABEL_ENUM_TO_STRING(eLabel) \
@@ -3499,20 +3558,46 @@ enum EMvSfpLabel
 
 //
 // Summary:
-//    Describes the SdiIp input connector settings.
+//    Describes the SDI IP input connector settings.
 //
 struct SMvSdiIpInputConnectorSettings
 {
    uint32_t ui32Size;                           // Structure size in bytes.
-   uint32_t ui32MulticastFilterIPv4Address;     // Multicast IPv4 address (Dst IPv4 in an IP Reception).
-   uint16_t ui16LocalUDPPort;                   // Local UDP port (Dst UDP port in an IP Reception).
-   uint32_t ui32DistantIPv4Address;             // Distant IPv4 address (Src IPv4 in an IP Reception). Not used in Multicast.
-   uint16_t ui16DistantUDPport;                 // Distant UDP port (Src UDP port in an IP Reception). Not used in Multicast.
+   uint32_t ui32MulticastFilterIPv4Address;     // Indicates the reception multicast IPv4 address.
+   uint16_t ui16LocalUDPPort;                   // Indicates the reception User Datagram Protocol (UDP) port.
+   uint32_t ui32DistantIPv4Address;             // Distant IPv4 address. For future use.
+   uint16_t ui16DistantUDPport;                 // Distant UDP port. For future use.
 };
 
 //
 // Summary:
-//    Describes the SdiIp output connector settings.
+//    Describes the SDI IP output connector settings.
+// Description:
+//<table>
+// Resolution                          Vtotal (in pixels)    Htotal (in pixels)    Approximate duration of a pixel (in seconds)
+// -------------------                 -------------------   ------------------    ---------------------------------------------
+// NTSC                                525                   858                   74.074 x 10<sup>-9</sup>
+// PAL                                 625                   864                   74.074 x 10<sup>-9</sup>
+// 720p at 23.98 fps                   750                   4125                  13.481 x 10<sup>-9</sup>
+// 720p at 24 fps                      750                   4125                  13.468 x 10<sup>-9</sup>
+// 720p at 25 fps                      750                   3960                  13.468 x 10<sup>-9</sup>
+// 720p at 29.97 fps                   750                   3300                  13.481 x 10<sup>-9</sup>
+// 720p at 30 fps                      750                   3300                  13.468 x 10<sup>-9</sup>
+// 720p at 50 fps                      750                   1980                  13.468 x 10<sup>-9</sup>
+// 720p at 59.94 fps                   750                   1650                  13.481 x 10<sup>-9</sup>
+// 720p at 60 fps                      750                   1650                  13.468 x 10<sup>-9</sup>
+// 1080i at 25 fps                     1125                  2640                  13.468 x 10<sup>-9</sup>
+// 1080i at 29.97 fps                  1125                  2200                  13.481 x 10<sup>-9</sup>
+// 1080i at 30 fps                     1125                  2200                  13.468 x 10<sup>-9</sup>
+// 1080p at 23.98 fps                  1125                  2750                  13.481 x 10<sup>-9</sup>
+// 1080p at 24 fps                     1125                  2750                  13.468 x 10<sup>-9</sup>
+// 1080p at 25 fps                     1125                  2640                  13.468 x 10<sup>-9</sup>
+// 1080p at 29.97 fps                  1125                  2200                  13.481 x 10<sup>-9</sup>
+// 1080p at 30 fps                     1125                  2200                  13.468 x 10<sup>-9</sup>
+// 1080p at 50 fps (3G Level A)        1125                  2640                  6.734 x 10<sup>-9</sup>
+// 1080p at 59.94 fps (3G Level A)     1125                  2200                  6.740 x 10<sup>-9</sup>
+// 1080p at 60 fps (3G Level A)        1125                  2200                  6.734 x 10<sup>-9</sup>
+// </table>
 //
 struct SMvSdiIpOutputConnectorSettings
 {
@@ -3544,55 +3629,108 @@ struct SMvSdiIpOutputConnectorSettings
                                                    // Older equipment will not work properly if DBN in audio data packets is activated
                                                    // to the extent that the video may be corrupted.  
                                                    // If the video is corrupted, do not use embedded audio DBN. 
-   uint32_t ui32RTPSyncSourceIdentifier;  // RTP Synchronization Source Identifier
-   uint32_t ui32TypeOfServiceDSCP;        // Type of Service (ToS): Differentiated Service Code Point (DSCP). Range is [0..63] (6 bits)
-   uint32_t ui32TypeOfServiceECN;         // Type of Service (ToS): Explicit Congestion Notification (ECN) [0..3] (2 bits)
-   uint32_t ui32TimeToLiveInSeconds;      // Time to live (TTL) of the packets.
-   uint16_t ui16LocalUDPPort;             // Local UDP port (Src UDP port in an IP Transmission).
-   uint32_t ui32DistantIPv4Address;       // Distant IPv4 address (Dst IPv4 in an IP Transmission).
-   uint16_t ui16DistantUDPport;           // Distant UDP port (Dst UDP port in an IP Transmission).
+   uint32_t ui32RTPSyncSourceIdentifier;  // Indicates the RTP (Real-time Transfer Protocol) Synchronization Source Identifier (SSRC).
+   uint32_t ui32TypeOfServiceDSCP;        // Indicates that the Type of Service (ToS) is Differentiated Service Code Point (DSCP). Range is [0..63] (6 bits).
+   uint32_t ui32TypeOfServiceECN;         // Indicates that the Type of Service (ToS) is Explicit Congestion Notification (ECN). Range is [0..3] (2 bits).
+   uint32_t ui32TimeToLiveInSeconds;      // Indicates the time in which packets can be used in seconds. That is, it indicates the packets' Time to live (TTL).
+   uint16_t ui16LocalUDPPort;             // Indicates the User Datagram Protocol (UDP) port of the sender (that is, transmitter). 
+   uint32_t ui32DistantIPv4Address;       // Indicates the IPv4 address of the destination (that is, receiver). Only used in multicast.
+   uint16_t ui16DistantUDPport;           // Indicates the UDP port of the destination (that is, receiver).
 };
 
 //
 // Summary:
-//    Describes the SfpIp settings.
+//    Describes the generic ASPEN connector settings.
+// Description:
+//
+struct SMvAspenConnectorSettings
+{
+   uint32_t ui32Size;                     // Structure size in bytes.
+   uint32_t ui32RTPSyncSourceIdentifier;  // Indicates the RTP (Real-time Transfer Protocol) Synchronization Source Identifier (SSRC).
+   uint32_t ui32TypeOfServiceDSCP;        // Indicates that the Type of Service (ToS) is Differentiated Service Code Point (DSCP). Range is [0..63] (6 bits).
+   uint32_t ui32TypeOfServiceECN;         // Indicates that the Type of Service (ToS) is Explicit Congestion Notification (ECN). Range is [0..3] (2 bits).
+   uint32_t ui32TimeToLiveInSeconds;      // Indicates the time in which packets can be used in seconds. That is, it indicates the packets' Time to live (TTL).
+   uint16_t ui16LocalUDPPort;             // Indicates the User Datagram Protocol (UDP) port of the sender (that is, transmitter). 
+   uint32_t ui32DistantIPv4Address;       // Indicates the IPv4 address of the destination (that is, receiver). Only used in multicast.
+   uint16_t ui16DistantUDPport;           // Indicates the UDP port of the destination (that is, receiver).
+   uint16_t ui16PID;                      // Indicates the Program Identifier (PID) of the connector. Range is [0..8191] (13 bits).
+};
+
+//
+// Summary:
+//    Describes the ASPEN video output connector settings.
+// Description:
+//
+typedef SMvAspenConnectorSettings SMvAspenVideoOutputConnectorSettings;
+
+
+//
+// Summary:
+//    Describes the ASPEN audio output connector settings.
+//
+typedef SMvAspenConnectorSettings SMvAspenAudioOutputConnectorSettings;
+
+//
+// Summary:
+//    Describes the ASPEN VANC output connector settings.
+//
+typedef SMvAspenConnectorSettings SMvAspenVancOutputConnectorSettings;
+
+//
+// Summary:
+//    Describes the SFP+ transceiver settings.
 //
 struct SMvSfpIpSettings
 {
    uint32_t ui32Size;                     // Structure size in bytes.
-   uint32_t ui32IPv4Address;              // Static IPv4 address.
-   bool     bEnableVirtualLAN;            // If true, enables the Virtual LAN.
-   uint32_t ui32VirtualLANTagPCP;         // Virtual LAN tag: Priority Code Point (PCP). Range is [0..7] (3 bits)
-   bool     bEnableVirtualLANTagDEI;      // Virtual LAN tag: Drop Eligible Indicator (DEI)
-   uint32_t ui32VirtualLANTagVID;         // Virtual LAN tag: Identifier (VID). Range is [0..4095] (12 bits)
+   uint32_t ui32IPv4Address;              // Indicates the static IPv4 address.
+   bool     bEnableVirtualLAN;            // If true, enables the Virtual LAN (VLAN).
+   uint32_t ui32VirtualLANTagPCP;         // Indicates the Priority Code Point (PCP). This is a 3-bit field with a range of 0 to 7.
+   bool     bEnableVirtualLANTagDEI;      // If true, enables the Drop Eligible Indicator (DEI) within the VLAN.
+   uint32_t ui32VirtualLANTagVID;         // Indicates the VLAN identifier (VID). This is a 12-bit field with a range of 0 to 4095.
 };
 
 //
 // Summary:
-//    Describes the SfpIp input status.
+//    Describes the SFP+ transceiver input status.
 //
 struct SMvSfpIpStatus
 {
    uint32_t ui32Size;                     // Structure size in bytes.
-   bool     bModulePresent;               // Indicates if a Sfp module is present on Sfp cage.
-   bool     bSignalPresent;               // Indicates if a IP signal is present on the Sfp module.
-   bool     bTransmitError;               // Indicates a Transmission error on the IP.
+   bool     bModulePresent;               // If true, indicates that an SFP+ transceiver is inserted in an SFP port.
+   bool     bSignalPresent;               // If true, indicates that an IP signal is detected by the SFP+ transceiver.
+   bool     bTransmitError;               // If true, indicates that an IP transmission error occurred.
 };
 
 //
 // Summary:
-//    Describes the SfpIp capabilities.
+//    Describes the SFP+ transceiver input status.
+//
+struct SMvSfpSdiStatus
+{
+   uint32_t       ui32Size;                  // Structure size in bytes.
+   bool           bModulePresent;            // If true, indicates that an SFP+ transceiver is inserted in an SFP port.
+   bool           bSupportedModule;          // If false, the brand and make of the SFP+ transceiver is not supported.
+   bool           bCorrectModuleDirection;   // If false, the SFP+ transceiver direction does not match the direction 
+                                             // of the SFP port. For example, an output SFP+ transceiver is inserted
+                                             // in an output SFP port.
+   SMvSfpSerialId sSerialId;                 // Indicates the SFP+ transceiver EEPROM data. Valid only when bModulePresent is true.
+};
+
+//
+// Summary:
+//    Describes the SFP+ transceiver capabilities.
 //
 struct SMvSfpIpCapabilities
 {
    uint32_t ui32Size;                        // Structure size in bytes.
-   uint32_t ui32OutputStreamSdiIPmaxCount;   // Indicates the amount of SdiIp Outputs available on the Sfp.
-   uint32_t ui32InputStreamSdiIPmaxCount;    // Indicates the amount of SdiIp Inputs available on the Sfp.
+   uint32_t ui32OutputStreamSdiIPmaxCount;   // Indicates the number of SDI IP outputs available on the SFP+ transceiver.
+   uint32_t ui32InputStreamSdiIPmaxCount;    // Indicates the number of SDI IP inputs available on the SFP+ transceiver.
 };
 
 //
 // Summary:
-//    Describes the SdiIp input status.
+//    Describes the SDI IP input status.
 //
 struct SMvSdiIpConnectorStatus
 {
@@ -3603,11 +3741,188 @@ struct SMvSdiIpConnectorStatus
    bool              bIsSMPTE352PayloadIdValid;    // If true, the SMPTE 352 payload ID is valid.
    USMPTE352Id       uSMPTE352PayloadId;           // Returns the SMPTE 352 payload ID.
    bool              bIsIPPacketPresent;           // If true, IP packets are present in the signal.
-   bool              bIsMacAddressMatch;           // If true, Mac addresses on IP packets match Mac addresses on SdiIp input connector.
-   bool              bIsIPv4AddressMatch;          // If true, IPv4 addresses on IP packets match IPv4 addresses on SdiIp input connector settings.
-   bool              bIsUDPPortMatch;              // If true, UDP ports on IP packets match UDP ports on SdiIp input connector settings.
-   uint32_t          ui32RTPSyncSourceIdentifier;  // Indicates the RTP Synchronization Source Identifier.
+   bool              bIsMacAddressMatch;           // If true, Mac addresses on IP packets match Mac addresses on SDI IP input connector.
+   bool              bIsIPv4AddressMatch;          // If true, IPv4 addresses on IP packets match IPv4 addresses on SDI IP input connector settings.
+   bool              bIsUDPPortMatch;              // If true, User Datagram Protocol (UDP) ports on IP packets match UDP ports on SDI IP input connector settings.
+   uint32_t          ui32RTPSyncSourceIdentifier;  // Indicates the RTP (Real-time Transport Protocol) Synchronization Source Identifier (SSRC).
    bool              bIsHwInputOverflow;           // Indicates an overflow error on the hardware IP packets processing module.
+};
+
+//
+// Summary:
+//    Describes identification of the SMPTE 2059 network clock.
+//
+typedef union UMvMasterClockIdentity
+{
+   uint8_t  aui8Bytes[8];  // Specifies the PTP IEEE1588 clock identification as an array of bytes.
+   uint64_t ui64All;       // Specifies the PTP IEEE1588 clock identification as a 64 bits value.
+} TMvMasterClockIdentity;
+
+//
+// Summary:
+//    Specifies the type network delay mechanism used for communication with the SMPTE 2059 master clock.
+//
+enum EMvSmpte2059DelayMechanism
+{
+   keMvSmpte2059DelayMechanismInvalid,       // Invalid value
+   keMvSmpte2059DelayMechanismEndToEnd,      // Indicates that the end-to-end delay mechanism is used.
+   keMvSmpte2059DelayMechanismPeerToPeer,    // Indicates that the pear-to-pear delay mechanism is used.
+   keMvSmpte2059DelayMechanismLast           // End of list indicator.
+};
+
+#define MV_ST2059_DELAYMECHANISM_ENUM_TO_STRING(eSmpte2059DelayMechanism) \
+   ((eSmpte2059DelayMechanism == keMvSmpte2059DelayMechanismInvalid)   ? ("Invalid") : \
+   (eSmpte2059DelayMechanism == keMvSmpte2059DelayMechanismEndToEnd)   ? ("EndToEnd") : \
+   (eSmpte2059DelayMechanism == keMvSmpte2059DelayMechanismPeerToPeer) ? ("PeerToPeer") : \
+   (eSmpte2059DelayMechanism == keMvSmpte2059DelayMechanismLast)       ? ("Last") : \
+   ("???"))
+
+//
+// Summary:
+//    Specifies the type of internet protocol connection to use for the SMPTE 2059 master clock.
+//
+enum EMvSmpte2059IpMode
+{
+   keMvSmpte2059IpModeInvalid,      // Invalid value
+   keMvSmpte2059IpModeMulticast,    // Indicates the connection is done using multicast.
+   keMvSmpte2059IpModeUnicast,      // Indicates the connection is done using unicast.
+   keMvSmpte2059IpModeHybrid,       // Indicates the connection is done using hybrid mode.
+   keMvSmpte2059IpModeLast          // End of list indicator.
+};
+
+#define MV_ST2059_IPMODE_ENUM_TO_STRING(eSmpte2059IpMode) \
+   ((eSmpte2059IpMode == keMvSmpte2059IpModeInvalid)  ? ("Invalid") : \
+   (eSmpte2059IpMode == keMvSmpte2059IpModeLast)      ? ("Last") : \
+   (eSmpte2059IpMode == keMvSmpte2059IpModeMulticast) ? ("Multicast") : \
+   (eSmpte2059IpMode == keMvSmpte2059IpModeUnicast)   ? ("Unicast") : \
+   (eSmpte2059IpMode == keMvSmpte2059IpModeHybrid)    ? ("Hybrid") : \
+   ("???"))
+
+//
+// Summary:
+//    Specifies the state of the card SMPTE 2059 signal.
+// Note:
+//    For more information about the genlock states, see the <i>Matrox DSX.sdk User Guide</i>.
+//
+enum EMvSmpte2059State
+{
+   keMvSmpte2059StateInvalid,          // Invalid value
+   keMvSmpte2059StateInitializing,     // Indicates an initializing connection with the time server.
+   keMvSmpte2059StateFaulty,           // Indicates a faulty connection with the time server.
+   keMvSmpte2059StateDisabled,         // Indicates ???
+   keMvSmpte2059StateListening,        // Indicates ???
+   keMvSmpte2059StatePreMaster,        // Indicates ???
+   keMvSmpte2059StateMaster,           // Indicates ???
+   keMvSmpte2059StatePassive,          // Indicates ???
+   keMvSmpte2059StateUncalibrated,     // Indicates ???
+   keMvSmpte2059StateSlaveUnlocked,    // Indicates that a time server is being followed but the card is not locked 
+                                       // to it.
+   keMvSmpte2059StateSlaveLocked,      // Indicates that a time server is being followed and the card is locked 
+                                       // to the signal.
+   keMvSmpte2059StateLast              // End of list indicator.
+};
+
+#define MV_ST2059_STATE_ENUM_TO_STRING(eSmpte2059State) \
+   ((eSmpte2059State == keMvSmpte2059StateInvalid)      ? ("Invalid") : \
+   (eSmpte2059State == keMvSmpte2059StateLast)          ? ("Last") : \
+   (eSmpte2059State == keMvSmpte2059StateInitializing)  ? ("Initializing") : \
+   (eSmpte2059State == keMvSmpte2059StateFaulty)        ? ("Faulty") : \
+   (eSmpte2059State == keMvSmpte2059StateDisabled)      ? ("Disabled") : \
+   (eSmpte2059State == keMvSmpte2059StateListening)     ? ("Listening") : \
+   (eSmpte2059State == keMvSmpte2059StatePreMaster)     ? ("PreMaster") : \
+   (eSmpte2059State == keMvSmpte2059StateMaster)        ? ("Master") : \
+   (eSmpte2059State == keMvSmpte2059StatePassive)       ? ("Passive") : \
+   (eSmpte2059State == keMvSmpte2059StateUncalibrated)  ? ("Uncalibrated") : \
+   (eSmpte2059State == keMvSmpte2059StateSlaveUnlocked) ? ("SlaveUnlocked") : \
+   (eSmpte2059State == keMvSmpte2059StateSlaveLocked)   ? ("SlaveLocked") : \
+   ("???"))
+ 
+//
+// Summary:
+//    Specifies the algorithm to select the best master clock to control the card SMPTE 2059 signal.
+// Note:
+//    For more information about the best master clock selection algorithm, see the <i>Matrox DSX.sdk User Guide</i>.
+//
+enum EMvSmpte2059BestMasterSelection
+{
+   keMvSmpte2059BestMasterSelectionInvalid,     // Invalid value
+   keMvSmpte2059BestMasterSelectionAutomatic,   // The best master clock is automatically selected.
+   keMvSmpte2059BestMasterSelectionSfpLabelA,   // Always choose the master clock from SFP cage A.
+   keMvSmpte2059BestMasterSelectionSfpLabelB,   // Always choose the master clock from SFP cage B.
+   keMvSmpte2059BestMasterSelectionLast         // End of list indicator.
+};
+
+#define MV_ST2059_BESTMASTERSELECTION_ENUM_TO_STRING(eSmpte2059BestMasterSelection) \
+   ((eSmpte2059BestMasterSelection == keMvSmpte2059BestMasterSelectionInvalid)  ? ("Invalid") : \
+   (eSmpte2059BestMasterSelection == keMvSmpte2059BestMasterSelectionLast)      ? ("Last") : \
+   (eSmpte2059BestMasterSelection == keMvSmpte2059BestMasterSelectionAutomatic) ? ("Automatic") : \
+   (eSmpte2059BestMasterSelection == keMvSmpte2059BestMasterSelectionSfpLabelA) ? ("SfpLabelA") : \
+   (eSmpte2059BestMasterSelection == keMvSmpte2059BestMasterSelectionSfpLabelB) ? ("SfpLabelB") : \
+   ("???"))
+
+//
+// Summary:
+//    Specifies the PTP IEEE 1588 time of day from epoch time (Midnight, 1 January 1970).
+// Description:
+//    The value is 64 bits from epoch time in seconds and fraction of seconds. It will loop around in January 2038.
+//    The value can also be sued as a positive or negative relative value.
+//
+struct SMvTimeOfDay
+{
+   int32_t  i32Seconds;       // Indicates the number of seconds since epoch time.
+   int32_t  i32NanoSeconds;   // Indicates the fraction of seconds in nanoseconds.
+};
+
+//
+// Summary:
+//    Specifies settings of the card SMPTE 2059 source.
+//
+struct SMvSmpte2059Settings
+{
+   uint32_t ui32Size;                                                // Structure size in bytes.
+   EMvSmpte2059BestMasterSelection eBestMasterSelectionAlgorithm;    // Indicates the master clock selection algorithm 
+                                                                     // between the SFP cages on the card.
+};
+
+//
+// Summary:
+//    Specifies the status of the card SMPTE 2059 source.
+//
+struct SMvSmpte2059Status
+{
+   uint32_t ui32Size;                           // Structure size in bytes.
+   EMvSmpte2059State eState;                    // Indicates the state of the SMPTE 2059 source.
+   EMvSfpLabel eBestMasterClockSfpLabel;        // Indicates the SFP cage that is used as a master clock.
+   TMvMasterClockIdentity oBestMasterClockId;   // Indicates the identity of the master clock.
+};
+
+//
+// Summary:
+//    Specifies the settings the SMPTE 2059 SFP.
+//
+struct SMvSmpte2059SfpSettings
+{
+   uint32_t ui32Size;                           // Structure size in bytes.
+   uint32_t ui32TypeOfServiceDSCP;              // Indicates that the Type of Service (ToS) is Differentiated Service Code Point (DSCP). Range is [0..63] (6 bits).
+   EMvSmpte2059DelayMechanism eDelayMechanism;  // Indicates the type of delay mechanism to use with the time server 
+                                                // connection.
+   EMvSmpte2059IpMode eIpMode;                  // Indicates the type of internet protocol mode to use with the time 
+                                                // server connection.
+   uint8_t ui8MasterClockDomainNumber;          // Indicates the time server clock domain to listen to.
+};
+
+//
+// Summary:
+//    Specifies the diagnostic informations of the SMPTE 2059 SFP.
+//
+struct SMvSmpte2059SfpTelemetry
+{
+   uint32_t ui32Size;                           // Structure size in bytes.
+   TMvMasterClockIdentity oBestMasterClockId;   // Indicates the clock identity of the best master clock for the SFP
+   int32_t i32OffsetFromMaster;                 // Indicates the computed offset of the best master clock for the SFP 
+                                                // and the master clock.
+   SMvTimeOfDay sLastCorrection;                // Indicates the time of day of the last correction done on the SFP 
+   EMvSmpte2059State eState;                    // Indicates the state of the SMPTE 2059 source for the SFP.
 };
 
 //
@@ -3820,6 +4135,7 @@ struct SMvNodeSettingsVanc
                                        // and keMvSurfaceFormatMatroxAncillaryData are valid for indicating the VANC data format.
 };
 
+
 //
 // Summary:
 //    Describes the node's settings.
@@ -3828,22 +4144,27 @@ struct SMvNodeSettingsVanc
 //   Type of stream to which node is connected       <i> xmin </i>       <i> x </i>  
 // -----------------------------------------     -----------------   --------------
 // Input stream                                  2 <sup>a</sup>      4           
-// Output stream                                 1                   3           
-// Transform stream (input)                      1 <sup>b</sup>      3 <sup>c</sup>        
-// Transform stream (output)                     1 <sup>d</sup>      3           
+// Output stream                                 1 <sup>b</sup>      3           
+// Transform stream (input)                      1 <sup>c</sup>      3 <sup>d</sup>        
+// Transform stream (output)                     1 <sup>e f</sup>    3           
 // Mixer stream (output)                         1                   3           
 // De-interlacer stream (input)                  1                   3           
-// De-interlacer stream (output)                 1                   3           
-// Transfer stream (input) <sup>e</sup>          1                   3           
-// Transfer stream (output) <sup>e</sup>         1                   3           
+// De-interlacer stream (output)                 1 <sup>f</sup>      3           
+// Transfer stream (input) <sup>g</sup>          1                   3           
+// Transfer stream (output) <sup>g</sup>         1                   3     
+// Reader stream                                 1                   7           
+// Writer stream                                 1                   7           
 // </table>
 // Remarks:
-// - <sup>a</sup> For Matrox X.mio3 and DSX LE4, xmin is 1 when the system clock is derived from an input or a genlock source that is genlocked to an SDI input or a black burst source.  
-//   If a black burst source is used, all the SDI inputs must be V-sync aligned to the black burst V-sync with a tolerance of 650 µs.
-// - <sup>b</sup> xmin is 4 in the case of a 3:2 pulldown or frame rate change from 50, 59.94, or 60 fps to 25, 29.97, or 30 fps.
-// - <sup>c</sup> x is 4 when the resolution is changed from interlaced video with a frame rate of 25, 29.97, or 30 fps to progressive video with a frame rate of 50, 59.94, or 60 fps.
-// - <sup>d</sup> xmin is 2 for a UHD resolution with a frame rate of 50, 59.94, or 60 fps.
-// - <sup>e</sup> If two transfer streams use the same host node, the write-to-read delay must be at least 3 frames.
+// - <sup>a</sup> For Matrox X.mio3 (12G, IP, FH, LP) and DSX LE4, xmin is 1 when the system clock is derived from an input, or a genlock source that is genlocked to an SDI input or a black burst source.  
+//   If a black burst source is used, all the SDI inputs must be aligned to the black burst with a tolerance of 650 µs.
+// - <sup>b</sup> For Matrox X.mio3 (12G, IP, FH, LP) and DSX LE4, xmin can be zero when a low latency output stream is required. In this case, the node content must be ready at
+//   least 8 ms before it is sent to the output stream.
+// - <sup>c</sup> xmin is 4 in the case of a 3:2 pulldown or frame rate change from 50, 59.94, or 60 fps to 25, 29.97, or 30 fps.
+// - <sup>d</sup> x is 4 when the resolution is changed from interlaced video with a frame rate of 25, 29.97, or 30 fps to progressive video with a frame rate of 50, 59.94, or 60 fps.
+// - <sup>e</sup> xmin is 2 for a UHD resolution with a frame rate of 50, 59.94, or 60 fps.
+// - <sup>f</sup> xmin is 2 when Matrox Ancillary Data is used.
+// - <sup>g</sup> If two transfer streams use the same host node, the write-to-read delay must be at least 3 frames.
 //
 struct SMvNodeSettings
 {
@@ -3955,7 +4276,7 @@ struct SMvVideoTransformSettings
    uint32_t ui32VerticalFilterManualValue;     // When vertical filter control is manual, indicates the selected sharpness control value.
                                                    // Range is 0 to 9. Typical value is "3". A value of "0" disables filtering. Lower values will generate sharper images,
                                                    // higher values will generate softer images. 
-   EMvTransformFilterCoefficients eTransformFilterCoefficients; // Selects the transform filter coefficients. Default value is keMvTransformFilterCoeffStandard.
+   EMvTransformFilterCoefficients eTransformFilterCoefficients; // Indicates the filter coefficient used by the transform stream. Default value is keMvTransformFilterCoeffStandard.
 };
 
 //
@@ -4076,6 +4397,19 @@ struct SMvSdiOutputConnectorSettings
    uint32_t ui32Size;                                          // Structure size in bytes.
    SMvSdiVideoOutputConnectorSettings sVideoSettings;          // Structure of the SDI video output connector settings.
    SMvSdiEmbeddedAudioOutputConnectorSettings sAudioSettings;  // Structure of the embedded SDI audio output connector settings.
+};
+
+//
+// Summary:
+//    Describes the default SDI output settings.
+//
+struct SMvSdiOutputDefaultSettings
+{  
+   uint32_t                            ui32Size;                     // Structure size in bytes.
+   SMvSdiVideoOutputConnectorSettings  sConnectorSettings;           // Default SDI video output connector settings.
+   SMvResolutionInfo                   sResInfo;                     // Default SDI output resolution.
+   bool                                bEnableMechanicalBypass;      // If true, enables mechanical bypass for the SDI output.
+                                                                     // For more information on the mechanical bypass input to output connections depending on the card, see the <i>Matrox DSX Topology API User Guide</i>.
 };
 
 //
@@ -4206,7 +4540,8 @@ struct SMvDeInterlacerStreamSettings
    bool     bShowMotionVectors;                   // If true, the output of the de-interlacer stream will show the motion 
                                                   // vector of the de-interlacing process.
    uint32_t ui32IncreaseMotionSensitivity;        // Increases motion sensitivity. Defaut value is 0, range is 0 to 7.
-   uint32_t ui32DecreaseAntiAliasingEdgeSensitivity;  // Decreases Anti-Aliasing Edge Sensitivity. Default value is 0, range 0 to 9.
+   uint32_t ui32DecreaseAntiAliasingEdgeSensitivity;  // Changes the anti-aliasing filter (AAF) control along edges. A value of 0 allows for more filtering, 
+                                                  // while a higher value results in less filtering. Default value is 0, range is 0 to 9.
    bool     bShowAntiAliasingEdgeMap;             // If true, the output of the de-interlacer stream will show the anti-aliasing edge map. Default value is false.
    bool     bProcessVanc;                         // If true, the de-interlacer stream processes the input node's ancillary data.
    bool     bConvertAnalogCEA608ToDigital;        // If true, converts Line 21 to Matrox Ancillary Data VANC format.
@@ -4320,9 +4655,9 @@ enum EMvSystemClockType
    keMvSystemClockTypeInput,        // Specifies that the DSX system clock is ticking at the speed of an input connector.
    keMvSystemClockTypeRendering,    // Specifies that the DSX system clock is ticking at a speed that is a multiple of the genlock clock. 
                                     // The possible values are one, two, four, or eight times the speed of the genlock clock.
-   keMvSystemClockTypeUniversal,    // Specifies that the DSX system clock is ticking at the speed of a hardware independant clock.
-                                    // The speed is decided based on the resolution passed upon creation.
-                                    // It is optionnally synchronized on a NTP server.
+   keMvSystemClockTypeUniversal,    // Specifies that the DSX system clock is ticking at a speed that is independant of hardware.
+                                    // The speed is determined from the resolution that is passed when it is created.
+                                    // It addition, it can be synchronized to an NTP server.
    keMvSystemClockTypeLast          // End of list indicator.
 };
 
@@ -4400,6 +4735,7 @@ enum EMvPciStandard
    keMvPciStandardPciX,       // Indicates that the card has a PCI-X communication bus.
    keMvPciStandardPciExpress, // Indicates that the card has a PCI Express communication bus.
    keMvPciStandardPciExpressGen2, // Indicates that the card has a PCI Express 2.0 communication bus.
+   keMvPciStandardPciExpressGen3, // Indicates that the card has a PCI Express 3.0 communication bus.
    keMvPciStandardPciLast     // End of list indicator.
 };
 
@@ -4409,6 +4745,7 @@ enum EMvPciStandard
    (eValue == keMvPciStandardPciX)        ? _T("PCI-X") : \
    (eValue == keMvPciStandardPciExpress)  ? _T("PCI-E") : \
    (eValue == keMvPciStandardPciExpressGen2)  ? _T("PCI-E Gen2") : \
+   (eValue == keMvPciStandardPciExpressGen3)  ? _T("PCI-E Gen3") : \
    (eValue == keMvPciStandardPciLast)     ? _T("Last") : \
    _T("???"))
 
@@ -4447,6 +4784,7 @@ enum EMvPciBusFrequency
    keMvPciBusFrequency133,       // Indicates that the bus speed is 133 MHz.
    keMvPciBusFrequency2500,      // Indicates that the bus speed is 2.5 GHz.
    keMvPciBusFrequency5000,      // Indicates that the bus speed is 5.0 GHz.
+   keMvPciBusFrequency8000,      // Indicates that the bus speed is 8.0 GHz.
    keMvPciBusFrequencyLast       // End of list indicator.
 };
 
@@ -4458,6 +4796,7 @@ enum EMvPciBusFrequency
    (eValue == keMvPciBusFrequency133)      ? _T("133 MHz") : \
    (eValue == keMvPciBusFrequency2500)     ? _T("2.5 GHz") : \
    (eValue == keMvPciBusFrequency5000)     ? _T("5.0 GHz") : \
+   (eValue == keMvPciBusFrequency8000)     ? _T("8.0 GHz") : \
    (eValue == keMvPciBusFrequencyLast)     ? _T("Last") : \
    _T("???"))
 
@@ -4565,7 +4904,7 @@ struct SMvTimeCodeSettings
 
 //
 // Summary:
-//    Describes the analog linear time code settings.
+//    Describes the analog linear time code (LTC) settings.
 //
 struct SMvALTCSettings
 {
@@ -4717,7 +5056,7 @@ enum EMvPositionNotReadyAction
    _T("???") )
 
 // Summary:
-// Describes the encoding options for the Matrox MPEG-2 Transport Stream.
+//    Describes the encoding options for the Matrox MPEG-2 Transport Stream.
 struct SMvTSEncoderOptions
 {
    uint32_t          ui32Size;                  // Structure size in bytes.
@@ -4794,13 +5133,13 @@ enum EMvSEIPayloadType
 };
 //
 // Summary:
-//    Describes the kind of notification regarding the connection status.
+//    Specifies the DSX Core connection status.
 //
 enum EMvDSXCORENotificationType
 {
-   keMvDSXCORENotificationDisconnected,         // The DSX Core has become disconnected
-   keMvDSXCORENotificationReconnected,          // The DSX Core has reestablished it's connection to the server
-   keMvDSXCORENotificationExpiringSoon          // The DSX core has coming within a given threshold from being released on grounds that the lease will expire
+   keMvDSXCORENotificationDisconnected,         // Indicates that the connection to the DSX Core server is lost.
+   keMvDSXCORENotificationReconnected,          // Indicates that the connection to the DSX Core server is reestablished.
+   keMvDSXCORENotificationExpiringSoon          // Indicates that the DSX Core license is within the grace period and will expire soon if the connection is not reestablished.
 };
 
 //
@@ -4809,7 +5148,7 @@ enum EMvDSXCORENotificationType
 //
 struct SMvDSXCORENotification
 {
-   EMvDSXCORENotificationType      eNotificationType;   // Indicate the type of notification.
+   EMvDSXCORENotificationType      eNotificationType;   // Indicates the type of notification.
 };
 
 //
@@ -4906,4 +5245,14 @@ struct SMvMPEG2TSElementaryStreamPCMAudioDesc
    SMvaWaveFormatInfo sWaveFormat;           // Audio sample description.
 };
 
+//
+// Summary:
+//    Describes extended informations of a MPEG-2 elementary stream chunk of data.
+//
+struct SMvMPEG2TSBufferInfo
+{
+   uint32_t ui32Size;                     // Structure size in bytes.
+   EMvMPEG2TSElementaryStreamType eType;  // Specified the type of elementary stream.
+   uint64_t ui64PTS;                      // Data presentation time in the program.
+};
 

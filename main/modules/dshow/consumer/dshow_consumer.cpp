@@ -38,6 +38,7 @@
 // #include <boost/thread.hpp>
 #include <boost/algorithm/string.hpp>
 // 
+#include <common/executor.h>
 #include <tbb/atomic.h>
 #include <tbb/concurrent_queue.h>
 #include <tbb/parallel_for.h>
@@ -136,6 +137,13 @@ namespace caspar {
 			AudioSampleCalc										m_audCalc;
 			HANDLE 												stream_event_handle;
 
+			caspar::executor									executor_   { L"dshow" };
+
+			int                                                 framerate_interval_ = format_desc_.fps > 0 ? format_desc_.fps : 25;
+			int                                                 framerate_count_ = 0;
+			caspar::timer                                       framerate_timer_;
+			double                                              framerate_ = framerate_interval_;
+
 		public:
 
 			std::future<bool> send(core::const_frame frame)
@@ -148,7 +156,7 @@ namespace caspar {
 			}
 			std::wstring print() const
 			{
-				return L"dshow_consumer[" + config_.name + L"|" + boost::lexical_cast<std::wstring>(channel_index_) + L"|" + format_desc_.name + L"]";
+				return L"dshow_consumer[" + config_.name + L"|" + boost::lexical_cast<std::wstring>(channel_index_) + L"|" + format_desc_.name + +L"|" + boost::lexical_cast<std::wstring>((float)framerate_) + L"]";
 			}
 
   			dshow_consumer(const configuration& config,
@@ -230,7 +238,7 @@ namespace caspar {
  			{
 				ensure_gpf_handler_installed_for_thread(
 					"dshow-consumer-thread");
-				char* pNewData_Y_Reverse = nullptr;
+				//char* pNewData_Y_Reverse = nullptr;
 				init();
 				caspar::timer pushframe_timer;
 				while (is_running_)
@@ -243,29 +251,13 @@ namespace caspar {
 					}
 					pushframe_timer.restart();
 					CComQIPtr<IMFrame> pMFrame;
-					if (!pNewData_Y_Reverse)
-					{
-						pNewData_Y_Reverse = (char*)malloc(frame.size());
-					}
+					//if (!pNewData_Y_Reverse)
+					//{
+					//	pNewData_Y_Reverse = (char*)malloc(frame.size());
+					//}
 
-					if (pNewData_Y_Reverse)
+					//if (pNewData_Y_Reverse)
 					{
-						/*tbb::parallel_for(0, (int)format_desc_.height, 1, [&](int y)
-						{
-							fast_memcpy(
-								reinterpret_cast<char*>(pNewData_Y_Reverse) + y * format_desc_.width * 4,
-								(frame.image_data().begin()) + (format_desc_.height - y - 1) * format_desc_.width * 4,
-								format_desc_.width * 4
-							);
-						});*/
-						for (int i = 0; i < (int)format_desc_.height; i++)
-						{
-							fast_memcpy(
-								reinterpret_cast<char*>(pNewData_Y_Reverse) + i * format_desc_.width * 4,
-								(frame.image_data().begin()) + (format_desc_.height - i - 1) * format_desc_.width * 4,
-								format_desc_.width * 4
-							);
-						}
 						WCHAR _bsProps[50] = { 0 };
 
 						int Samples = m_audCalc.NextSamples(props.dblRate, format_desc_.audio_sample_rate);
@@ -273,7 +265,7 @@ namespace caspar {
 
 						int audio_frame_size = ((boost::iterator_range<const int32_t*>)frame.audio_data()).size() * sizeof(int32_t);
 						m_Frames->FramesCreateFromMem(&props,
-							(LONGLONG)(pNewData_Y_Reverse),
+							(LONGLONG)(frame.image_data().begin()),
 							&pMFrame,
 							_bsProps
 						);
@@ -287,7 +279,7 @@ namespace caspar {
 						LONG audio_size;
 						LONGLONG audio_data;
 						pMFrame->FrameAudioGetBytes(&audio_size, &audio_data);
-						fast_memcpy((void*)audio_data, frame.audio_data().begin(), audio_frame_size);
+						std::memcpy((void*)audio_data, frame.audio_data().begin(), audio_frame_size);
 						M_TIME t;
 						pMFrame->FrameTimeGet(&t);
 						t.rtStartTime = frame_time;
@@ -305,7 +297,15 @@ namespace caspar {
 						//CComQIPtr<IMFrame> pFrame;
 						//pMFrame->FrameConvert(&avProps.vidProps, &pFrame, nullptr);
 						//m_Proxy->ReceiverPutFrame(L"ds_stream", pFrame);
-						m_Proxy->ReceiverPutFrame(L"ds_stream", pMFrame);
+						executor_.begin_invoke([=] { m_Proxy->ReceiverPutFrame(L"ds_stream", pMFrame); });
+
+						if (++framerate_count_ >= framerate_interval_)
+						{
+							framerate_ = framerate_count_ / framerate_timer_.elapsed();
+							framerate_timer_.restart();
+							framerate_count_ = 0;
+						}
+						graph_->set_text(print());
 					}
 					graph_->set_value("pushframe-time", pushframe_timer.elapsed() * format_desc_.fps * 0.5);
 
@@ -348,11 +348,11 @@ namespace caspar {
 						}
 					}
 				}
-				if (pNewData_Y_Reverse)
-				{
-					free(pNewData_Y_Reverse);
-					pNewData_Y_Reverse = nullptr;
-				}
+				//if (pNewData_Y_Reverse)
+				//{
+				//	free(pNewData_Y_Reverse);
+				//	pNewData_Y_Reverse = nullptr;
+				//}
  			}
 
   			void VideoFormatTransfer(core::video_format_desc Src, M_VID_PROPS& Des)
@@ -529,7 +529,7 @@ namespace caspar {
  				Des.dblRate = Src.fps;
  				Des.fccType = eMFCC_ARGB32;
  				Des.nWidth = Src.width;
- 				Des.nHeight = Src.height;
+ 				Des.nHeight = -Src.height;
  				Des.nAspectX = Src.square_width;
  				Des.nAspectY = Src.square_height;
  				Des.nRowBytes = Des.nWidth * 4;

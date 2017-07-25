@@ -85,12 +85,28 @@
 #ifndef _DEBUG
 int CheckChannelLicense()
 {
-	int num = LoginLDKDog(LOGIN_DOG_2_CHANNEL_SDI);
+	int num = 0;
+	std::vector<LOGIN_DOG_RES_>vcp = { LOGIN_DOG_RES_::LOGIN_DOG_6_CHANNEL,
+										LOGIN_DOG_RES_::LOGIN_DOG_5_CHANNEL,
+										LOGIN_DOG_RES_::LOGIN_DOG_4_CHANNEL,
+										LOGIN_DOG_RES_::LOGIN_DOG_3_CHANNEL,
+										LOGIN_DOG_RES_::LOGIN_DOG_2_CHANNEL,
+										LOGIN_DOG_RES_::LOGIN_DOG_1_CHANNEL };
+	for (int i =0;i<vcp.size();i++)
+	{
+		num = LoginLDKDog(vcp[i]);
+		if (num)
+		{
+			CASPAR_LOG(info) << "LDKDog channel "<<num;
+			return num;
+		}
+	}
 	if (!num)
 	{
 		CASPAR_LOG(fatal) << "Matching LDKDog failure.";
 	}
 	return num;
+	
 }
 #endif
 
@@ -219,6 +235,11 @@ void do_run(
 	{
 		if (!std::getline(std::wcin, wcmd))		// TODO: It's blocking...
 			wcmd = L"EXIT";						// EOF, handle as EXIT
+		if (std::wcin.bad() || std::wcin.fail() || std::wcin.eof())
+		{
+			CASPAR_LOG(error) << L"open Standard Input failed" << L"\r\n";
+			break;
+		}
 		if(boost::iequals(wcmd, L"EXIT") || boost::iequals(wcmd, L"Q") || boost::iequals(wcmd, L"QUIT") || boost::iequals(wcmd, L"BYE"))
 		{
 			CASPAR_LOG(info) << L"Received message from Console: " << wcmd << L"\\r\\n";
@@ -320,13 +341,14 @@ bool run(const std::wstring& config_file_name, tbb::atomic<bool>& should_wait_fo
 	int channel_num = 2;
 #ifndef _DEBUG
 	channel_num = CheckChannelLicense();
-	if (false/*0 == channel_num*/)
+	if (0 == channel_num)
 	{
-		std::wstring wcmd1;
-		std::wstring upper_cmd1;
-		std::getline(std::wcin, wcmd1);
-		shutdown_server_now.set_value(false);
-		return 0;
+		CASPAR_LOG(fatal) << L"Please check the license,then restart!\r\nPress enter key to quit!";
+		//std::wstring wcmd1;
+		//std::wstring upper_cmd1;
+		//std::getline(std::wcin, wcmd1);
+		//shutdown_server_now.set_value(false);
+		//return 0;
 	}
 #endif // !_DEBUG
 

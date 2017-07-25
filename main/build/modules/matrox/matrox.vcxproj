@@ -248,27 +248,35 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\modules\matrox\consumer\matrox_consumer.cpp" />
-    <ClCompile Include="..\..\..\modules\matrox\matrox.cpp" />
-    <ClCompile Include="..\..\..\modules\matrox\matrox_interface.cpp" />
-    <ClCompile Include="..\..\..\modules\matrox\mvsBaseTopology.cpp" />
-    <ClCompile Include="..\..\..\modules\matrox\mvsCleanTopologies.cpp" />
-    <ClCompile Include="..\..\..\modules\matrox\mvsInputTopology.cpp" />
-    <ClCompile Include="..\..\..\modules\matrox\mvsOutputTopology.cpp" />
-    <ClCompile Include="..\..\..\modules\matrox\producer\matrox_producer.cpp" />
-    <ClCompile Include="..\..\..\modules\matrox\SDIInConnectorStatusCallback.cpp" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="..\..\..\modules\matrox\common.h" />
     <ClInclude Include="..\..\..\modules\matrox\consumer\matrox_consumer.h" />
+    <ClInclude Include="..\..\..\modules\matrox\ErrorNotificationCallback.h" />
+    <ClInclude Include="..\..\..\modules\matrox\GenlockStatusCallback.h" />
     <ClInclude Include="..\..\..\modules\matrox\matrox.h" />
-    <ClInclude Include="..\..\..\modules\matrox\matrox_interface.h" />
-    <ClInclude Include="..\..\..\modules\matrox\mtxfileid.h" />
-    <ClInclude Include="..\..\..\modules\matrox\mvsBaseTopology.h" />
-    <ClInclude Include="..\..\..\modules\matrox\mvsCleanTopologies.h" />
-    <ClInclude Include="..\..\..\modules\matrox\mvsInputTopology.h" />
-    <ClInclude Include="..\..\..\modules\matrox\mvsOutputTopology.h" />
+    <ClInclude Include="..\..\..\modules\matrox\matrox_2022_capture.h" />
+    <ClInclude Include="..\..\..\modules\matrox\matrox_2022_playback.h" />
+    <ClInclude Include="..\..\..\modules\matrox\matrox_interface_consumer.h" />
+    <ClInclude Include="..\..\..\modules\matrox\matrox_interface_producer.h" />
+    <ClInclude Include="..\..\..\modules\matrox\MvErrorCallbackHandler.h" />
+    <ClInclude Include="..\..\..\modules\matrox\mvHostnodeFrame.h" />
     <ClInclude Include="..\..\..\modules\matrox\producer\matrox_producer.h" />
     <ClInclude Include="..\..\..\modules\matrox\SDIInConnectorStatusCallback.h" />
+    <ClInclude Include="..\..\..\modules\matrox\SfpSdiStatusCallback.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\modules\matrox\consumer\matrox_consumer.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\ErrorNotificationCallback.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\GenlockStatusCallback.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\matrox.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\matrox_2022_capture.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\matrox_2022_playback.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\matrox_interface_consumer.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\matrox_interface_producer.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\MvErrorCallbackHandler.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\mvHostnodeFrame.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\producer\matrox_producer.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\SDIInConnectorStatusCallback.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\SfpSdiStatusCallback.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

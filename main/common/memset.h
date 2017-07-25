@@ -40,12 +40,12 @@ namespace caspar {
 //				range.size());
 //	}, partitioner);
 //}
-	static void fast_memset(void* dest, int c, std::size_t size)
+	/*static void fast_memset(void* dest, int c, std::size_t size)
 	{
 		A_memset(
 			reinterpret_cast<std::uint8_t*>(dest),
 			c,
 			size);
-	}
+	}*/
 
 }

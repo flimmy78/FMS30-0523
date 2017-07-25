@@ -260,10 +260,10 @@ public:
 			if(key_only_)						
 				aligned_memshfl(reserved_frames_.front()->image_data(), frame.image_data().begin(), frame.image_data().size(), 0x0F0F0F0F, 0x0B0B0B0B, 0x07070707, 0x03030303);
 			else
-				A_memcpy(reserved_frames_.front()->image_data(), frame.image_data().begin(), frame.image_data().size());
+				std::memcpy(reserved_frames_.front()->image_data(), frame.image_data().begin(), frame.image_data().size());
 		}
 		else
-			A_memset(reserved_frames_.front()->image_data(), 0, reserved_frames_.front()->image_size());
+			std::memset(reserved_frames_.front()->image_data(), 0, reserved_frames_.front()->image_size());
 								
 
 		// Send and display

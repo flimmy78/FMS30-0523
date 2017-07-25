@@ -494,19 +494,19 @@ public:
 			boost::range::rotate(audio_cadence_, std::begin(audio_cadence_)+1);
 
 			//logokiller wxg201170105
-			int nPlanes = av_pix_fmt_count_planes(AV_PIX_FMT_UYVY422);
-			if (nPlanes != 3)
-			{
-				auto decoded_frame_sws = av_frame_clone(video_frame.get());
-				byte_vector	picture_buf_;
-				picture_buf_.resize(avpicture_get_size(AV_PIX_FMT_YUV422P, video_frame->width, video_frame->height));
-				avpicture_fill(reinterpret_cast<AVPicture*>(video_frame.get()), picture_buf_.data(), AV_PIX_FMT_YUV422P, in_format_desc_.width, in_format_desc_.height);
-				sws_scale(sws_.get(), decoded_frame_sws->data, decoded_frame_sws->linesize, 0, in_format_desc_.height, video_frame->data, video_frame->linesize);
-				av_frame_free(&decoded_frame_sws);
-				video_frame->format = AV_PIX_FMT_YUV422P;
-			}
 			if (logo_killer_params_.logo_killer_enable)
 			{
+				int nPlanes = av_pix_fmt_count_planes(AV_PIX_FMT_UYVY422);
+				if (nPlanes != 3)
+				{
+					auto decoded_frame_sws = av_frame_clone(video_frame.get());
+					byte_vector	picture_buf_;
+					picture_buf_.resize(avpicture_get_size(AV_PIX_FMT_YUV422P, video_frame->width, video_frame->height));
+					avpicture_fill(reinterpret_cast<AVPicture*>(video_frame.get()), picture_buf_.data(), AV_PIX_FMT_YUV422P, in_format_desc_.width, in_format_desc_.height);
+					sws_scale(sws_.get(), decoded_frame_sws->data, decoded_frame_sws->linesize, 0, in_format_desc_.height, video_frame->data, video_frame->linesize);
+					av_frame_free(&decoded_frame_sws);
+					video_frame->format = AV_PIX_FMT_YUV422P;
+				}
 				LogoKiller_YUV422(video_frame.get(), logo_killer_params_.logo_killer_left, logo_killer_params_.logo_killer_top
 					, logo_killer_params_.logo_killer_width, logo_killer_params_.logo_killer_height
 					, logo_killer_params_.logo_killer_is_smooth, logo_killer_params_.logo_killer_smooth_value);

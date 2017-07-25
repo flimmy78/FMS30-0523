@@ -226,10 +226,10 @@ struct SMvMpeg2CompressionOptions
                                                 // For SD resolutions, the range is between 10,000,000 and 50,000,000 (10 Mbits and 50 Mbits). Default is 10,000,000.
                                                 // For HD resolutions, the range is between 50,000,000 and 300,000,000 (50 Mbits and 300 Mbits). Default is 50,000,000.
    EMvFrameRate         eFrameRate;          // Specifies the frame rate at which the data will be encoded. Default is keMvFrameRate30M.
-   EMvMpeg2ZigZagType   eMpeg2ZigZag;        // Specifies the 'ZigZag' type used to encode the data. Default is keMvMpeg2ZigZagTypeAlternate.
+   EMvMpeg2ZigZagType   eMpeg2ZigZag;        // Specifies the zigzag type used to encode the data. Default is keMvMpeg2ZigZagTypeAlternate.
                                                 // This flag is ignored when encoding D10 (keMvSurfaceFormatMpegD10_422) and is set automatically to 
                                                 // keMvMpeg2ZigZagTypeRegular as defined in the SMPTE 356 specification.
-   EMvMpeg2RoundingType eRounding;           // Specifies the Rounding type used to encode the data. Default is keMvMpeg2RoundingTypeCustom.
+   EMvMpeg2RoundingType eRounding;           // Specifies the rounding type used to encode the data. Default is keMvMpeg2RoundingTypeMatroxCustom.
    EMvMpeg2DCPrecision  eDCPrecision;        // Specifies the DC precision used to encode the data. Default is keMvMpeg2DCPrecision8bits.
                                                 // This flag is ignored when encoding D10 (keMvSurfaceFormatMpegD10_422) and is set automatically to 
                                                 // keMvMpeg2DCPrecision10bits as defined in the SMPTE 356 specification.
@@ -363,7 +363,7 @@ enum EMvH264VancModel
    keMvH264VancModelInvalid,                                     // Not initialized. Invalid value. 
    keMvH264VancModelANSI_SCTE_128_ETSI_TS_101_154,               // Indicates that the VANC model is ANSI/SCTE 128 and ETSI TS 101 154. 
    keMvH264VancModelAVCIntra,                                    // Indicates that the VANC model is AVC-Intra.
-   keMvH264VancModelAVC_HD,                                      // Indicates that the VANC model is AVC-HD
+   keMvH264VancModelAVC_HD,                                      // Indicates that the VANC model is AVC-HD.
    keMvH264VancModelLast                                         // End of list indicator.
 };
 
@@ -379,13 +379,13 @@ enum EMvH264VancModel
 
 //
 // Summary:
-//    Describes the entropy coding
+//    Specifies the entropy coding mode.
 //
 enum EMvEntropyCodingMode
 {
    keMvEntropyCodingInvalid,         // Invalid value.
-   keMvEntropyCodingCAVLC,           // CAVLC
-   keMvEntropyCodingCABAC,           // CABAC
+   keMvEntropyCodingCAVLC,           // Indicates that the entropy coding mode mode is context-adaptive variable-length coding (CAVLC).
+   keMvEntropyCodingCABAC,           // Indicates that the entropy coding mode mode is context-adaptive binary arithmetic coding (CABAC).
    keMvEntropyCodingLast             // End of list indicator.
 };
 
@@ -426,8 +426,8 @@ enum EMvBitRateModel
 enum EMvH264SampleRate
 {
    keMvH264SampleRateInvalid,    // Not initialized.  Invalid value.
-   keMvH264SampleRateLow,        // The rate at which the quality sampling is done is low.
-   keMvH264SampleRateHigh,       // The rate at which the quality sampling is done is high.
+   keMvH264SampleRateLow,        // The quality sampling rate is low.
+   keMvH264SampleRateHigh,       // The quality sampling rate is high.
    keMvH264SampleRateLast        // End of list indicator.
 };
 
@@ -836,14 +836,15 @@ enum EMvClipOptionMOVVANCTrackOption
 //
 struct SMvFlexMpegClipReaderOpen
 {
-   uint32_t size;
+   uint32_t size;                         // Structure size in bytes.
 
-   bool bRecreateIndexFiles;					// Specifies whether or not to generate index files when IMvFlexMpegClipReader::Open is called.
+   bool bRecreateIndexFiles;					// If true, generates index files when IMvFlexMpegClipReader::Open is called.
 
-   wchar_t awchIndexFileNameVideo[MAX_PATH];	// Specifies an index file name for video. If NULL, no index file is generated/re-used.
-   wchar_t awchIndexFileNameAudio[MAX_PATH];	// Specifies an index file name for audio. If NULL, no index file is generated/re-used.
-
-   IMvInformationCallback *pIMvInformationCallback;
+   wchar_t awchIndexFileNameVideo[MAX_PATH];	// Specifies an index file name for video. This index includes both a video index and an audio index. 
+                                             // If NULL, no index file is generated/re-used.
+   wchar_t awchIndexFileNameAudio[MAX_PATH];	// Specifies an index file name for audio. Set to NULL, the video index file (awchIndexFileNameVideo) 
+                                             // generates both a video index and an audio index.
+   IMvInformationCallback *pIMvInformationCallback;   // Pointer to the information callback interface.
 };
 
 //

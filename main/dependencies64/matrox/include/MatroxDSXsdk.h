@@ -185,7 +185,7 @@ interface IMvNodeNotificationCallback : public IUnknown
    // Summary:
    //    Notifies when uncompressed data can be sent or retrieved.
    // Return value:
-   //    - MV_NOERROR. 
+   //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall NotifyForBufferAccess
       (
@@ -1050,14 +1050,14 @@ interface IMvMuxerStream : public IMvStream
       uint64_t               in_ui64Timestamp,	// Indicates the time that the modifications are to be made.
       IMvCompressedHostNode* in_pIOutputNode	// Pointer to the new output compressed host node interface. The pointer will be used at the time
 												// specified in in_ui64Timestamp.
-      ) = 0;
+      ) = 0;   
 };
 
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Provides information abour a transport stream.
+//    Provides information about a transport stream.
 // Remarks:
 //
 //////////////////////////////////////////////////////////////////////////////////
@@ -1065,29 +1065,29 @@ interface IMvDemuxerMPEG2TSDecription : public IUnknown
 {
    //
    // Summary:
-   //   Gets the number of program stream found in the MPGEG2 transport stream.  
+   //   Gets the number of program found in the MPGEG2 transport stream.  
    // Return value:
-   //    - An integer for IMvMPEG2TSDecription::GetProgramStreamInformation().
+   //    - An integer for IMvMPEG2TSDecription::GetProgramInformation().
    //
    virtual uint32_t __stdcall GetProgramCount() = 0;
 
    //
    // Summary:
-   //   Gets the information about a specific program stream found in a MPEG-2 transport stream.
+   //   Gets the information about a specific program found in a MPEG-2 transport stream.
    //
-   virtual HRESULT  __stdcall GetProgramStreamInformation
+   virtual HRESULT  __stdcall GetProgramInformation
       (
-      uint32_t in_ui32PSIndex,                  // Indicates the index corresponding to the program stream.
-      SMvDemuxerProgramStreamInfo & io_krsInfo  // Structure that receives the program stream information.
+      uint32_t in_ui32PgmIndex,           // Indicates the index corresponding to the program.
+      SMvDemuxerProgramInfo & io_krsInfo  // Structure that receives the program information.
       ) = 0;
 
    //
    // Summary:
-   //   Gets the information about a specific elementary stream found in a program stream.
+   //   Gets the information about a specific elementary stream found in a program.
    //
    virtual HRESULT  __stdcall GetElementaryStreamInformation
       (
-      uint32_t in_ui32PSIndex,                     // Indicates the index corresponding to the program stream.
+      uint32_t in_ui32PgmIndex,                    // Indicates the index corresponding to the program.
       uint32_t in_ui32ESIndex,                     // Indicates the index corresponding to the elementary stream.
       SMvDemuxerElementaryStreamInfo & io_krsInfo  // Structure that receives the elementary stream information.
       ) = 0;
@@ -1214,7 +1214,7 @@ interface IMvDemuxerStream : public IMvStream
 
    //
    // Summary:
-   //    Attach a node to a specific elementary stream of a specific program stream. The node will receive all 
+   //    Attach a node to a specific elementary stream of a specific program. The node will receive all 
    //    information pertaining to the specified elementary stream.
    // Return value:
    //    - MV_NOERROR, if completed successfully.
@@ -1222,9 +1222,9 @@ interface IMvDemuxerStream : public IMvStream
    //
    virtual HRESULT __stdcall AttachNode
       (
-      uint32_t in_ui32ProgramStreamIndex,       // Indicates the index corresponding to the program stream.
-      uint32_t in_ui32ElementaryStreamIndex,    // Indicates the index corresponding to the elementary stream.
-      IMvCompressedHostNode * in_pINode         // Pointer to the compressed host node interface to attach.
+      uint32_t in_ui32ProgramIndex,          // Indicates the index corresponding to the program.
+      uint32_t in_ui32ElementaryStreamIndex, // Indicates the index corresponding to the elementary stream.
+      IMvCompressedHostNode * in_pINode      // Pointer to the compressed host node interface to attach.
       ) = 0;
 
    //
@@ -1628,38 +1628,62 @@ interface IMvMPEG4SStPVideoSettingsCallback : public IMvEncoderStreamSettingsCal
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface used to obtain the Matrox H264 SW2 encoder settings. 
+//    Interface used to obtain the Matrox H.264 SW2 encoder settings. 
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvH264SW2VideoSettingsCallback : public IMvEncoderStreamSettingsCallback
 {
+   //
+   // Summary:
+   //   Gets the Matrox H.264 SW2 encoder settings.  
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
    virtual HRESULT __stdcall GetSettings
       (
-      void  * out_psSettings
+      void  * out_psSettings     // Pointer to the structure containing the Matrox H.264 SW2 encoder settings.
       ) = 0;
 
+   //
+   // Summary:
+   //   Gets the preset used to configure the Matrox H.264 SW2 encoder.  
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
    virtual HRESULT __stdcall GetPreset
       (
-      uint32_t & out_rui32Preset
+      uint32_t & out_rui32Preset    // Indicates the Matrox H.264 SW2 encoder preset.
       ) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface used to obtain the Matrox M264 encoder settings. 
+//    Interface used to obtain the Matrox M264 hardware encoder settings. 
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvM264VideoSettingsCallback : public IMvEncoderStreamSettingsCallback
 {
+   //
+   // Summary:
+   //   Gets the Matrox M264 hardware encoder settings.  
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
    virtual HRESULT __stdcall GetSettings
       (
-      void  * out_psSettings
+      void  * out_psSettings     // Pointer to the structure containing the Matrox M264 hardware encoder settings.
       ) = 0;
 
+   //
+   // Summary:
+   //   Gets the preset used to configure the Matrox M264 hardware encoder.  
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
    virtual HRESULT __stdcall GetPreset
       (
-      uint32_t & out_rui32Preset
+      uint32_t & out_rui32Preset    // Indicates the Matrox M264 hardware encoder preset.
       ) = 0;
 };
 //////////////////////////////////////////////////////////////////////////////////
@@ -2967,8 +2991,12 @@ interface IMvReaderStreamHelper : public IUnknown
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Provides the callback notification for asynchronous errors of software streams except the read stream and writer streams. 
+//    Provides the callback notification for asynchronous errors of software streams.
 //    This interface passes asynchronous errors to the object implementing it.
+// Note:
+//    - This method does not apply to reader and writer streams. The callback notification  
+//      for asynchronous errors related to the reader and writer stream are IMvReaderStreamEventCallback and 
+//      IMvWriterStreamEventCallback, respectively.
 // Remarks:
 //    - Use the IMvSystemTopology interface to register and unregister the
 //      IMvSystemTopologyErrorCallback interface.
@@ -2995,7 +3023,7 @@ interface IMvSystemTopologyErrorCallback : public IUnknown
 //    Provides the callback notifications for events generated by the universal clock.
 //    This interface passes asynchronous events to the object implementing it.
 // Remarks:
-//    - Use the IMvSystemTopology interface to register and unregister the
+//    - Use the IMvSystemClockUniversal interface to register and unregister the
 //      IMvUniversalClockNotificationCallback interface.
 //
 //////////////////////////////////////////////////////////////////////////////////
@@ -3003,11 +3031,14 @@ interface IMvUniversalClockNotificationCallback : public IUnknown
 {
 	//
 	// Summary:
-	//    Receives the new asynchronous error for the Üniversal Clock.
+	//    Receives the new asynchronous event for the universal clock.
 	// Return value:
 	//    - MV_NOERROR, if completed successfully. 
 	//
-   virtual HRESULT __stdcall NotifyAsyncClockEvent( const SMvUniversalClockNotification & in_krsNotification ) = 0;
+   virtual HRESULT __stdcall NotifyAsyncClockEvent
+      (
+      const SMvUniversalClockNotification & in_krsNotification    // Structure describing the asynchronous event.
+      ) = 0;
 };
 
 
@@ -3039,7 +3070,13 @@ interface IMvSystemTopology : public IUnknown
 
    //
    // Summary:
-   //    Creates an input stream in the system topology.
+   //    Creates an input stream for SDI input connectors in the system topology.
+   // Remarks:
+   //    - This method allows the input stream to automatically determine whether or not alpha connectors are required.
+   //    - If you would like to capture ultra high definition (UHD), a list of four video input connectors 
+   //      are needed. The audio and VANC are obtained from the first connector in the in_pIVideoInputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In addition, 
+   //      each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -3059,18 +3096,69 @@ interface IMvSystemTopology : public IUnknown
 
    //
    // Summary:
-   //    Creates an input stream using SdiIp connector(s) in the system topology.
+   //    Creates an input stream for SDI input connectors in the system topology.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - This method allows the user application to determine whether or not alpha connectors are required.
+   //    - If the user application does not specify using alpha connectors, the input stream will only capture the 
+   //      video part of the node, even if the card node contains alpha values.
+   //    - If alpha connectors are not used, the alpha part of the card node is put to opaque.
+   //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
+   //      In this case, the input stream behaves the same as when it is created using IMvSystemTopology::CreateInputStream().
+   //    - The user application can get the associated alpha connector for in_apISdiInputConnectors using 
+   //      IMvVideoInputConnector::GetAssociatedAlphaConnector().
+   //    - If you would like to capture ultra high definition (UHD), a list of four video input connectors are needed.
+   //      If alpha connectors are used, a list of four alpha connectors are also needed. (Otherwise, set the alpha 
+   //      connectors to NULL.) 
+   //      The audio and VANC are obtained from the first connector in the in_apISdiInputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
+   //
+   virtual HRESULT __stdcall CreateInputStreamSdi
+      (
+      const char* in_kszName,                               // Indicates the name of the input stream to create.
+      IMvConnector* in_apISdiInputConnectors[],             // Pointer to the array of SDI video input connector interfaces.
+      IMvConnector* in_apIAlphaInputConnectors[],           // Pointer to the array of SDI alpha output connector interfaces.
+      uint32_t in_ui32VideoConnectorsCount,                 // Indicates the number of video input connectors.
+      IMvConnector* in_apIAudioInputConnectors[],           // Pointer to the array of audio input connector interfaces.
+      uint32_t in_ui32AudioInputConnectorsCount,            // Indicates the number of audio input connectors.
+      IMvNode* in_pIOutputNode,                             // Pointer to the node interface that receives the audio,
+                                                            // video, and VANC data. This parameter can be NULL.
+      const SMvResolutionInfo& in_krsResolution,            // Structure of the resolution settings of the input stream.
+      const SMvInputStreamSettings& in_krsStreamSettings,   // Structure of the input stream settings.
+      IMvInputStream **out_ppIInputStream                   // Pointer that receives the created input stream
+                                                            // interface, if the method is completed successfully.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Creates an input stream for SMPTE 2022-6 streams over SFP+ transceivers in the system topology.
+   // Remarks:
+   //    - This method allows the user application to determine whether or not alpha connectors are required.
+   //    - If the user application does not specify using alpha connectors, the input stream will only capture the 
+   //      video part of the node, even if the card node contains alpha values.
+   //    - If alpha connectors are not used, the alpha part of the card node is put to opaque.
+   //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
+   //      In this case, the input stream behaves the same as when it is created using IMvSystemTopology::CreateInputStream().
+   //    - The user application can get the associated alpha connector for in_pISdiIpInputConnectors using 
+   //      IMvSdiIpInputConnector::GetAssociatedAlphaConnector().
+   //    - If you would like to capture ultra high definition (UHD), a list of four SDI IP input connectors are needed. 
+   //      If alpha connectors are used, a list of four alpha connectors are also needed. (Otherwise, set the alpha 
+   //      connectors to NULL.) The audio and VANC are obtained from the first connector in the in_pISdiIpInputConnectors
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
    virtual HRESULT __stdcall CreateInputStreamSdiIp
       (
       const char * in_kszName,                              // Indicates the name of the input stream to create.   
-      IMvConnector* in_pISdiIpInputConnectors[],            // Pointer to the array of SdiIp video input connector interfaces.
-      IMvConnector* in_pISdiIpAlphaInputConnectors[],       // Pointer to the array of SdiIp alpha input connector interfaces.
-      uint32_t in_ui32ConnectorsCount,                      // Indicates the number of SdiIp video input connectors.
-      IMvConnector* in_apIAudioInputConnectors[],           // Pointer to the array of audio input connector interfaces.
-      uint32_t in_ui32AudioInputConnectorsCount,            // Indicates the number of audio input connectors.
+      IMvConnector* in_pISdiIpInputConnectors[],            // Pointer to the array of SDI IP video input connector interfaces.
+      IMvConnector* in_pISdiIpAlphaInputConnectors[],       // Pointer to the array of SDI IP alpha input connector interfaces.
+      uint32_t in_ui32ConnectorsCount,                      // Indicates the number of SDI IP video input connectors.
+      IMvConnector* in_apIAudioInputConnectors[],           // Pointer to the array of SDI IP audio input connector interfaces.
+      uint32_t in_ui32AudioInputConnectorsCount,            // Indicates the number of SDI IP audio input connectors.
       IMvNode* in_pIOutputNode,                             // Pointer to the output node interface that receives the audio, video, and VANC data.
       const SMvResolutionInfo & in_krsResolution,           // Structure of the resolution settings of the input stream. 
       const SMvInputStreamSettings& in_krsStreamSettings,   // Structure of the input stream settings.
@@ -3080,7 +3168,14 @@ interface IMvSystemTopology : public IUnknown
 
    //
    // Summary:
-   //    Creates an output stream in the system topology.
+   //    Creates an output stream for SDI output connectors in the system topology.
+   // Remarks:
+   //    - This method allows the output stream to automatically determine whether or not alpha connectors are required.
+   //    - If you would like to output ultra high definition (UHD), a list of four video 
+   //      output connectors are needed when the output stream is created using this method.
+   //      The audio and VANC are obtained from the first connector in the in_pIVideoOuputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //   
@@ -3098,7 +3193,20 @@ interface IMvSystemTopology : public IUnknown
 
    //
    // Summary:
-   //    Creates an output stream using Sdi connector(s) in the system topology.
+   //    Creates an output stream for SDI output connectors in the system topology.
+   // Remarks:
+   //    - This method allows the user application to determine whether or not alpha connectors are required.
+   //    - If the user application does not specify using alpha connectors, the output stream will only output the 
+   //      video part of the node, even if the card node contains alpha values.
+   //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
+   //      In this case, the output stream behaves the same as when it is created using IMvSystemTopology::CreateOutputStream().
+   //    - The user application can get the associated alpha connector for in_pISdiOutputConnectors using 
+   //      IMvVideoOutputConnector::GetAssociatedAlphaConnector().
+   //    - If you would like to output ultra high definition (UHD), a list of four video output connectors are needed. 
+   //      If alpha connectors are used, a list of four alpha connectors are also needed. (Otherwise, set the alpha connectors to NULL.) 
+   //      The audio and VANC are obtained from the first connector in the in_pISdiOutputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //   
@@ -3108,16 +3216,29 @@ interface IMvSystemTopology : public IUnknown
       IMvNode    * in_pIInputNode,                             // Pointer to the input node interface of the output stream.
       const SMvResolutionInfo & in_krsResolution,              // Structure of the resolution settings of the output stream.
       const SMvOutputStreamSettings & in_krsStreamSettings,    // Structure of the output stream settings.
-      IMvConnector * in_pISdiOutputConnectors[],               // Pointer to the array of Sdi video output connector interfaces.
-      IMvConnector * in_pAlphaOutputConnectors[],              // Pointer to the array of Sdi alpha output connector interfaces.
-      uint32_t in_ui32ConnectorsCount,                         // Indicates the number of Sdi video output connectors.
+      IMvConnector * in_pISdiOutputConnectors[],               // Pointer to the array of SDI video output connector interfaces.
+      IMvConnector * in_pAlphaOutputConnectors[],              // Pointer to the array of SDI alpha output connector interfaces.
+      uint32_t in_ui32ConnectorsCount,                         // Indicates the number of SDI video output connectors.
       IMvOutputStream ** out_ppIOutputStream                   // Pointer that receives the created output stream 
                                                                // interface, if the method is completed successfully.
       ) = 0;
 
    //
    // Summary:
-   //    Creates an output stream using SdiIp connector(s) in the system topology.
+   //    Creates an output stream for SMPTE 2022-6 streams over SFP+ transceivers in the system topology.
+   // Remarks:
+   //    - This method allows the user application to determine whether or not alpha connectors are required.
+   //    - If the user application does not specify using alpha connectors, the output stream will only output the 
+   //      video part of the node, even if the card node contains alpha values.
+   //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
+   //      In this case, the output stream behaves the same as when it is created using IMvSystemTopology::CreateOutputStream().
+   //    - The user application can get the associated alpha connector for in_pISdiIpOutputConnectors using 
+   //      IMvSdiIpOutputConnector::GetAssociatedAlphaConnector().
+   //    - If you would like to output ultra high definition (UHD), a list of four SDI IP output connectors are needed. 
+   //      If alpha connectors are used, a list of four alpha connectors are also needed. (Otherwise, set the alpha connectors to NULL.) 
+   //      The audio and VANC are obtained from the first connector in the in_pISdiIpOutputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //   
@@ -3127,11 +3248,45 @@ interface IMvSystemTopology : public IUnknown
       IMvNode    * in_pIInputNode,                              // Pointer to the input node interface of the output stream.
       const SMvResolutionInfo & in_krsResolution,               // Structure of the resolution settings of the output stream.
       const SMvOutputStreamSettings & in_krsStreamSettings,     // Structure of the output stream settings.
-      IMvConnector * in_pISdiIpOutputConnectors[],              // Pointer to the array of SdiIp video output connector interfaces.
-      IMvConnector * in_pSdiIpAlphaOutputConnectors[],          // Pointer to the array of SdiIp alpha output connector interfaces.
-      uint32_t in_ui32ConnectorsCount,                          // Indicates the number of SdiIp video output connectors.
+      IMvConnector * in_pISdiIpOutputConnectors[],              // Pointer to the array of SDI IP video output connector interfaces.
+      IMvConnector * in_pSdiIpAlphaOutputConnectors[],          // Pointer to the array of SDI IP alpha output connector interfaces.
+      uint32_t in_ui32ConnectorsCount,                          // Indicates the number of SDI IP video output connectors.
       IMvOutputStream ** out_ppIOutputStream                    // Pointer that receives the created output stream
                                                                 // interface, if the method is completed successfully.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Creates an output stream for ASPEN streams over SFP+ transceivers in the system topology.
+   // Remarks:
+   //    - This method allows the user application to determine whether or not alpha connectors are required.
+   //    - If the user application does not specify using alpha connectors, the output stream will only output the 
+   //      video part of the node, even if the card node contains alpha values.
+   //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
+   //    - The user application can get the associated alpha connector for in_apIVideoOutputConnectors using 
+   //      IMvAspenVideoOutputConnector::GetAssociatedAlphaConnector().
+   //    - If you would like to output ultra high definition (UHD), a list of four video output connectors are needed. 
+   //      If alpha connectors are used, a list of four alpha connectors are also needed. (Otherwise, set the alpha connectors to NULL.) 
+   //      However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //   
+   virtual HRESULT __stdcall CreateOutputStreamAspen
+      (
+      const char * in_kszName,                              // Indicates the name of the output stream to create.
+      IMvNode    * in_pIInputNode,                          // Pointer to the input node interface of the output stream.
+                                                            // This parameter can be NULL.
+      const SMvResolutionInfo & in_krsResolution,           // Structure of the resolution settings of the output stream.
+      const SMvOutputStreamSettings & in_krsStreamSettings, // Structure of the output stream settings.
+      IMvConnector * in_apIVideoOutputConnectors[],         // Pointer to the array of ASPEN video output connector interfaces.
+      IMvConnector * in_apAlphaOutputConnectors[],          // Pointer to the array of ASPEN alpha output connector interfaces.
+      uint32_t       in_ui32VideoConnectorsCount,           // Indicates the number of ASPEN video output connectors.
+      IMvConnector * in_apIAudioConnectors[],               // Pointer to the array of ASPEN audio output connector interfaces.
+      uint32_t       in_ui32AudioConnectorsCount,           // Indicates the number of ASPEN audio output connectors.
+      IMvConnector * in_pIVancConnector,                    // Pointer to the ASPEN VANC output connector interface.
+      IMvOutputStream ** out_ppIOutputStream                // Pointer that receives the created output stream
+                                                            // interface, if the method is completed successfully.
       ) = 0;
 
    //
@@ -3242,7 +3397,7 @@ interface IMvSystemTopology : public IUnknown
       IMvCompressedHostNode * in_pIVancNode,                // Pointer to the input compressed host node interface containing compressed VANC data.
       IMvCompressedHostNode * in_pIOutputNode,              // Pointer to the output compressed host node interface containing a single MPEG-2 program transport stream (SPTS) muxed buffer.
       const SMvMuxerStreamSettings   & in_krsSettings,      // Structure of the muxer stream settings.
-      IMvMuxerStream ** out_ppNewStream                     // Pointer that receives the created muxer stream interface, if the method is completed successfully.
+      IMvMuxerStream ** out_ppNewStream                     // Pointer that receives the created muxer stream interface, if the method is completed successfully.      
       ) = 0; 
 
    //
@@ -3622,7 +3777,11 @@ interface IMvSystemTopology : public IUnknown
 
    //
    // Summary:
-   //    Registers a callback notification for an asynchronous error of software streams except the read stream and writer streams.
+   //    Registers a callback notification for an asynchronous error related to software streams.
+   // Note:
+   //    - This method does not apply to reader and writer streams. Asynchronous error callbacks for the 
+   //      reader and writer stream are registered using IMvReaderStream::RegisterEventCallback() and 
+   //      IMvWriterStream::RegisterEventCallback(), respectively.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    // Remarks:
@@ -4199,9 +4358,13 @@ interface IMvSystemConfiguration : public IUnknown
 
    //
    // Summary:
-   //    Creates a new system topology, the hardware profile is deduced from the clock.
+   //    Creates a new system topology. 
    // Return value: 
    //    - MV_NOERROR, if completed successfully.
+   // Remarks:
+   //   - The hardware profile is obtained from the system clock.
+   // Note:
+   //   - If you would like to use a universal clock, you must create the system topology using IMvSystemConfiguration::CreateSystemTopologyEx().
    //
    virtual HRESULT __stdcall CreateSystemTopology
       (
@@ -4212,15 +4375,20 @@ interface IMvSystemConfiguration : public IUnknown
 
    //
    // Summary:
-   //    Creates a new system topology, we have to provide the hardware profile as a IMvCardConfiguration.
+   //    Creates a new system topology.
    // Return value: 
    //    - MV_NOERROR, if completed successfully.
+   // Remarks:
+   //   - The hardware profile is obtained using the IMvCardConfiguration interface.
+   // Note:
+   //   - You can also use IMvSystemConfiguration::CreateSystemTopology() to create a new system topology. However, if you would like to use a universal clock, 
+   //     you must create the system topology using this method.
    //
    virtual HRESULT __stdcall CreateSystemTopologyEx
       (
       const char *            in_kszName,       // Indicates the name of the system topology to create.
       IMvSystemClock *        in_pIClock,       // Pointer to the system clock interface.
-      IMvCardConfiguration *  in_pCardConfig,   // Pointer to the card configuration.
+      IMvCardConfiguration *  in_pCardConfig,   // Pointer to the card configuration interface.
       IMvSystemTopology **    out_ppITopology   // Pointer that receives the created system topology interface, if method is completed successfully.
       ) = 0;
 
@@ -4242,13 +4410,15 @@ interface IMvSystemConfiguration : public IUnknown
 
    //
    // Summary:
-   //    Create a new Universal Clock, this new resource is accessible through the system configuration object.
+   //    Creates a new universal clock. 
    // Return value: 
    //    - MV_NOERROR, if completed successfully.
+   // Remarks:
+   //   - This new resource is accessible through the system configuration object.
    //
    virtual HRESULT __stdcall CreateUniversalClock 
       (
-      SMvUniversalClockInfo&  in_sUniversClockInfo,      // Information required to initialize the universal clock.
+      SMvUniversalClockInfo&  in_sUniversClockInfo,      // Structure describing the information required to initialize the universal clock.
       IMvSystemClock **       out_ppINewUniversalClock   // Pointer that receives the universal clock interface.
       ) = 0;
 
@@ -4408,92 +4578,91 @@ interface IMvSystemConfiguration : public IUnknown
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface required for Universal clock
+//    Interface that represents a universal clock.
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvSystemClockUniversal : public IUnknown
 {
    //
    // Summary:
-   //    Get the FrameRate at which the clock operates
+   //    Gets the resolution for which the universal clock was configured.
    // Return value:
-   //    - MV_NOERROR, if no errors occur.
-   //    - MV_E_INVALID_STRUCTURE_SIZE, if there is a problem with out_refsMvResolutionInfo
+   //    - MV_NOERROR, if completed successfully.
+   //    - MV_E_INVALID_STRUCTURE_SIZE, if a problem is encountered with out_refsMvResolutionInfo.
    //
    virtual HRESULT __stdcall GetResolution
       ( 
-      SMvResolutionInfo& out_refsMvResolutionInfo        // Structure that receives the clock resolution.
+      SMvResolutionInfo& out_refsMvResolutionInfo        // Structure that receives the universal clock resolution.
       )= 0;
 
    //
    // Summary:
-   //    Tell us if our clock is synchronized to the time server or not
+   //    Gets the current status of the universal clock with respect to the NTP (Network Time Protocol) time server.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
-   //    - MV_E_INVALID_STRUCTURE_SIZE, if there is a problem with out_rsTimeServerStatus
+   //    - MV_E_INVALID_STRUCTURE_SIZE, if a problem is encountered with out_rsTimeServerStatus.
    //
    virtual HRESULT __stdcall GetStatus
       ( 
-      SMvUniversalClockStatus& out_rsTimeServerStatus    // Structure that receives the clock status.
+      SMvUniversalClockStatus& out_rsTimeServerStatus    // Structure that receives the current universal clock status with respect to the NTP time server.
       ) = 0;
 
    //
    // Summary:
-   //    Register and unregister to the universal clock error notification
+   //    Registers a callback notification for asynchronous events generated by the universal clock.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
-   //    - MV_E_ALREADY_ATTACHED, if this object has already registered for this callback.
+   //    - MV_E_ALREADY_ATTACHED, if a callback for this object is already registered.
+   // Remarks:
+   //    - The IUnknown::AddRef method of the in_pINotificationCallback parameter is called when the 
+   //      notification is registered to prevent the object implementing the IMvUniversalClockNotificationCallback 
+   //      interface from being destroyed.
    //
    virtual HRESULT __stdcall RegisterCallbackForNotification
       (
-      IMvUniversalClockNotificationCallback * in_pINotificationCallback    // Pointer to the callback interface that receives on clock events
+      IMvUniversalClockNotificationCallback * in_pINotificationCallback    // Pointer to the universal clock notification callback interface that receives asynchronous events generated by the universal clock.
       ) = 0;
 
+   //
+   // Summary:
+   //    Unregisters a callback notification for asynchronous events generated by the universal clock.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   // Remarks:
+   //    - The IUnknown::Release method of the in_pINotificationCallback parameter is called when the 
+   //      notification is unregistered to remove the reference count added by IMvSystemClockUniversal::RegisterCallbackForNotification.
+   //
    virtual HRESULT __stdcall UnregisterCallbackForNotification
       (  
-      IMvUniversalClockNotificationCallback * in_pINotificationCallback    // Pointer to the callback interface that receives on clock events
+      IMvUniversalClockNotificationCallback * in_pINotificationCallback    // Pointer to the universal clock notification callback interface that receives asynchronous events generated by the universal clock.
       ) = 0;
    
    //
    // Summary:
-   //    Get the Time server name OR it's IP Address (as it was given at creation time)
+   //    Gets the NTP (Network Time Protocol) time server name or IP address.
    // Return value:
-   //    - MV_NOERROR, if no errors occur.
-   //    - MV_E_INVALID_PARAMETER, if the parameter is NULL
-   //    - MV_E_NOT_SUPPORTED, if the engine is not in "software mode"
+   //    - MV_NOERROR, if completed successfully.
+   //    - MV_E_INVALID_PARAMETER, if the parameter is NULL.
    // Remarks:
-   //    - A empty out_szNtpServerAddress means the universal clock is NOT synchronized to any external clock synchronisation source.
+   //    - The buffer that is returned is the information that was used when the universal clock was created.
+   //    - This value cannot be changed.
+   //    - An empty out_szNtpServerAddress means the universal clock is NOT synchronized to any external clock synchronization source.
    //
    virtual HRESULT __stdcall GetTimeServerName
       (
-      int      in_iNtpServerAddressCharCount,                              // Maximum number of characters that out_szNtpServerAddress can contains.
+      int      in_iNtpServerAddressCharCount,                              // Indicates the maximum number of characters that out_szNtpServerAddress can contain.
       char *   out_szNtpServerAddress                                      // Pointer to the buffer containing the NTP server name or IP address.
       ) = 0;
-};
 
-//////////////////////////////////////////////////////////////////////////////////
-//
-// Summary:
-//    Interface required for DSX core Seat Notifications
-//
-//////////////////////////////////////////////////////////////////////////////////
-interface IMvDSXCoreSeatNotification : public IUnknown
-{
-   //IMvDSXCORENotificationCallback
-   // Summary:
-   //    Register and unregister to the seat error notification
-   // Return value:
-   //    - MV_NOERROR, if completed successfully. 
-   //    - MV_E_ALREADY_ATTACHED, if this object has already registered for this callback.
    //
-   virtual HRESULT __stdcall RegisterCallbackForNotification
-      (
-      IMvDSXCORENotificationCallback * in_pINotificationCallback    // Pointer to the callback interface that receives on clock events
-      ) = 0;
-
-   virtual HRESULT __stdcall UnregisterCallbackForNotification
-      (
-      IMvDSXCORENotificationCallback * in_pINotificationCallback    // Pointer to the callback interface that receives on clock events
+   // Summary:
+   //    Gets the minimum period of time between two successive calls to the NTP (Network Time Protocol) server.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully.
+   //
+   virtual HRESULT __stdcall GetNtpMinUpdatePeriodInMs
+      (  
+      int *    out_iNtpMinUpdatePeriodInMs   // Pointer to the value indicating the minimum period of time (in milliseconds) between two successive calls to the NTP server.
       ) = 0;
 };
 
@@ -4633,7 +4802,7 @@ interface IMvDecoderStream : public IMvStream
    //   Modifies the output host node currently bound to the decoder stream.  
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
-    //   - MV_E_WRONG_STATE, if the output compressed host node is changed when the decoder stream is still decoding.
+    //   - MV_E_WRONG_STATE, if the output host node is changed when the decoder stream is still decoding.
    // Remarks:
    //    - The new output host node must have the same resolution and same memory location as the old output host node.
    //    - The output host node can only be changed when the decoder stream is stopped.
@@ -4792,7 +4961,7 @@ interface IMvRTPReceiverStream : public IMvStream
    //
    virtual HRESULT ConnectWithSAP
       (
-      const char    *in_szNIC,              // Network interface card address.
+      const char    *in_szNIC,              // Pointer to the string containing the network interface card address.
       const char    *in_szSAPSessionName,   // Pointer to the string containing the SAP data. This will be used to connect to the remote host.
       uint32_t       in_ui32Timeout          // Indicates the maximum time (in milliseconds) to wait for the RTP receiver stream to connect to the remote host. 
       ) = 0;
@@ -4816,7 +4985,7 @@ interface IMvRTPReceiverStream : public IMvStream
    //
    virtual HRESULT ConnectWithSdpStringDescription
       (
-      const char  *in_szNIC,          // Network interface card address.
+      const char  *in_szNIC,          // Pointer to the string containing the network interface card address.
       const char  *in_szSDPData       // Pointer to the string containing the SDP data.
       ) = 0;
 };

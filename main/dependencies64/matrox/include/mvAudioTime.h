@@ -85,7 +85,9 @@ inline uint64_t MvGetNanoTimeFromAudioSamples
    SMvAudioSamplesDescription & in_rsAudioSamplesDescription   // Sample's format for nanotime computation.
    )
 {
-   return ((in_ui64AudioSamples * ( uint64_t )10000000  ) / in_rsAudioSamplesDescription.sWaveFormat.ulSamplesPerSec);
+   uint64_t ui64LowWeightValue  = in_ui64AudioSamples % in_rsAudioSamplesDescription.sWaveFormat.ulSamplesPerSec * 10000000 / in_rsAudioSamplesDescription.sWaveFormat.ulSamplesPerSec;
+   uint64_t ui64HighWeightValue = in_ui64AudioSamples / in_rsAudioSamplesDescription.sWaveFormat.ulSamplesPerSec * 10000000;
+   return ui64HighWeightValue + ui64LowWeightValue;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +102,9 @@ inline uint64_t MvGetAudioSamplesFromNanoTime
    SMvAudioSamplesDescription & in_rsAudioSamplesDescription   // Sample's format for nanotime computation.
    )
 {
-   return (((in_ui64NanoTime + (uint64_t)1) * in_rsAudioSamplesDescription.sWaveFormat.ulSamplesPerSec)/(uint64_t)10000000 );
+   uint64_t ui64LowWeightValue  = (in_ui64NanoTime + 1) % 10000000 * in_rsAudioSamplesDescription.sWaveFormat.ulSamplesPerSec / 10000000;
+   uint64_t ui64HighWeightValue = (in_ui64NanoTime + 1) / 10000000 * in_rsAudioSamplesDescription.sWaveFormat.ulSamplesPerSec;
+   return ui64HighWeightValue + ui64LowWeightValue;
 }
 
 /////////////////////////////////////////////////////////////////////////////////

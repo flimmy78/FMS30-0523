@@ -91,7 +91,7 @@ struct SMvNodeNotificationCallbackParameters
    IMvNode*         pINode;                  // Pointer to the node that generated the notification.
    uint64_t         ui64Timestamp;           // Indicates the time at which the data is valid.
    uint64_t         ui64UseBefore;           // Indicates the time at which the data pointed by pVideoBuffer, 
-                                             // pAudioBuffer, pAncBuffer and the time code parameters will no longer be usable by
+                                             // pAudioBuffer, pAncBuffer, and the time code parameters will no longer be usable by
                                              // the user application. Past this time the node content may not be the expected data.
    uint32_t         ui32Width;               // Usable width of the video and ancillary buffers in pixels.
    uint32_t         ui32VideoHeight;         // Usable height of the video data in lines.
@@ -155,7 +155,15 @@ struct SMvMuxerStreamSettings
    uint16_t                         ui16PCRPID;                      // Specifies the packet ID of the Program Clock Reference (PCR) elementary stream.
    EMvMPEG2MuxerBitRateOption       eMPEG2MuxerBitRateOption;        // Specifies the bit rate encoding option of the stream. The recommended option for streaming is variable bit rate (VBR).
    EMvMPEG2MuxerVancProcessingType  eMPEG2MuxerVancProcessingType;   // Specifies the type of the elements to process in the VANC. Currently, only SCTE 35 streams are supported.
-};                                                                            
+   uint64_t                         ui64AverageTSBitrate;            // Specifies the average bitrate to be used by the muxer.
+   uint32_t                         ui32VideoMaxStreamDelay;         // specify the maximum PTS and PCR difference (in ms) for video stream, 0 = automatically computed.
+   //Maximum delay is the maximum PTS and PCR difference. For AVC it is calculated by the stream's 
+   //CPB size divided by the maximum bitrate (or the maximum values for the profile if no HRD is found). 
+   //Setting it to a lower value will reduce the lead time between the video and PCR/audio. 
+   //Care should be taken when setting this value. If  the value is too low, a temporal bitrate peak can 
+   //surge a frame beyond the reduced lead time, and the resulting stream may contain PCRs with a higher
+   //PTS value than the video frames following it.
+};
 
 
 //
@@ -330,6 +338,7 @@ struct SMvMXFWriterStreamSettings
    EMvVANCLocation            eVANCLocation;    // Indicates where to save the VANC data.
    EMvClipOptionMxfFillLabel  eMvFillLabel;     // Indicates which fill label to use when generating an MXF file.
    bool                       bTDIRTmpFile;     // If true, RIP files are saved to TMP files.
+   wchar_t                    wszMaterialPackageName[MAX_PATH];  // Specifies the material package name to write.
 };
 
 //
@@ -340,7 +349,7 @@ struct SMvPCMCompressionOptions
 {
    uint32_t    ui32Size;               // Structure size in bytes.
    uint32_t    ui32BitsPerSample;      // Bits per sample for the format type. This value represents the container size.
-   uint32_t    ui32ValidBitsPerSample; // This field must be greater than or equal to ui32ValidBitsPerSample.
+   uint32_t    ui32ValidBitsPerSample; // This field must be less than or equal to ui32BitsPerSample.
 };
 
 
@@ -385,6 +394,8 @@ struct SMvReaderStreamVideoInformation
    bool                       bRepeatLastFrame;       // If true, the reader stream repeats the last decompressed frame at the output. Otherwise, black is output. 
    uint64_t                   ui64StreamIdentifier;   // Specifies which stream to decode.
    CLSID                      clsidH264Decoder;       // Specifies the CLSID of H264 Decoder to decode the H.264 file. This can be set by app. For non H.264 file, it should be GUID_NULL.
+   uint32_t                   ui32HardwareProfile;    // Specifies hardware profile when using hardware decoder to decode H.264 files. This can be set by app.
+   uint32_t                   ui32CardIndex;          // Specifies card Index when using hardware decoder to decode H.264 files. This can be set by app.
 };
 
 //
@@ -607,7 +618,7 @@ enum EMvAsyncErrorType
    keMvAsyncErrorTypeCompressedHostNode,     // Indicates that the asynchronous error occurred in the compressed host node.
    keMvAsyncErrorTypeDecoderStream,          // Indicates that the asynchronous error occurred in  the decoder stream.
    keMvAsyncErrorTypeRTPReceiverStream,      // Indicates that the asynchronous error occurred in  RTP receiver stream.
-	keMvAsyncErrorTypeUniversalClock,			// Indicates that the asynchronous error occurred in  Universal Clock.
+	keMvAsyncErrorTypeUniversalClock,         // Indicates that the asynchronous error occurred in  Universal Clock.
    keMvAsyncErrorTypeLast,                   // End of list indicator.
 };
 
@@ -756,20 +767,20 @@ struct SMvAsyncErrorInformation
 
 //
 // Summary:
-//    Specifies the status of the Time Server Dependant clock
+//    Specifies the status of the time server dependent clock.
 //
 enum EMvTimeServerStatus
 {
    keMvTimeServerStatusInvalid,              // Invalid value.
-   keMvTimeServerStatusLocked,               // Indicates that our Time Server Dependant clock is locked/synchronized.
-   keMvTimeServerStatusUnlocked,             // Indicates that our Time Server Dependant clock is unlocked/not synchronized (server not reachable)
-   keMvTimeServerStatusFreeRunning,          // Indicates that our Time Server Dependant clock is unlocked and will never be.
+   keMvTimeServerStatusLocked,               // Indicates that the time server dependent clock is locked/synchronized.
+   keMvTimeServerStatusUnlocked,             // Indicates that the time server dependent clock is unlocked/not synchronized (the time server is not reachable).
+   keMvTimeServerStatusFreeRunning,          // Indicates that the time server dependent clock is unlocked and will never be locked.
    keMvTimeServerStatusLast                  // End of list indicator.
 };
 
 //
 // Summary:
-//    Describes the Time server synchronization status.
+//    Describes the NTP (Network Time Protocol) time server synchronization status.
 //
 struct SMvUniversalClockStatus
 {
@@ -779,17 +790,17 @@ struct SMvUniversalClockStatus
 
 //
 // Summary:
-//    Describes the time correction applied to the clock.
+//    Describes the time server correction applied to the universal clock.
 //
 struct SMvTimeServerCorrection
 {
    uint32_t                ui32Size;                  // Structure size in bytes.
-   int64_t                 i64TimeCorrection;         // Indicate the value of the correction made in nanotimes.
+   int64_t                 i64TimeCorrection;         // Indicates the value of the correction applied (in nanotime).
 };
 
 //
 // Summary:
-//    Describes the kind of notification coming from the universal clock.
+//    Describes the type of notification received from the universal clock.
 //
 enum EMvUniversalClockNotificationType
 {
@@ -806,12 +817,12 @@ enum EMvUniversalClockNotificationType
 struct SMvUniversalClockNotification 
 {
    uint32_t                               ui32Size;            // Structure size in bytes.
-   uint64_t                               ui64Timestamp;       // Indicate the time at which the notification occurred (in nanotime).
-   EMvUniversalClockNotificationType      eNotificationType;   // Indicate the type of notification.
+   uint64_t                               ui64Timestamp;       // Indicates the time at which the notification occurred (in nanotime).
+   EMvUniversalClockNotificationType      eNotificationType;   // Indicates the type of notification.
    union UMvUniversalClockNotification
    {
-      SMvUniversalClockStatus             sStatus;
-      SMvTimeServerCorrection             sTimeCorrection;
+      SMvUniversalClockStatus             sStatus;             // Indicates the NTP (Network Time Protocol) time server synchronization status.
+      SMvTimeServerCorrection             sTimeCorrection;     // Indicates the NTP time server correction applied to the universal clock.
    } uData;
 };
 
@@ -834,7 +845,7 @@ enum EMvIPProtocol
 struct SMvNetworkInterfaceSettings
 {
    uint32_t          ui32Size;                        // Structure size in bytes.
-   char              szNetworkInterfaceIPAddress[33]; // Indicates the IP address (IPV4 or IPV6) configured on the network card, which is used for Real-time Transport Protocol (RTP) transmission.
+   char              szNetworkInterfaceIPAddress[33]; // Indicates the IP address (IPv4) configured on the network card, which is used for Real-time Transport Protocol (RTP) transmission.
    char              szRemoteIPAddress[33];           // Indicates the IP address to or from which data will be streamed. Can use a multicast address.
                                                       // However, a multicast address will only stream content to the systems within the same subnet as the source system.
    uint16_t          ui16SourcePort;                  // Indicates the IP port to use on source side. This value must be an even number.
@@ -976,30 +987,38 @@ struct SMvRTPReceiverStreamSettings
                                        // Currently only keMvSurfaceFormatMpeg2Transport can be received.
 };
 
+//
+// Summary:
+//    Describes the network settings of an RTP receiver stream.
+//
 struct SMvRTPReceiverStreamNetworkSettings
 {
-   uint32_t ui32Size;
-   char szNIC[50];
-   char szIPAddress[50];
-   uint16_t ui16Port;
-   EMvIPProtocol eIPProtocol;
+   uint32_t       ui32Size;            // Structure size in bytes.
+   char           szNIC[50];           // Indicates the IP address (IPv4) of the card that will receive the stream.
+   char           szIPAddress[50];     // Indicates the IP address (IPv4) configured of the  RTP transmitter.
+   uint16_t       ui16Port;            // Indicates the port to use. 
+   EMvIPProtocol  eIPProtocol;         // Indicates the IP protocol. Currently only keMvIPProtocolUDP is supported.
 };
 
 //
 // Summary:
-//    Creates a new univeral clock or loads a previously created universal clock.
+//    Indicates the information required to create a new universal clock or to load a previously created universal clock.
 //
 struct SMvUniversalClockInfo
 {
-   int                  size;
-   const char *         szClockName;
-   const char *         szNtpServerNameOrIP;
-   SMvResolutionInfo    sMvResolutionInfo;
+   uint32_t          ui32Size;                     // Structure size in bytes.
+   const char *      szClockName;                  // Pointer to the string containing the name of the universal clock.
+   const char *      szNtpServerNameOrIP;          // Pointer to the string containing the IPv4 address (such as 172.17.1.20) or the machine name of 
+                                                   // the NTP (Network Time Protocol) time server (such as time.aserver.com) to synchronize to.
+   SMvResolutionInfo sMvResolutionInfo;            // Structure containing the resolution settings.
+   uint32_t          ui32NtpMinUpdatePeriodInMs;   // Indicates the minimum period of time between two successive calls to the NTP server. 
+                                                   // This parameter allows the universal clock to be configured so that the NTP server is not flooded while allowing 
+                                                   // for fast sampling. The default value is 500 ms. The minimum is 1 ms.
 };
 
 //
 // Summary:
-//    Information about a program stream contained into an MPEG-2 transport stream.
+//    Information about a program contained into an MPEG-2 transport stream.
 //
 struct SMvDemuxerElementaryStreamInfo
 {
@@ -1014,10 +1033,10 @@ struct SMvDemuxerElementaryStreamInfo
 
 //
 // Summary:
-//    Information about an elementary stream contained into a program stream that is contained in an MPEG-2 transport 
+//    Information about an elementary stream contained into a program that is contained in an MPEG-2 transport 
 //    stream.
 //
-struct SMvDemuxerProgramStreamInfo
+struct SMvDemuxerProgramInfo
 {
    uint32_t  ui32size;              // Structure size in bytes.
    uint32_t  ui32ProgramNumber;     // Program number as specified in the PMT.
@@ -1030,14 +1049,14 @@ struct SMvDemuxerProgramStreamInfo
 
 //
 // Summary:
-//    Information about a node that is attached to a specific elementary stream of a program stream that is contained 
+//    Information about a node that is attached to a specific elementary stream of a program that is contained 
 //    in an MPEG-2 transport stream.
 //
 struct SMvDemuxerAttachedNode
 {
-   uint32_t ui32Size;
+   uint32_t                ui32Size;
    IMvCompressedHostNode * pNode;
-   uint32_t ui32ProgramStreamIndex;
-   uint32_t ui32ElementaryStreamIndex;
+   uint32_t                ui32ProgrammIndex;
+   uint32_t                ui32ElementaryStreamIndex;
 };
 

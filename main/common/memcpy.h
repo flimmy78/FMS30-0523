@@ -41,12 +41,12 @@ namespace caspar {
 //	}, partitioner);
 //}
 
-	static void fast_memcpy(void* dest, const void* src, std::size_t size)
+	/*static void fast_memcpy(void* dest, const void* src, std::size_t size)
 	{
 		A_memcpy(
 			reinterpret_cast<std::uint8_t*>(dest),
 			reinterpret_cast<const std::uint8_t*>(src),
 			size);
-	}
+	}*/
 
 }

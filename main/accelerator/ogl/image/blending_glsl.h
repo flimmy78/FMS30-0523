@@ -322,7 +322,7 @@ static std::string get_chroma_glsl()
 		{
 			return 0.5 - abs(abs(angle1 - angle2) - 0.5);
 		}
-		
+
 		float AngleDiffDirectional(float angle1, float angle2)
 		{
 			float diff = angle1 - angle2;
