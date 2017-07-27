@@ -521,30 +521,16 @@ void describe_scroll_producer(core::help_sink& sink, const core::help_repository
 
 spl::shared_ptr<core::frame_producer> create_scroll_producer(const core::frame_producer_dependencies& dependencies, const std::vector<std::wstring>& params)
 {
-	static const auto extensions = {
-		L".png",
-		L".tga",
-		L".bmp",
-		L".jpg",
-		L".jpeg",
-		L".gif",
-		L".tiff",
-		L".tif",
-		L".jp2",
-		L".jpx",
-		L".j2k",
-		L".j2c"
-	};
 	std::wstring filename = env::media_folder() + params.at(0);
 	
-	auto ext = std::find_if(extensions.begin(), extensions.end(), [&](const std::wstring& ex) -> bool
+	auto ext = std::find_if(supported_extensions().begin(), supported_extensions().end(), [&](const std::wstring& ex) -> bool
 	{
 		auto file = caspar::find_case_insensitive(boost::filesystem::path(filename).replace_extension(ex).wstring());
 
 		return static_cast<bool>(file);
 	});
 
-	if(ext == extensions.end())
+	if (ext == supported_extensions().end())
 		return core::frame_producer::empty();
 	
 	double duration = 0.0;

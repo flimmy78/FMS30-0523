@@ -207,22 +207,7 @@ namespace caspar {
 				L"delay until foreground layer becomes slide_show3 and then\n"
 				L">> LOADBG 1-10 EMPTY MIX 20 AUTO\n", L"Plays a slide show of 3 images for 100 frames each and fades to black.");
 		}
-
-		static const auto g_extensions = {
-			L".png",
-			L".tga",
-			L".bmp",
-			L".jpg",
-			L".jpeg",
-			L".gif",
-			L".tiff",
-			L".tif",
-			L".jp2",
-			L".jpx",
-			L".j2k",
-			L".j2c"
-		};
-
+		
 		spl::shared_ptr<core::frame_producer> create_producer(const core::frame_producer_dependencies& dependencies, const std::vector<std::wstring>& params)
 		{
 			auto length = get_param(L"LENGTH", params, std::numeric_limits<uint32_t>::max());
@@ -246,7 +231,7 @@ namespace caspar {
 
 					auto extension = it->path().extension().wstring();
 
-					if (std::find_if(g_extensions.begin(), g_extensions.end(), ieq(extension)) == g_extensions.end())
+					if (std::find_if(supported_extensions().begin(), supported_extensions().end(), ieq(extension)) == supported_extensions().end())
 						continue;
 
 					files.insert(it->path().wstring());
@@ -287,14 +272,14 @@ namespace caspar {
 
 			std::wstring filename = env::media_folder() + params.at(0);
 
-			auto ext = std::find_if(g_extensions.begin(), g_extensions.end(), [&](const std::wstring& ex) -> bool
+			auto ext = std::find_if(supported_extensions().begin(), supported_extensions().end(), [&](const std::wstring& ex) -> bool
 			{
 				auto file = caspar::find_case_insensitive(boost::filesystem::path(filename).wstring() + ex);
 
 				return static_cast<bool>(file);
 			});
 
-			if (ext == g_extensions.end())
+			if (ext == supported_extensions().end())
 				return core::frame_producer::empty();
 
 			return spl::make_shared<image_producer>(dependencies.frame_factory, *caspar::find_case_insensitive(filename + *ext), false, length);
@@ -305,14 +290,14 @@ namespace caspar {
 		{
 			std::wstring filename = env::media_folder() + media_file;
 
-			auto ext = std::find_if(g_extensions.begin(), g_extensions.end(), [&](const std::wstring& ex) -> bool
+			auto ext = std::find_if(supported_extensions().begin(), supported_extensions().end(), [&](const std::wstring& ex) -> bool
 			{
 				auto file = caspar::find_case_insensitive(boost::filesystem::path(filename).wstring() + ex);
 
 				return static_cast<bool>(file);
 			});
 
-			if (ext == g_extensions.end())
+			if (ext == supported_extensions().end())
 				return core::draw_frame::empty();
 
 			spl::shared_ptr<core::frame_producer> producer = spl::make_shared<image_producer>(

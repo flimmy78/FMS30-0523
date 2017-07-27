@@ -100,4 +100,25 @@ std::shared_ptr<FIBITMAP> load_png_from_memory(const void* memory_location, size
 	return bitmap;
 }
 
+const std::set<std::wstring>& supported_extensions()
+{
+	static const std::set<std::wstring> extensions =
+	{
+		L".png",
+		L".tga",
+		L".bmp",
+		L".jpg",
+		L".jpeg",
+		L".gif",
+		L".tiff",
+		L".tif",
+		L".jp2",
+		L".jpx",
+		L".j2k",
+		L".j2c"
+	};
+
+	return extensions;
+}
+
 }}
