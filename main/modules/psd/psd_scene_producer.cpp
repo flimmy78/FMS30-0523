@@ -394,7 +394,8 @@ spl::shared_ptr<core::frame_producer> create_psd_scene_producer(const core::fram
 																																	dependencies.format_desc.time_scale*2,
 																																	dependencies.format_desc.duration,
 																																	dependencies.format_desc.name,
-																																	core::find_audio_cadence(dependencies.format_desc.framerate * 2) };
+																																	core::find_audio_cadence(dependencies.format_desc.framerate * 2),
+																																	dependencies.format_desc.afd_mode };
 
 			auto group = spl::make_shared<core::scene::scene_producer>(psd_layer->name(), L"layer group in " + params.at(0), doc.width(), doc.height(), format_desc);
 
