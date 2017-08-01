@@ -134,7 +134,7 @@ std::wstring get_blend_mode(blend_mode mode)
 	case blend_mode::linear_light:
 		return L"linear_light";
 	case blend_mode::vivid_light:
-		return L"vivid_ligh";
+		return L"vivid_light";
 	case blend_mode::pin_light:
 		return L"pin_light";
 	case blend_mode::hard_mix:
