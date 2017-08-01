@@ -117,7 +117,7 @@ class dependency_resolver
 
 	std::list<layer_record> layers;
 	layer_record master;
-	
+
 	spl::shared_ptr<core::scene::scene_producer> scene_;
 	bool is_root_;
 
@@ -131,9 +131,9 @@ public:
 
 	spl::shared_ptr<core::scene::scene_producer> scene() { return scene_; }
 
-	void add(caspar::core::scene::layer* layer, layer_tag tags, double adjustment_x, double adjustment_y, bool vector_mask)
+	void add(caspar::core::scene::layer* layer, layer_tag tags, bool vector_mask)
 	{
-		layer_record rec{ layer, tags, adjustment_x, adjustment_y, vector_mask };
+		layer_record rec{ layer, tags, 0, 0, vector_mask };
 		layers.push_back(rec);
 
 		//if the layer is either explicitly tagged as dynamic or at least not tagged as static/rasterized we should try to set it as master
@@ -142,9 +142,9 @@ public:
 			//if we don't have a master already, just assign this
 			if (master.layer == nullptr)
 				master = rec;
-			else if ((rec.tags & layer_tag::explicit_dynamic) == layer_tag::explicit_dynamic) 
+			else if ((rec.tags & layer_tag::explicit_dynamic) == layer_tag::explicit_dynamic)
 			{
-				if((master.tags & layer_tag::explicit_dynamic) == layer_tag::none) 
+				if((master.tags & layer_tag::explicit_dynamic) == layer_tag::none)
 				{
 					//if we have a master that's not explicitly tagged as dynamic but this layer is; use this as master
 					master = rec;
@@ -201,8 +201,8 @@ public:
 };
 
 boost::rational<int> get_frame_number(
-	const core::video_format_desc& format_desc,
-	const boost::rational<int>& at_second)
+		const core::video_format_desc& format_desc,
+		const boost::rational<int>& at_second)
 {
 	return at_second * format_desc.framerate;
 }
@@ -271,26 +271,27 @@ void create_timelines(
 		const spl::shared_ptr<core::scene::scene_producer>& scene,
 		const core::video_format_desc& format_desc,
 		core::scene::layer& layer,
-		const layer_ptr& psd_layer,
-		double adjustment_x,
-		double adjustment_y)
+		const layer_ptr& psd_layer)
 {
-	auto timeline = psd_layer->timeline_data();
-	auto start = get_rational(timeline.get_child(L"timeScope.Strt"));
-	auto end_offset = get_rational(timeline.get_child(L"timeScope.outTime"));
-	auto end = start + end_offset;
-	auto start_frame = get_frame_number(format_desc, start);
-	auto end_frame = get_frame_number(format_desc, end);
+	auto timeline		= psd_layer->timeline_data();
+	auto start			= get_rational(timeline.get_child(L"timeScope.Strt"));
+	auto end_offset		= get_rational(timeline.get_child(L"timeScope.outTime"));
+	auto end			= start + end_offset;
+	auto start_frame	= get_frame_number(format_desc, start);
+	auto end_frame		= get_frame_number(format_desc, end);
 
-	layer.hidden = scene->timeline_frame() < boost::rational_cast<int64_t>(start_frame) || scene->timeline_frame() > boost::rational_cast<int64_t>(end_frame);
+	layer.hidden =
+			scene->timeline_frame() < boost::rational_cast<int64_t>(start_frame)
+			|| scene->timeline_frame() > boost::rational_cast<int64_t>(end_frame);
 
 	auto tracklist = timeline.get_child_optional(L"trackList");
 
 	if (!tracklist)
 		return;
 
-	double original_pos_x = psd_layer->location().x;
-	double original_pos_y = psd_layer->location().y;
+	bool is_text_field		= psd_layer->is_text() && !psd_layer->is_static();
+	double original_pos_x	= is_text_field ? psd_layer->text_pos().x : psd_layer->location().x;
+	double original_pos_y	= is_text_field ? psd_layer->text_pos().y : psd_layer->location().y;
 
 	for (auto& track : *tracklist)
 	{
@@ -300,14 +301,13 @@ void create_timelines(
 		{
 			for (auto& key : track.second.get_child(L"keyList"))
 			{
-				bool tween = key.second.get<std::wstring>(L"animInterpStyle")
-						== L"Lnr ";
-				auto time = get_rational(key.second.get_child(L"time"));
-				auto hrzn = key.second.get<double>(L"animKey.Hrzn");
-				auto vrtc = key.second.get<double>(L"animKey.Vrtc");
-				auto x = original_pos_x + hrzn + adjustment_x;
-				auto y = original_pos_y + vrtc + adjustment_y;
-				auto frame = get_frame_number(format_desc, time);
+				bool tween	= key.second.get<std::wstring>(L"animInterpStyle") == L"Lnr ";
+				auto time	= get_rational(key.second.get_child(L"time"));
+				auto hrzn	= key.second.get<double>(L"animKey.Hrzn");
+				auto vrtc	= key.second.get<double>(L"animKey.Vrtc");
+				auto x		= original_pos_x + hrzn;
+				auto y		= original_pos_y + vrtc;
+				auto frame	= get_frame_number(format_desc, time);
 
 				if (frame == 0) // Consider as initial value (rewind)
 				{
@@ -335,11 +335,10 @@ void create_timelines(
 
 			for (auto& key : track.second.get_child(L"keyList"))
 			{
-				bool tween = key.second.get<std::wstring>(L"animInterpStyle")
-						== L"Lnr ";
-				auto time = get_rational(key.second.get_child(L"time"));
-				auto opct = key.second.get<double>(L"animKey.Opct.#Prc") / 100.0;
-				auto frame = get_frame_number(format_desc, time);
+				bool tween	= key.second.get<std::wstring>(L"animInterpStyle") == L"Lnr ";
+				auto time	= get_rational(key.second.get_child(L"time"));
+				auto opct	= key.second.get<double>(L"animKey.Opct.#Prc") / 100.0;
+				auto frame	= get_frame_number(format_desc, time);
 
 				if (frame == 0) // Consider as initial value (rewind)
 					opacity.set(opct);
@@ -395,9 +394,8 @@ spl::shared_ptr<core::frame_producer> create_psd_scene_producer(const core::fram
 																																	dependencies.format_desc.time_scale*2,
 																																	dependencies.format_desc.duration,
 																																	dependencies.format_desc.name,
-																																	core::find_audio_cadence(dependencies.format_desc.framerate * 2),
-																																	dependencies.format_desc.afd_mode};
-			
+																																	core::find_audio_cadence(dependencies.format_desc.framerate * 2) };
+
 			auto group = spl::make_shared<core::scene::scene_producer>(psd_layer->name(), L"layer group in " + params.at(0), doc.width(), doc.height(), format_desc);
 
 			auto& scene_layer = current.scene()->create_layer(group, psd_layer->location().x, psd_layer->location().y, psd_layer->name());
@@ -405,10 +403,10 @@ spl::shared_ptr<core::frame_producer> create_psd_scene_producer(const core::fram
 			scene_layer.hidden.set(!psd_layer->is_visible());
 
 			if (psd_layer->has_timeline())
-				create_timelines(root, dependencies.format_desc, scene_layer, psd_layer, 0, 0);
+				create_timelines(root, dependencies.format_desc, scene_layer, psd_layer);
 
 			if (psd_layer->is_movable())
-				current.add(&scene_layer, psd_layer->tags(), 0, 0, false);
+				current.add(&scene_layer, psd_layer->tags(), false);
 
 			if (psd_layer->is_resizable())	//TODO: we could add support for resizable groups with vector masks
 				CASPAR_LOG(warning) << "Groups doesn't support the \"resizable\"-tag.";
@@ -438,31 +436,28 @@ spl::shared_ptr<core::frame_producer> create_psd_scene_producer(const core::fram
 			caspar::core::scene::layer* scene_layer = nullptr;
 			std::shared_ptr<core::frame_producer> layer_producer;
 			auto layer_name = psd_layer->name();
-			int adjustment_x = 0,
-				adjustment_y = 0;
 
 			if(psd_layer->is_text() && !psd_layer->is_static())
 			{
 				std::wstring str = psd_layer->text_data().get(L"EngineDict.Editor.Text", L"");
-			
+
 				core::text::text_info text_info(std::move(get_text_info(psd_layer->text_data())));
 				auto max_scale = std::max(abs(psd_layer->scale().x), abs(psd_layer->scale().y));
 				text_info.size *= max_scale;
 				text_info.scale_x = psd_layer->scale().x / max_scale;
 				text_info.scale_y = psd_layer->scale().y / max_scale;
-				text_info.shear = 0;	
+				text_info.shear = 0;
 
 				auto text_producer = core::text_producer::create(dependencies.frame_factory, 0, 0, str, text_info, doc.width(), doc.height());
 				//text_producer->pixel_constraints().width.set(psd_layer->size().width);
 				//text_producer->pixel_constraints().height.set(psd_layer->size().height);
 				core::text::string_metrics metrics = text_producer->measure_string(str);
-			
-				//adjustment_x = -2;	//the 2 offset is just a hack for now. don't know why our text is rendered 2 px to the right of that in photoshop
-				//adjustment_y = metrics.bearingY;
+
 				layer_producer = text_producer;
-				scene_layer = &current.scene()->create_layer(spl::make_shared_ptr(layer_producer), static_cast<int>(psd_layer->text_pos().x) + adjustment_x, static_cast<int>(psd_layer->text_pos().y) + adjustment_y, layer_name);
-				
+				scene_layer = &current.scene()->create_layer(spl::make_shared_ptr(layer_producer), static_cast<int>(psd_layer->text_pos().x), static_cast<int>(psd_layer->text_pos().y), layer_name);
+
 				int justification = psd_layer->text_data().get(L"EngineDict.ParagraphRun.RunArray..ParagraphSheet.Properties.Justification", 0);
+
 				switch (justification)
 				{
 				case 1: // Right
@@ -487,11 +482,11 @@ spl::shared_ptr<core::frame_producer> create_psd_scene_producer(const core::fram
 						var.on_change([=]() {
 							hotswap->producer().set(dependencies.producer_registry->create_producer(dependencies, root->get_variable(layer_name).as<std::wstring>().get()));
 						});*/
-						
+
 					}
 					else
 						hotswap->producer().set(dependencies.producer_registry->create_producer(dependencies, layer_name));
-					
+
 					layer_producer = hotswap;
 				}
 				else if(psd_layer->is_solid())
@@ -515,7 +510,7 @@ spl::shared_ptr<core::frame_producer> create_psd_scene_producer(const core::fram
 				}
 
 				if(layer_producer)
-					scene_layer = &current.scene()->create_layer(spl::make_shared_ptr(layer_producer), psd_layer->location().x + adjustment_x, psd_layer->location().y + adjustment_y, layer_name);
+					scene_layer = &current.scene()->create_layer(spl::make_shared_ptr(layer_producer), psd_layer->location().x, psd_layer->location().y, layer_name);
 			}
 
 			if (layer_producer && scene_layer)
@@ -528,7 +523,7 @@ spl::shared_ptr<core::frame_producer> create_psd_scene_producer(const core::fram
 				if (psd_layer->mask().has_vector()) {
 
 					if (psd_layer->is_placeholder() && psd_layer->is_cornerpin()) {
-						
+
 						psd::point<int> layer_pos{ static_cast<int>(scene_layer->position.x.get()), static_cast<int>(scene_layer->position.y.get()) };
 						auto unbind_and_set = [&layer_pos](caspar::core::scene::coord& c, const caspar::psd::point<int>& pt) {
 							c.x.unbind();
@@ -580,10 +575,10 @@ spl::shared_ptr<core::frame_producer> create_psd_scene_producer(const core::fram
 				}
 
 				if (psd_layer->has_timeline())
-					create_timelines(root, dependencies.format_desc, *scene_layer, psd_layer, adjustment_x, adjustment_y);
+					create_timelines(root, dependencies.format_desc, *scene_layer, psd_layer);
 
 				if (psd_layer->is_movable() || psd_layer->is_resizable() || (psd_layer->is_text() && !psd_layer->is_static()))
-					current.add(scene_layer, psd_layer->tags(), -adjustment_x, -adjustment_y, psd_layer->mask().has_vector());
+					current.add(scene_layer, psd_layer->tags(), psd_layer->mask().has_vector());
 
 				if (psd_layer->is_placeholder())
 					scene_layer->use_mipmap.set(true);
@@ -592,7 +587,7 @@ spl::shared_ptr<core::frame_producer> create_psd_scene_producer(const core::fram
 	}
 
 	if (scene_stack.size() != 1) {
-		
+
 	}
 	root->reverse_layers();
 	scene_stack.top().calculate();
