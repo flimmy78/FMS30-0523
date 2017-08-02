@@ -41,11 +41,6 @@
 #include <tbb/atomic.h>
 #include <tbb/recursive_mutex.h>
 
-#include <boost/range/algorithm.hpp>
-#include <boost/thread/condition_variable.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/thread.hpp>
-
 #if defined(_MSC_VER)
 #pragma warning (push)
 #pragma warning (disable : 4244)
@@ -66,7 +61,7 @@ static const size_t MIN_BUFFER_COUNT    = 50;
 static const size_t MAX_BUFFER_SIZE     = 64 * 1000000;
 
 namespace caspar { namespace ffmpeg {
-struct input::implementation : boost::noncopyable
+struct input::impl : boost::noncopyable
 {
 	const spl::shared_ptr<diagnostics::graph>					graph_;
 
@@ -74,11 +69,11 @@ struct input::implementation : boost::noncopyable
 	const int													default_stream_index_	= av_find_default_stream_index(format_context_.get());
 
 	const std::wstring											filename_;
-	tbb::atomic<uint32_t>										start_;
-	tbb::atomic<uint32_t>										length_;
+	tbb::atomic<uint32_t>										in_;
+	tbb::atomic<uint32_t>										out_;
 	const bool													thumbnail_mode_;
 	tbb::atomic<bool>											loop_;
-	uint32_t													frame_number_			= 0;
+	uint32_t													file_frame_number_			= 0;
 
 	tbb::concurrent_bounded_queue<std::shared_ptr<AVPacket>>	buffer_;
 	tbb::atomic<size_t>											buffer_size_;
@@ -101,7 +96,7 @@ struct input::implementation : boost::noncopyable
 	double                                                      time_per_frame_;
 	int                                                         length_diff;//length add
 
-	explicit implementation(const spl::shared_ptr<diagnostics::graph> graph, const std::wstring& url_or_file, bool loop, uint32_t start, uint32_t length, bool thumbnail_mode, const ffmpeg_options& vid_params)
+	explicit impl(const spl::shared_ptr<diagnostics::graph> graph, const std::wstring& url_or_file, bool loop, uint32_t in, uint32_t out, bool thumbnail_mode, const ffmpeg_options& vid_params)
 		: graph_(graph)
 		, format_context_(open_input(url_or_file, vid_params))
 		, filename_(url_or_file)
@@ -124,19 +119,19 @@ struct input::implementation : boost::noncopyable
 				enable_quiet_logging_for_thread();
 			});
 
-		start_			= start;
-		length_			= length;
-		if (length != std::numeric_limits<uint32_t>::max())
+		in_			    = in;
+		out_			= out;
+		if (out_ != std::numeric_limits<uint32_t>::max())
 		{
 			double fps = read_fps(*format_context_, 0.0);
 			int64_t durationLen = static_cast<int64_t>(format_context_->duration*fps / 1000000 + 1);
-			if ((durationLen - length) > 50)
+			if ((durationLen - out_) > 50)
 			{
-				length_ = length + 50;
+				out_ = out + 50;
 			}
 			else
 			{
-				length_ = static_cast<unsigned int>(durationLen);
+				out_ = static_cast<unsigned int>(durationLen);
 			}
 		}
 		loop_			= loop;
@@ -185,7 +180,7 @@ struct input::implementation : boost::noncopyable
 				/////////////////////////////////////////////////
 			}
 		}
-		start_ += source_track_origin_;
+		in_ += source_track_origin_;
 		//-----------------------------------------------------------
 		isLiveStream_ = filename_.find(L"udp", 0) == 0 ||
 			filename_.find(L"rtmp", 0) == 0 ||
@@ -194,15 +189,15 @@ struct input::implementation : boost::noncopyable
 		length_time = 0;//length add
 		length_diff = 0;
 
-		if (start_ > 0 && !isLiveStream_)
+		if (in_ > 0 && !isLiveStream_)
 		{
 			m_first_pkt = create_packet();
 			setCurrentCheckTime(30);
 			av_read_frame(format_context_.get(), m_first_pkt.get());
 			need_seek_ = true;
-			queued_seek(start_);
+			queued_seek(in_);
 		}
-		seek_start_ = start_;
+		seek_start_ = in_;
 		graph_->set_color("seek", diagnostics::color(1.0f, 0.5f, 0.0f));
 		graph_->set_color("buffer-count", diagnostics::color(0.7f, 0.4f, 0.4f));
 		graph_->set_color("buffer-size", diagnostics::color(1.0f, 1.0f, 0.0f));
@@ -293,11 +288,11 @@ struct input::implementation : boost::noncopyable
 
 				if(is_eof(ret))
 				{
-					frame_number_	= 0;
+					file_frame_number_	= 0;
 
 					if(loop_)
 					{
-						queued_seek(start_);
+						queued_seek(in_);
 						graph_->set_tag(diagnostics::tag_severity::INFO, "seek");
 						CASPAR_LOG(trace) << print() << " Looping.";
 					}
@@ -345,7 +340,7 @@ struct input::implementation : boost::noncopyable
 										THROW_ON_ERROR(ret, "av_read_frame", print());
 
 										if (m_first_pkt->stream_index == default_stream_index_)
-											++frame_number_;
+											++file_frame_number_;
 
 										THROW_ON_ERROR2(av_dup_packet(m_first_pkt.get()), print());
 
@@ -396,7 +391,7 @@ struct input::implementation : boost::noncopyable
 								double timeSecond = (packet->pts - pStream1->start_time) * av_q2d(pStream1->time_base);
 								double frames_per_second = read_fps(*format_context_, 0.0);//av_q2d(pStream->r_frame_rate);
 								int32_t nframe = static_cast<int32_t>(timeSecond * frames_per_second);// / length_time;
-								length_diff = start_ - nframe;
+								length_diff = in_ - nframe;
 								length_diff < 0 ? length_diff = 0 : length_diff;
 
 								need_seek_ = false;
@@ -441,7 +436,7 @@ struct input::implementation : boost::noncopyable
 						THROW_ON_ERROR(ret, "av_read_frame", print());
 
 						if (packet->stream_index == default_stream_index_)
-							++frame_number_;
+							++file_frame_number_;
 
 						THROW_ON_ERROR2(av_dup_packet(packet.get()), print());
 
@@ -633,6 +628,7 @@ struct input::implementation : boost::noncopyable
 			std::numeric_limits<int64_t>::max(),			
 			0), print());
 
+		file_frame_number_  = target;
 		auto flush_packet	= create_packet();
 		flush_packet->data	= nullptr;
 		flush_packet->size	= 0;
@@ -670,7 +666,7 @@ struct input::implementation : boost::noncopyable
 		}
 		int count = nframe + 1;
 		int nCount = 0;
-		while (count <= static_cast<int>(start_))
+		while (count <= static_cast<int>(in_))
 		{
 			boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
 			packet1 = create_packet();
@@ -759,13 +755,13 @@ struct input::implementation : boost::noncopyable
 			CASPAR_LOG(trace) << print() << " Received EOF. ";
 
 	//	return ret == AVERROR_EOF || ret == AVERROR(EIO) || frame_number_ >= length_; // av_read_frame doesn't always correctly return AVERROR_EOF;
-		if (length_ == std::numeric_limits<uint32_t>::max())
+		if (out_ == std::numeric_limits<uint32_t>::max())
 		{
-			return ret == AVERROR_EOF || ret == AVERROR(EIO) || frame_number_ >= length_;
+			return ret == AVERROR_EOF || ret == AVERROR(EIO) || file_frame_number_ >= out_;
 		}
 		else
 		{
-			return ret == AVERROR_EOF || ret == AVERROR(EIO) || frame_number_ >= ((length_ + length_diff) * (length_time == 0 ? 1 : length_time)); // av_read_frame doesn't always correctly return AVERROR_EOF;
+			return ret == AVERROR_EOF || ret == AVERROR(EIO) || file_frame_number_ >= ((out_ + length_diff) * (length_time == 0 ? 1 : length_time)); // av_read_frame doesn't always correctly return AVERROR_EOF;
 		}
 	}
 
@@ -778,7 +774,7 @@ struct input::implementation : boost::noncopyable
 #ifdef  _DEBUG
 		return false;
 #endif
-		caspar::ffmpeg::input::implementation* input0 = (caspar::ffmpeg::input::implementation*)ctx;
+		caspar::ffmpeg::input::impl* input0 = (caspar::ffmpeg::input::impl*)ctx;
 		boost::posix_time::millisec_posix_time_system_config::time_duration_type time_elapse;
 		time_elapse = boost::posix_time::microsec_clock::universal_time() - input0->last_checktime_;
 		if (time_elapse.total_seconds() > input0->check_timeout_)
@@ -794,24 +790,26 @@ struct input::implementation : boost::noncopyable
 	}
 };
 
-input::input(const spl::shared_ptr<diagnostics::graph>& graph, const std::wstring& url_or_file, bool loop, uint32_t start, uint32_t length, bool thumbnail_mode, const ffmpeg_options& vid_params)
-	: impl_(new implementation(graph, url_or_file, loop, start, length, thumbnail_mode, vid_params))
+input::input(const spl::shared_ptr<diagnostics::graph>& graph, const std::wstring& url_or_file, bool loop, uint32_t in, uint32_t out, bool thumbnail_mode, const ffmpeg_options& vid_params)
+	: impl_(new impl(graph, url_or_file, loop, in, out, thumbnail_mode, vid_params))
 {
 	source_afd_code = impl_->source_afd_code;
 }
 bool input::eof() const {return !impl_->executor_.is_running();}
 bool input::try_pop(std::shared_ptr<AVPacket>& packet){return impl_->try_pop(packet);}
 spl::shared_ptr<AVFormatContext> input::context(){return impl_->format_context_;}
-void input::start(uint32_t value){impl_->start_ = value;}
-uint32_t input::start() const{return impl_->start_;}
-void input::length(uint32_t value){impl_->length_ = value;}
-uint32_t input::length() const{return impl_->length_;}
+void input::in(uint32_t value){impl_->in_ = value;}
+uint32_t input::in() const{return impl_->in_;}
+void input::out(uint32_t value){impl_->out_ = value;}
+uint32_t input::out() const{return impl_->out_;}
+void input::length(uint32_t value) { impl_->out_ = impl_->in_ + value; }
+uint32_t input::length() const { return impl_->out_ - impl_->in_; }
 void input::loop(bool value){impl_->loop_ = value;}
 bool input::loop() const{return impl_->loop_;}
 int input::num_audio_streams() const { return impl_->num_audio_streams(); }
 std::future<bool> input::seek(uint32_t target){return impl_->seek(target);}
 double input::length_time() { return impl_->length_time; }//seek add1
-uint32_t input::start_position() { return impl_->start_; }//Omn Seek
+uint32_t input::start_position() { return impl_->in_; }//Omn Seek
 
 bool input::hasUpdateAVstarttime()
 {
