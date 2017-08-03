@@ -512,7 +512,7 @@ struct input::impl : boost::noncopyable
 		auto path					= parts.at(1);
 		AVInputFormat* input_format	= nullptr;
 
-		static const std::set<std::wstring> PROTOCOLS_TREATED_AS_FORMATS = { L"dshow", L"v4l2" };
+		static const std::set<std::wstring> PROTOCOLS_TREATED_AS_FORMATS = { L"dshow", L"v4l2", L"iec61883" };
 
 		if (protocol.empty())
 			resource_name = path;
@@ -599,21 +599,6 @@ struct input::impl : boost::noncopyable
 	{
 		if (!thumbnail_mode_)
 			CASPAR_LOG(debug) << print() << " Seeking: " << target;
-
-		int flags = AVSEEK_FLAG_FRAME;
-		if(target == 0)
-		{
-			// Fix VP6 seeking
-			int vid_stream_index = av_find_best_stream(format_context_.get(), AVMEDIA_TYPE_VIDEO, -1, -1, 0, 0);
-			if(vid_stream_index >= 0)
-			{
-				auto codec_id = format_context_->streams[vid_stream_index]->codec->codec_id;
-//2.0				if(codec_id == CODEC_ID_VP6A || codec_id == CODEC_ID_VP6F || codec_id == CODEC_ID_VP6)
-//3.0
-				if (codec_id == AV_CODEC_ID_VP6A || codec_id == AV_CODEC_ID_VP6F || codec_id == AV_CODEC_ID_VP6)
-					flags = AVSEEK_FLAG_BYTE;
-			}
-		}
 
 		auto stream = format_context_->streams[default_stream_index_];
 
