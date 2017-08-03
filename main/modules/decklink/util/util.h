@@ -132,6 +132,9 @@ static core::video_format get_caspar_video_format(BMDDisplayMode fmt)
 	case bmdMode4K2160p25:					return core::video_format::x2160p2500;
 	case bmdMode4K2160p2997:				return core::video_format::x2160p2997;
 	case bmdMode4K2160p30:					return core::video_format::x2160p3000;
+	case bmdMode4K2160p50:					return core::video_format::x2160p5000;
+	case bmdMode4K2160p5994:				return core::video_format::x2160p5994;
+	case bmdMode4K2160p60:					return core::video_format::x2160p6000;
 	case bmdMode4kDCI2398:					return core::video_format::dci2160p2398;
 	case bmdMode4kDCI24:					return core::video_format::dci2160p2400;
 	case bmdMode4kDCI25:					return core::video_format::dci2160p2500;
