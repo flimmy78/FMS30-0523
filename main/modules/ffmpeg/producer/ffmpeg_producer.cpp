@@ -902,7 +902,7 @@ void describe_producer(core::help_sink& sink, const core::help_repository& repo)
 		->text(L"H.264, FLV, WMV and several audio codecs as well as uncompressed audio.");
 	sink.definitions()
 		->item(L"clip", L"The file without the file extension to play. It should reside under the media folder.")
-		->item(L"url", L"If clip contains :// it is instead treated as the URL parameter. The URL can either be any streaming protocol supported by FFmpeg, dshow://video={webcam_name} or v4l2://{video device}.")
+		->item(L"url", L"If clip contains :// it is instead treated as the URL parameter. The URL can either be any streaming protocol supported by FFmpeg, dshow://video={webcam_name} or v4l2://{video device} or iec61883://{auto}.")
 		->item(L"loop", L"Will cause the media file to loop between in and out.")
 		->item(L"in", L"Optionally sets the first frame. 0 by default. If loop is specified, this will be the frame where it starts over again.")
 		->item(L"out", L"Optionally sets the last frame. If not specified the clip will be played to the end. If loop is specified, the file will jump to start position once it reaches the last frame.")
