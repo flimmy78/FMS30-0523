@@ -79,7 +79,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalOptions> /Zm192 /bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\..\..\..\main\modules\ffmpeg\..;..\..\..\..\main\modules\ffmpeg\..\..;..\..\..\..\main\dependencies64\boost;..\..\..\..\main\dependencies64\tbb\include;..\..\..\..\main\dependencies64\ffmpeg\include;..\..\..\..\main\dependencies64\ffmpeg\include-win32;..\..\..\..\main\dependencies64\RxCpp\include;..\..\..\..\main\dependencies64\asmlib;..\..\..\..\main\dependencies64\intel\ipp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\main\modules\ffmpeg\..;..\..\..\..\main\modules\ffmpeg\..\..;..\..\..\..\main\modules\common_zq;..\..\..\..\main\dependencies64\boost;..\..\..\..\main\dependencies64\tbb\include;..\..\..\..\main\dependencies64\ffmpeg\include;..\..\..\..\main\dependencies64\ffmpeg\include-win32;..\..\..\..\main\dependencies64\RxCpp\include;..\..\..\..\main\dependencies64\asmlib;..\..\..\..\main\dependencies64\intel\ipp\include;..\..\..\..\main\dependencies64\mainconcept\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -117,7 +117,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalOptions> /Zm192 /bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\..\..\..\main\modules\ffmpeg\..;..\..\..\..\main\modules\ffmpeg\..\..;..\..\..\..\main\dependencies64\boost;..\..\..\..\main\dependencies64\tbb\include;..\..\..\..\main\dependencies64\ffmpeg\include;..\..\..\..\main\dependencies64\ffmpeg\include-win32;..\..\..\..\main\dependencies64\RxCpp\include;..\..\..\..\main\dependencies64\asmlib;..\..\..\..\main\dependencies64\intel\ipp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\main\modules\ffmpeg\..;..\..\..\..\main\modules\ffmpeg\..\..;..\..\..\..\main\modules\common_zq;..\..\..\..\main\dependencies64\boost;..\..\..\..\main\dependencies64\tbb\include;..\..\..\..\main\dependencies64\ffmpeg\include;..\..\..\..\main\dependencies64\ffmpeg\include-win32;..\..\..\..\main\dependencies64\RxCpp\include;..\..\..\..\main\dependencies64\asmlib;..\..\..\..\main\dependencies64\intel\ipp\include;..\..\..\..\main\dependencies64\mainconcept\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -520,6 +520,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\core\core.vcxproj">
       <Project>{575ac9d3-9589-3f5f-890c-a879f361ef19}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\common_zq\common_zq.vcxproj">
+      <Project>{5e7eda3d-3c59-47eb-8228-4098b58559fb}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

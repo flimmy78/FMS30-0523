@@ -569,7 +569,7 @@ namespace com_matrox_vpg_SDK
 #define MV_E_GPIO_PIN_ALREADY_USED                              MAKE_MVHRESULTERROR (0x8205)  // The GPio pin chosen is already in use by another watchdog.
 #define MV_E_WRITE_TO_READ_DELAY_IS_TOO_SMALL                   MAKE_MVHRESULTERROR (0x8206)  // The write to read delay is below the required value.
 #define MV_E_INCOMPATIBLE_AUDIO_SETTINGS                        MAKE_MVHRESULTERROR (0x8207)  // The audio settings of the input node are incompatible with the settings of the output node.
-#define MV_E_INCOMPATIBLE_VANC_SETTINGS                         MAKE_MVHRESULTERROR (0x8208)  // The VANC settings of the input node are incompatible with the settings of the output node.
+#define MV_E_INCOMPATIBLE_VANC_SETTINGS                         MAKE_MVHRESULTERROR (0x8208)  // The ancillary data settings of the input node are incompatible with the settings of the output node.
 #define MV_E_NO_AUDIO_IN_NODE                                   MAKE_MVHRESULTERROR (0x8209)  // The node content type does not contain audio data.
 #define MV_E_FAILED_TO_ATTACH_SCHEDULER                         MAKE_MVHRESULTERROR (0x820A) // Tried to attach a scheduler while it was already attached
 #define MV_E_FAILED_TO_DETACH_SCHEDULER                         MAKE_MVHRESULTERROR (0x820B) // Tried to detach a scheduler while no scheduler was attached
@@ -633,7 +633,7 @@ namespace com_matrox_vpg_SDK
 #define MV_E_SCANMODE_UNSUPPORTED_WITH_BASELINE_PROFILE         MAKE_MVHRESULTERROR (0x8245)  // The specific scan mode is not supported for 264 baseline profile.
 #define MV_E_TIMECODE_NOT_SUPPORTED_IN_CODEC                    MAKE_MVHRESULTERROR (0x8246)  // Timecode is not supported in the codec.
 #define MV_E_DEVICE_FAILED                                      MAKE_MVHRESULTERROR (0x8247)  // The device failed.
-#define MV_E_VANC_NOT_SUPPORTED                                 MAKE_MVHRESULTERROR (0x8248)  // VANC Capture not supported with current settings
+#define MV_E_VANC_NOT_SUPPORTED                                 MAKE_MVHRESULTERROR (0x8248)  // Ancillary data capture not supported with current settings.
 #define MV_E_NO_AUDIO_SUPPORTED_IN_FILEFORMAT                   MAKE_MVHRESULTERROR (0x8249)  // The selected file format doesn't support audio.
 #define MV_E_ENCODER_CLOSED                                     MAKE_MVHRESULTERROR (0x824A)  // The encoder is closed, this operation is not valid at this time.
 #define MV_E_UNDEFINED_BEHAVIOR                                 MAKE_MVHRESULTERROR (0x824B)  // An undefined behavior happens in the encoder.
@@ -698,25 +698,25 @@ namespace com_matrox_vpg_SDK
 #define MV_E_PID_VALUE_OUT_OF_RANGE                             MAKE_MVHRESULTERROR (0x8286)  // Transport Stream elementary stream PIDs must be in range [0x0010, 0x1FFF]. ISO-IEC 13818-1
 #define MV_E_NODE_WITH_INCOMPATIBLE_CLOCK                       MAKE_MVHRESULTERROR (0x8287)  // The stream needs to have a node create with the same clock.
 #define MV_E_VIDEO_NODE_RESOLUTION_MISMATCH                     MAKE_MVHRESULTERROR (0x8288)  // The input video node and the output node do not have compatible resolution.
-#define MV_E_VANC_NODE_RESOLUTION_MISMATCH                      MAKE_MVHRESULTERROR (0x8289)  // The input VANC node and the output node do not have compatible resolution.
+#define MV_E_VANC_NODE_RESOLUTION_MISMATCH                      MAKE_MVHRESULTERROR (0x8289)  // The input ancillary data node and the output node do not have compatible resolution.
 #define MV_E_AUDIO_NODE_RESOLUTION_MISMATCH                     MAKE_MVHRESULTERROR (0x828A)  // The input audio node and the output node do not have compatible resolution.
 #define MV_E_NOT_UNIQUE_PID                                     MAKE_MVHRESULTERROR (0x828B)  // Transport Stream elementary stream PIDs must be unique. ISO-IEC 13818-1
 #define MV_E_NO_MORE_ACTIVATIONS                                MAKE_MVHRESULTERROR (0x828C)  // The requested feature needs an activation and no more are available.
 #define MV_E_WAIT_ABANDONED                                     MAKE_MVHRESULTERROR (0x828D)  // The wait operation returned WAIT_ABANDONED. Validate integrity of data.
-#define MV_E_UNSUPPORTED_TS_TYPE                                MAKE_MVHRESULTERROR (0x828E)  // The type of the TS trying to be demultiplexed is unsupported. 
+#define MV_E_UNSUPPORTED_TS_TYPE                                MAKE_MVHRESULTERROR (0x828E)  // The type of the TS trying to be demultiplexed is unsupported.
 #define MV_E_NOT_ADMINISTRATOR                                  MAKE_MVHRESULTERROR (0x828F)  // Feature requires application to run as administrator.
 #define MV_E_CONNECTION_FAILED                                  MAKE_MVHRESULTERROR (0x8290)  // Network connection failed
-#define MV_E_UNSUPPORTED_PROTOCOL                               MAKE_MVHRESULTERROR (0x8291)  // Requested protocol is not supported 
-#define MV_E_DNS_NAME_LOOKUP_FAILED                             MAKE_MVHRESULTERROR (0x8292)  // Domain Name System resolve failed 
+#define MV_E_UNSUPPORTED_PROTOCOL                               MAKE_MVHRESULTERROR (0x8291)  // Requested protocol is not supported
+#define MV_E_DNS_NAME_LOOKUP_FAILED                             MAKE_MVHRESULTERROR (0x8292)  // Domain Name System resolve failed
 #define MV_E_SOCKET_BINDING_FAILED                              MAKE_MVHRESULTERROR (0x8293)  // Socket binding failed
 #define MV_E_NETWORK_RECEPTION_OPERATION_FAILED                 MAKE_MVHRESULTERROR (0x8294)  // Network reception request failed
 #define MV_E_NETWORK_SEND_OPERATION_FAILED                      MAKE_MVHRESULTERROR (0x8295)  // Network send request failed
 #define MV_E_DATA_NOT_AVAILABLE                                 MAKE_MVHRESULTERROR (0x8296)  // Network data not available
-#define MV_E_NETWORK_STREAM_NOT_CONNECTED                       MAKE_MVHRESULTERROR (0x8297)  // There's no active connection          
+#define MV_E_NETWORK_STREAM_NOT_CONNECTED                       MAKE_MVHRESULTERROR (0x8297)  // There's no active connection
 #define MV_E_UNSUPPORTED_SERVER_REQUEST                         MAKE_MVHRESULTERROR (0x8298)  // Request on server is not supported
-#define MV_E_INVALID_BUFFERING_MODE                             MAKE_MVHRESULTERROR (0x8299)  // Buffering mode provided is invalid  
+#define MV_E_INVALID_BUFFERING_MODE                             MAKE_MVHRESULTERROR (0x8299)  // Buffering mode provided is invalid
 #define MV_E_NODE_NOT_FOUND                                     MAKE_MVHRESULTERROR (0x829A)  // The node or reference node is not found
-#define MV_E_INVALID_SDP_SOURCE                                 MAKE_MVHRESULTERROR (0x8300)  // SDP source provided is invalid  
+#define MV_E_INVALID_SDP_SOURCE                                 MAKE_MVHRESULTERROR (0x8300)  // SDP source provided is invalid
 #define MV_E_UNSUPPORTED_STREAM_TYPE                            MAKE_MVHRESULTERROR (0x8301)  // The requested network stream type is not supported
 #define MV_E_NETWORK_STREAM_DISCONNECTED                        MAKE_MVHRESULTERROR (0x8302)  // The network has been disconnected
 #define MV_E_STREAM_ALREADY_CONNECTED                           MAKE_MVHRESULTERROR (0x8303)  // A connection request has been made on stream already connected
@@ -726,9 +726,9 @@ namespace com_matrox_vpg_SDK
 #define MV_E_BUFFER_SIZE_TOO_SMALL                              MAKE_MVHRESULTERROR (0x8307)  // The requested size of the buffer is too small.
 #define MV_E_INVALID_NUMBER_OF_AUDIO_CONNECTORS                 MAKE_MVHRESULTERROR (0x8308)  // The number of audio connectors does not match the required numbers of audio tracks
 #define MV_E_INVALID_PRESET                                     MAKE_MVHRESULTERROR (0x8309)  // The preset selected for the codec is invalid.
-#define MV_E_LICENSE_NOT_AVAILABLE                              MAKE_MVHRESULTERROR (0x830A)  // This license is not available for use. 
+#define MV_E_LICENSE_NOT_AVAILABLE                              MAKE_MVHRESULTERROR (0x830A)  // This license is not available for use.
 #define MV_E_LICENSE_EXPIRED                                    MAKE_MVHRESULTERROR (0x830B)  // This license is expired
-#define MV_E_WIBU_LICENSE_FAIL                                  MAKE_MVHRESULTERROR (0x830C)  // This license cannot be used. 
+#define MV_E_DSXCORE_LICENSE_FAIL                               MAKE_MVHRESULTERROR (0x830C)  // This license cannot be used.
 #define MV_E_CABAC_UNSUPPORTED_WITH_BASELINE_PROFILE            MAKE_MVHRESULTERROR (0x830D)  // Encoding coding CABAC is not supported for 264 baseline profile.
 #define MV_E_QP_INVALID_RANGE                                   MAKE_MVHRESULTERROR (0x830E)  // QP invalid range
 #define MV_E_UNSUPPORTED_CLOCK                                  MAKE_MVHRESULTERROR (0x830F)  // The clock passed in parameter is not supported for this call/object.
@@ -754,11 +754,14 @@ namespace com_matrox_vpg_SDK
 #define MV_E_AVCONTENT_IS_NOT_SURFACE_BUFFER                    MAKE_MVHRESULTERROR (0x8323)  // The object implementing the interface IMvAVContent does not support the interface IMvSurface.
 #define MV_E_AVCONTENT_IS_NOT_AUDIO_SAMPLES_BUFFER              MAKE_MVHRESULTERROR (0x8324)  // The object implementing the interface IMvAVContent does not support the interface IMvaudioSamples.
 #define MV_E_OUTPUT_RESOLUTION_MISMATCH                         MAKE_MVHRESULTERROR (0x8325)  // Output resolution mismatch.
-#define MV_E_INVALID_AUDIO_CONNECTOR                            MAKE_MVHRESULTERROR (0x8326)  // The connector is not used in the right context.  
+#define MV_E_INVALID_AUDIO_CONNECTOR                            MAKE_MVHRESULTERROR (0x8326)  // The connector is not used in the right context.
 #define MV_E_MISMATCH_SFP                                       MAKE_MVHRESULTERROR (0x8327)  // The connectors must come from the same SFP+ transceiver.
 #define MV_E_MUXER_ERROR                                        MAKE_MVHRESULTERROR (0x8328)  // General error from Muxer.
 #define MV_E_DAEMON_SERVICE_CONNECTION_FAILED                   MAKE_MVHRESULTERROR (0x8329)  // Connection to the Matrox daemon/service application failed.
-#define MV_E_CODEC_INERNAL_BUFFERS_RELEASED_OUT_OF_ORDER        MAKE_MVHRESULTERROR (0x832A)  // Internal Error: The codec's buffers were released out of order.
+#define MV_E_CODEC_INTERNAL_BUFFERS_RELEASED_OUT_OF_ORDER       MAKE_MVHRESULTERROR (0x832A)  // Internal Error: The codec's buffers were released out of order.
+#define MV_E_IPV4_ADDRESS_AND_UDP_PORT_ALREADY_IN_USE           MAKE_MVHRESULTERROR (0x832B)  // IPv4 address and UDP port already in use.
+#define MV_E_NO_PROFILE_FOUND                                   MAKE_MVHRESULTERROR (0x832C)  // No Matrox profile available in the system.
+
 
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -899,6 +902,8 @@ namespace com_matrox_vpg_SDK
 #define  MV_W_CODEC_TIMEOUT_WAITING_FOR_SEQUENCE_RESET      MAKE_MVHRESULTWARNING(0x0095)  // The decoder timed out waiting for the sequence reset to complete in order to finish cancelling
 #define  MV_W_MUXER_WARNING                                 MAKE_MVHRESULTWARNING(0x0096)  // General warning message from Muxer.
 #define  MV_W_MUXER_VIDEO_STREAM_DELAY_TOO_LONG             MAKE_MVHRESULTWARNING(0x0097)  // During muxing, video stream is delayed too long.
+#define  MV_W_WRONG_CC_COUNT_CORRECTED                      MAKE_MVHRESULTWARNING(0x0098)  // CDP CC-Count was not following standard and has been corrected.
+#define  MV_W_CODEC_DISPLAY_POSITION_OUT_OF_ORDER           MAKE_MVHRESULTWARNING(0x0099)  // The decoded picture has a display position lower than the last decoded picture.
 
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////

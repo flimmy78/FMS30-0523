@@ -7,6 +7,10 @@
 #include "../producer/filter/filter.h"
 #include "../producer/filter/audio_filter.h"
 
+#include <muxer/muxer_base.h>
+#include <render/render_base.h>
+#include <auxinfo.h>
+
 #include <common/except.h>
 #include <common/executor.h>
 #include <common/assert.h>
@@ -74,6 +78,45 @@ extern "C"
 
 namespace caspar {
 	namespace ffmpeg {
+
+		static const int aac_sample_rates[16] = {
+			96000, 88200, 64000, 48000, 44100, 32000,
+			24000, 22050, 16000, 12000, 11025, 8000, 7350
+		};
+		struct adts_header
+		{
+			adts_header(int profile, int channels, int samplerateindex)
+			{
+				profile_ = profile;
+				channels_ = channels;
+				samplerateindex_ = samplerateindex;
+				pData = new uint8_t[7];
+			}
+			~adts_header()
+			{
+				if (pData)
+				{
+					delete pData;
+					pData = nullptr;
+				}
+			}
+			uint8_t* constructheader(int packetlen)
+			{
+				pData[0] = 0xFF;
+				pData[1] = 0xF9;
+				pData[2] = (((profile_) << 6) + (samplerateindex_ << 2) + (channels_ >> 2));
+				pData[3] = (((channels_ & 3) << 6) + (packetlen >> 11));
+				pData[4] = ((packetlen & 0x7FF) >> 3);
+				pData[5] = (((packetlen & 7) << 5) + 0x1F);
+				pData[6] = 0xFC;
+				return pData;
+			}
+		private:
+			int profile_;
+			int channels_;
+			int samplerateindex_;
+			uint8_t* pData;
+		};
 
 		void set_pixel_format(AVFilterContext* sink, AVPixelFormat pix_fmt)
 		{
@@ -185,6 +228,7 @@ namespace caspar {
 
 			core::monitor::subject						subject_;
 			std::string									path_;
+			std::string									path_redundancy_;
 			boost::filesystem::path						full_path_;
 
 			std::map<std::string, std::string>			options_;
@@ -194,6 +238,7 @@ namespace caspar {
 			core::audio_channel_layout					in_channel_layout_ = core::audio_channel_layout::invalid();
 
 			std::shared_ptr<AVFormatContext>			oc_;
+			std::shared_ptr<AVFormatContext>			oc2_; //used for path_redundancy_
 			tbb::atomic<bool>							abort_request_;
 
 			std::shared_ptr<AVStream>					video_st_;
@@ -220,19 +265,42 @@ namespace caspar {
 			int                                                 framerate_count_ = 0;
 			caspar::timer                                       framerate_timer_;
 			double                                              framerate_ = framerate_interval_;
+			//
+			std::map<std::string, std::string>			 path_options_;
+			MUXER_TYPE                                   muxer_type_;
+			RENDER_TYPE                                  render_type_;
+			muxer_base *                                 muxer_;
+			render_base *                                render_;
+			std::map<int32_t, adts_header *>			 adts_headers_;
 
+			//wxg record
+			//--------------------------------------------------------------------
+			bool										is_recodeMode_;
+			bool										is_recording_;
+			executor*									video_encoder_executor_record_;
+			executor*									audio_encoder_executor_record_;
+			executor*									write_executor_record_;
+			int64_t										recordFramesNums_ = 0;
 		public:
 
 			ffmpeg_consumer(
 				std::string path,
+				std::string path_redundancy,
 				std::string options,
 				bool mono_streams)
 				: path_(path)
+				, path_redundancy_(path_redundancy)
 				, full_path_(path)
 				, mono_streams_(mono_streams)
 				, audio_encoder_executor_(print() + L" audio_encoder")
 				, video_encoder_executor_(print() + L" video_encoder")
 				, write_executor_(print() + L" io")
+				, muxer_type_(MUXER_UNKNOWN)
+				, render_type_(RENDER_UNKNOWN)
+				, muxer_(nullptr)
+				, render_(nullptr)
+				,is_recording_(false)
+				,is_recodeMode_(false)
 			{
 				frame_buffer_.set_capacity(10);
 				is_running_ = true;
@@ -254,6 +322,15 @@ namespace caspar {
 				if (options_.find("threads") == options_.end())
 					options_["threads"] = "auto";
 
+				graph_->set_color("tick-time", diagnostics::color(0.0f, 0.6f, 0.9f));
+				graph_->set_color("pushframe-time", diagnostics::color(0.1f, 1.0f, 0.1f));
+				graph_->set_color("videoenc-time", diagnostics::color(1.0f, 0.4f, 0.0f, 0.8f));
+				graph_->set_color("dropped-frame", diagnostics::color(0.3f, 0.6f, 0.3f));
+				graph_->set_color("buffer-frames", diagnostics::color(0.7f, 0.4f, 0.4f));
+				graph_->set_text(print());
+				diagnostics::register_graph(graph_);
+
+				is_recodeMode_ = !boost::contains(path_, L"://");
 			}
 
 			~ffmpeg_consumer()
@@ -286,6 +363,16 @@ namespace caspar {
 							avio_close(oc_->pb);
 
 						oc_.reset();
+
+						if (oc2_)
+						{
+							FF(av_write_trailer(oc2_.get()));
+
+							if (!(oc2_->oformat->flags & AVFMT_NOFILE) && oc2_->pb)
+								avio_close(oc2_->pb);
+
+							oc2_.reset();
+						}
 					}
 					catch (...)
 					{
@@ -294,49 +381,205 @@ namespace caspar {
 				}
 				is_running_ = false;
 				thread_.join();
+					
+				if (muxer_)
+				{
+					delete muxer_;
+					muxer_ = nullptr;
+				}
+				if (render_)
+				{
+					delete render_;
+					render_ = nullptr;
+				}
+
+				for (std::map<int32_t, adts_header*>::iterator iter = adts_headers_.begin(); iter != adts_headers_.end(); iter++)
+				{
+					adts_header* adts_header_ = iter->second;
+					if (adts_header_)
+					{
+						delete adts_header_;
+						adts_header_ = nullptr;
+					}
+				}
+				adts_headers_.clear();
 			}
 
 			void initialize(
 				const core::video_format_desc& format_desc,
 				const core::audio_channel_layout& channel_layout)
 			{
+				//graph_->set_color("tick-time", diagnostics::color(0.0f, 0.6f, 0.9f));
+				//graph_->set_color("pushframe-time", diagnostics::color(0.1f, 1.0f, 0.1f));
+				//graph_->set_color("videoenc-time", diagnostics::color(1.0f, 0.4f, 0.0f, 0.8f));
+				//graph_->set_color("dropped-frame", diagnostics::color(0.3f, 0.6f, 0.3f));
+				//graph_->set_color("buffer-frames", diagnostics::color(0.7f, 0.4f, 0.4f));
+				//graph_->set_text(print());
+				//diagnostics::register_graph(graph_);
+				CASPAR_VERIFY(format_desc.format != core::video_format::invalid);
+
+				in_video_format_ = format_desc;
+				in_channel_layout_ = channel_layout;
+
+				framerate_ = framerate_interval_ = in_video_format_.fps;
+
+				path_parser();
+				if (render_type_ != RENDER_UNKNOWN)
+				{
+					initialize_new();
+				}
+				else
+				{
+					initialize_std_ffmpeg();
+				}
+			}
+
+			void initialize_record(
+				const core::video_format_desc& format_desc,
+				const core::audio_channel_layout& channel_layout)
+			{
+				recordFramesNums_ = 0;
+				is_running_ = true;
+				video_encoder_executor_record_ = new executor(u16(path_) + L" video_encoder");
+				audio_encoder_executor_record_ = new executor(u16(path_) + L" audio_encoder");
+				write_executor_record_ = new executor(u16(path_) + L" io");
+				//graph_->set_color("tick-time", diagnostics::color(0.0f, 0.6f, 0.9f));
+				//graph_->set_color("pushframe-time", diagnostics::color(0.1f, 1.0f, 0.1f));
+				//graph_->set_color("videoenc-time", diagnostics::color(1.0f, 0.4f, 0.0f, 0.8f));
+				//graph_->set_color("dropped-frame", diagnostics::color(0.3f, 0.6f, 0.3f));
+				//graph_->set_color("buffer-frames", diagnostics::color(0.7f, 0.4f, 0.4f));
+				//graph_->set_text(print());
+				//diagnostics::register_graph(graph_);
+
+				CASPAR_VERIFY(format_desc.format != core::video_format::invalid);
+
+				in_video_format_ = format_desc;
+				in_channel_layout_ = channel_layout;
+
+				framerate_ = framerate_interval_ = in_video_format_.fps;
+
+				path_parser();
+				if (render_type_ != RENDER_UNKNOWN)
+				{
+					initialize_new();
+				}
+				else
+				{
+					initialize_std_ffmpeg();
+				}
+			}
+
+			void uninitiate_record()
+			{
+				core::const_frame frame;
+				while (frame_buffer_.try_pop(frame))
+				{
+					boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
+				}
+				is_running_ = false;
+				thread_.join();
+				if (oc_)
+				{
+					try
+					{
+						video_encoder_executor_record_->begin_invoke([&] { encode_video(nullptr); });
+						audio_encoder_executor_record_->begin_invoke([&] { encode_audio(core::const_frame::empty()); });
+						video_encoder_executor_record_->stop();
+
+						audio_encoder_executor_record_->stop();
+						video_encoder_executor_record_->join();
+						audio_encoder_executor_record_->join();
+
+						graph_->auto_reset();
+						boost::this_thread::sleep_for(boost::chrono::milliseconds(500));
+						video_graph_.reset();
+						audio_filter_.reset();
+						video_st_.reset();
+						audio_sts_.clear();
+
+						CASPAR_LOG(info) << L"ffmpeg record video and audio encode params reset! ";
+
+						write_packet_record(nullptr);
+
+						write_executor_record_->stop();
+						write_executor_record_->join();
+
+						FF(av_write_trailer(oc_.get()));
+
+						if (!(oc_->oformat->flags & AVFMT_NOFILE) && oc_->pb)
+							avio_close(oc_->pb);
+
+						oc_.reset();
+
+						if (oc2_)
+						{
+							FF(av_write_trailer(oc2_.get()));
+
+							if (!(oc2_->oformat->flags & AVFMT_NOFILE) && oc2_->pb)
+								avio_close(oc2_->pb);
+
+							oc2_.reset();
+						}
+					}
+					catch (...)
+					{
+						CASPAR_LOG_CURRENT_EXCEPTION();
+					}
+				}
+
+				if (muxer_)
+				{
+					delete muxer_;
+					muxer_ = nullptr;
+				}
+				if (render_)
+				{
+					delete render_;
+					render_ = nullptr;
+				}
+
+				for (std::map<int32_t, adts_header*>::iterator iter = adts_headers_.begin(); iter != adts_headers_.end(); iter++)
+				{
+					adts_header* adts_header_ = iter->second;
+					if (adts_header_)
+					{
+						delete adts_header_;
+						adts_header_ = nullptr;
+					}
+				}
+				adts_headers_.clear();
+			}
+
+			void initialize_new()
+			{
 				try
 				{
-					static boost::regex prot_exp("^.+:.*");
+					render_ = render_base::create(render_type_);
+					if (nullptr == render_) return;
 
-					if (!boost::regex_match(
-						path_,
-						prot_exp))
-					{
-						if (!full_path_.is_complete())
-						{
-							full_path_ =
-								u8(
-									env::media_folder()) +
-								path_;
-						}
-
-						if (boost::filesystem::exists(full_path_))
-							boost::filesystem::remove(full_path_);
-
-						boost::filesystem::create_directories(full_path_.parent_path());
-					}
-
-					graph_->set_color("tick-time", diagnostics::color(0.0f, 0.6f, 0.9f));
-					graph_->set_color("pushframe-time", diagnostics::color(0.1f, 1.0f, 0.1f));
-					graph_->set_color("videoenc-time", diagnostics::color(1.0f, 0.4f, 0.0f, 0.8f));
-					graph_->set_color("dropped-frame", diagnostics::color(0.3f, 0.6f, 0.3f));
-					graph_->set_color("buffer-frames", diagnostics::color(0.7f, 0.4f, 0.4f));
-					graph_->set_text(print());
-					diagnostics::register_graph(graph_);
-
-					const auto oformat_name =
+					bool bret = render_->init(full_path_.string(), path_options_);
+					if (false == bret) return;
+	
+					/*const */auto oformat_name =
 						try_remove_arg<std::string>(
 							options_,
 							boost::regex("^f|format$"));
+					
+					if (0 == oformat_name->compare("mcmpegts")) //mcmpegts
+					{
+						muxer_type_ = MUXER_MC_MPEG;
+						oformat_name.reset("mpegts");
+					}
+
+					if (muxer_type_ != MUXER_UNKNOWN)
+					{
+						muxer_ = muxer_base::create(muxer_type_);
+						if (nullptr == muxer_)	return;
+              			bret = muxer_->init(options_,render_->getrenderinbufstrm());
+						if (false == bret)	 return;
+					}
 
 					AVFormatContext* oc;
-
 					FF(avformat_alloc_output_context2(
 						&oc,
 						nullptr,
@@ -351,13 +594,6 @@ namespace caspar {
 
 					oc_->interrupt_callback.callback = ffmpeg_consumer::interrupt_cb;
 					oc_->interrupt_callback.opaque = this;
-
-					CASPAR_VERIFY(format_desc.format != core::video_format::invalid);
-
-					in_video_format_ = format_desc;					
-					in_channel_layout_ = channel_layout;
-
-					framerate_ = framerate_interval_ = in_video_format_.fps;
 
 					CASPAR_VERIFY(oc_->oformat);
 
@@ -401,8 +637,204 @@ namespace caspar {
 					{
 						configure_video_filters(
 							*video_codec,
+							try_remove_arg<std::string>(options_, boost::regex("vf|f:v|filter:v"))
+							.get_value_or(""),
+							try_remove_arg<std::string>(options_, boost::regex("pix_fmt")));
+
+						configure_audio_filters(
+							*audio_codec,
 							try_remove_arg<std::string>(options_,
-								boost::regex("vf|f:v|filter:v")).get_value_or(""));
+								boost::regex("af|f:a|filter:a")).get_value_or(""));
+					}
+
+					// Encoders
+
+					{
+						auto video_options = options_;
+						auto audio_options = options_;
+
+						video_st_ = open_encoder(
+							*video_codec,
+							video_options,
+							0);
+
+						for (int i = 0; i < audio_filter_->get_num_output_pads(); ++i)
+							audio_sts_.push_back(open_encoder(
+								*audio_codec,
+								audio_options,
+								i));
+
+						auto it = options_.begin();
+						while (it != options_.end())
+						{
+							if (video_options.find(it->first) == video_options.end() || audio_options.find(it->first) == audio_options.end())
+								it = options_.erase(it);
+							else
+								++it;
+						}
+					}
+					//Muxer
+					if (nullptr != muxer_)
+					{
+						muxer_->addvideostream();
+						for (int pad_id = 0; pad_id < audio_filter_->get_num_output_pads(); ++pad_id)
+						{
+							muxer_->addaudiostream(pad_id);
+							if (audio_sts_.at(pad_id)->codec->codec_id == AV_CODEC_ID_AAC) //AAC ADTS
+							{
+								int profile = audio_sts_.at(pad_id)->codec->profile; //AAC LC 
+								int channels = audio_sts_.at(pad_id)->codec->channels;
+								int samplerateindex = -1;
+								for (int i = 0; i < 16; i++)
+								{
+									if (audio_sts_.at(pad_id)->codec->sample_rate == aac_sample_rates[i])
+									{
+										samplerateindex = i;
+										break;
+									}
+								}
+								if (samplerateindex == -1)
+								{
+									CASPAR_LOG(error) << L"not support this samplerate:" << audio_sts_.at(pad_id)->codec->sample_rate;
+									return;
+								}
+								adts_header* adts_header_ = new adts_header(profile, channels, samplerateindex);
+								adts_headers_[pad_id] = adts_header_;
+							}
+						}
+					}
+
+ 					// Output
+ 					{
+ 						AVDictionary* av_opts = nullptr;
+ 
+ 						to_dict(
+ 							&av_opts,
+ 							std::move(options_));
+ 
+ 						CASPAR_SCOPE_EXIT
+ 						{
+ 							av_dict_free(&av_opts);
+ 						};
+ 
+						if (!(oc_->oformat->flags & AVFMT_NOFILE))
+						{
+							FF(avio_open2(
+								&oc_->pb,
+								full_path_.string().c_str(),
+								AVIO_FLAG_WRITE,
+								&oc_->interrupt_callback,
+								&av_opts));
+						}
+ 
+ 						FF(avformat_write_header(
+ 							oc_.get(),
+ 							&av_opts));
+ 
+ 						options_ = to_map(av_opts);
+ 					}
+
+					// Dump Info
+
+					av_dump_format(
+						oc_.get(),
+						0,
+						oc_->filename,
+						1);
+
+					for (const auto& option : options_)
+					{
+						CASPAR_LOG(warning)
+							<< L"Invalid option: -"
+							<< u16(option.first)
+							<< L" "
+							<< u16(option.second);
+					}
+					
+					if (is_recodeMode_)
+						thread_ = boost::thread([this] { run_record(); });
+					else
+						thread_ = boost::thread([this] {run(); });
+				}
+				catch (...)
+				{
+					video_st_.reset();
+					audio_sts_.clear();
+					oc_.reset();
+					throw;
+				}
+			}
+
+			void initialize_std_ffmpeg()
+			{
+				try
+				{
+					/*const*/ auto oformat_name =
+						try_remove_arg<std::string>(
+							options_,
+							boost::regex("^format$"));
+
+					AVFormatContext* oc;
+					FF(avformat_alloc_output_context2(
+						&oc,
+						nullptr,
+						oformat_name && !oformat_name->empty() ? oformat_name->c_str() : nullptr,
+						full_path_.string().c_str()));
+
+					oc_.reset(
+						oc,
+						avformat_free_context);
+
+					CASPAR_VERIFY(oc_->oformat);
+
+					oc_->interrupt_callback.callback = ffmpeg_consumer::interrupt_cb;
+					oc_->interrupt_callback.opaque = this;
+
+					CASPAR_VERIFY(oc_->oformat);
+
+					const auto video_codec_name =
+						try_remove_arg<std::string>(
+							options_,
+							boost::regex("^c:v|codec:v|vcodec$"));
+
+					const auto video_codec =
+						video_codec_name
+						? avcodec_find_encoder_by_name(video_codec_name->c_str())
+						: avcodec_find_encoder(oc_->oformat->video_codec);
+
+					const auto audio_codec_name =
+						try_remove_arg<std::string>(
+							options_,
+							boost::regex("^c:a|codec:a|acodec$"));
+
+					const auto audio_codec =
+						audio_codec_name
+						? avcodec_find_encoder_by_name(audio_codec_name->c_str())
+						: (is_pcm_s24le_not_supported(*oc_)
+							? avcodec_find_encoder(oc_->oformat->audio_codec)
+							: avcodec_find_encoder_by_name("pcm_s24le"));
+
+					if (!video_codec)
+						CASPAR_THROW_EXCEPTION(user_error() << msg_info(
+							"Failed to find video codec " + (video_codec_name
+								? *video_codec_name
+								: "with id " + boost::lexical_cast<std::string>(
+									oc_->oformat->video_codec))));
+					if (!audio_codec)
+						CASPAR_THROW_EXCEPTION(user_error() << msg_info(
+							"Failed to find audio codec " + (audio_codec_name
+								? *audio_codec_name
+								: "with id " + boost::lexical_cast<std::string>(
+									oc_->oformat->audio_codec))));
+
+					// Filters
+
+					{
+						configure_video_filters(
+							*video_codec,
+							try_remove_arg<std::string>(options_, boost::regex("vf|f:v|filter:v"))
+							.get_value_or(""),
+							try_remove_arg<std::string>(options_, boost::regex("pix_fmt")));
 
 						configure_audio_filters(
 							*audio_codec,
@@ -464,6 +896,60 @@ namespace caspar {
 							oc_.get(),
 							&av_opts));
 
+						//
+						if (!path_redundancy_.empty())
+						{
+							int32_t nIdx = static_cast<int32_t>(path_redundancy_.find(':'));
+							if (nIdx > 0)
+							{
+								std::string protocolstr = path_redundancy_.substr(0, nIdx + 3);
+								if (0 == protocolstr.compare("rtmp://"))
+								{
+									oformat_name.reset("flv");
+								}
+							}
+							
+							AVFormatContext* oc2;
+							FF(avformat_alloc_output_context2(
+								&oc2,
+								nullptr,
+								oformat_name && !oformat_name->empty() ? oformat_name->c_str() : nullptr,
+								path_redundancy_.c_str()));
+
+							oc2_.reset(
+								oc2,
+								avformat_free_context);
+
+							CASPAR_VERIFY(oc2_->oformat);
+
+							oc2_->interrupt_callback.callback = ffmpeg_consumer::interrupt_cb;
+							oc2_->interrupt_callback.opaque = this;
+
+							CASPAR_VERIFY(oc2_->oformat);
+
+							for (int i = 0; i < oc_->nb_streams; i++) 
+							{
+								AVStream *in_stream = oc_->streams[i];
+								AVStream *out_stream = avformat_new_stream(oc2_.get(), in_stream->codec->codec);
+								avcodec_copy_context(out_stream->codec, in_stream->codec);
+							}
+
+
+							if (!(oc2_->oformat->flags & AVFMT_NOFILE))
+							{
+								FF(avio_open2(
+									&oc2_->pb,
+									path_redundancy_.c_str(),
+									AVIO_FLAG_WRITE,
+									&oc2_->interrupt_callback,
+									&av_opts));
+							}
+
+							FF(avformat_write_header(
+								oc2_.get(),
+								&av_opts));
+						}
+
 						options_ = to_map(av_opts);
 					}
 
@@ -474,6 +960,14 @@ namespace caspar {
 						0,
 						oc_->filename,
 						1);
+					if (oc2_)
+					{
+						av_dump_format(
+							oc2_.get(),
+							0,
+							oc2_->filename,
+							1);
+					}					
 
 					for (const auto& option : options_)
 					{
@@ -484,7 +978,10 @@ namespace caspar {
 							<< u16(option.second);
 					}
 
-					thread_ = boost::thread([this] {run(); });
+					if (is_recodeMode_)
+						thread_ = boost::thread([this] { run_record(); });
+					else
+						thread_ = boost::thread([this] {run(); });
 				}
 				catch (...)
 				{
@@ -505,6 +1002,11 @@ namespace caspar {
 				graph_->set_value("tick-time", tick_timer_.elapsed()*in_video_format_.fps*0.5);
 				if (!frame_buffer_.try_push(frame))
 					graph_->set_tag(diagnostics::tag_severity::WARNING, "dropped-frame");
+				if (is_recodeMode_ && !is_recording_)
+				{
+					core::const_frame dropFrame;
+					frame_buffer_.try_pop(dropFrame);
+				}
 				graph_->set_text(print());
 				graph_->set_value("buffer-frames", ((double)frame_buffer_.size()) / frame_buffer_.capacity());
 				tick_timer_.restart();
@@ -585,6 +1087,81 @@ namespace caspar {
 				}
 			}
 
+			//wxg record 2017年9月1日09:53:22
+			void run_record()
+			{
+				ensure_gpf_handler_installed_for_thread(
+					"ffmpeg-consumer-thread");
+				caspar::timer pushframe_timer;
+				while (is_running_)
+				{
+					core::const_frame frame;
+					if (!frame_buffer_.try_pop(frame))
+					{
+						boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
+						continue;
+					}
+					recordFramesNums_++;
+					pushframe_timer.restart();
+
+					auto src_av_frame = create_frame();
+
+					const auto sample_aspect_ratio =
+						boost::rational<int>(
+							in_video_format_.square_width,
+							in_video_format_.square_height) /
+						boost::rational<int>(
+							in_video_format_.width,
+							in_video_format_.height);
+
+					src_av_frame->format = AVPixelFormat::AV_PIX_FMT_BGRA;
+					src_av_frame->width = in_video_format_.width;
+					src_av_frame->height = in_video_format_.height;
+					src_av_frame->sample_aspect_ratio.num = sample_aspect_ratio.numerator();
+					src_av_frame->sample_aspect_ratio.den = sample_aspect_ratio.denominator();
+					src_av_frame->pts = video_pts_;
+					src_av_frame->interlaced_frame = in_video_format_.field_mode != core::field_mode::progressive;
+					src_av_frame->top_field_first = (in_video_format_.field_mode & core::field_mode::upper) == core::field_mode::upper ? 1 : 0;
+
+					video_pts_ += 1;
+
+					subject_
+						<< core::monitor::message("/frame") % video_pts_
+						<< core::monitor::message("/path") % path_
+						<< core::monitor::message("/fps") % in_video_format_.fps;
+
+					FF(av_image_fill_arrays(
+						src_av_frame->data,
+						src_av_frame->linesize,
+						frame.image_data().begin(),
+						static_cast<AVPixelFormat>(src_av_frame->format),
+						in_video_format_.width,
+						in_video_format_.height,
+						1));
+
+					FF(av_buffersrc_add_frame(
+						video_graph_in_,
+						src_av_frame.get()));
+
+					auto filt_frame = create_frame();
+
+					av_buffersink_get_frame(
+						video_graph_out_,
+						filt_frame.get());
+
+					video_encoder_executor_record_->begin_invoke([=]() mutable
+					{
+						encode_video(filt_frame);
+					});
+
+					audio_encoder_executor_record_->begin_invoke([=]() mutable
+					{
+						encode_audio(frame);
+					});
+					graph_->set_value("pushframe-time", pushframe_timer.elapsed() * in_video_format_.fps * 0.5);
+				}
+			}
+
 			void mark_dropped()
 			{
 				graph_->set_tag(diagnostics::tag_severity::WARNING, "dropped-frame");
@@ -592,7 +1169,7 @@ namespace caspar {
 
 			std::wstring print() const
 			{
-				return L"ffmpeg_consumer[" + u16(path_) + L"|" + boost::lexical_cast<std::wstring>((float)framerate_) + L"]";
+				return L"ffmpeg_consumer[" + u16(path_) + L"|" + u16(path_redundancy_)+ L"|" + boost::lexical_cast<std::wstring>((float)framerate_) + L"]";
 			}
 
 			int64_t presentation_frame_age_millis() const
@@ -600,8 +1177,164 @@ namespace caspar {
 				return current_encoding_delay_;
 			}
 
+
+			bool record_init(std::wstring strFileName)
+			{
+				return true;
+			}
+
+			bool record_start()
+			{
+				recordFramesNums_ = 0;
+				return true;
+			}
+
+			bool record_stop()
+			{
+				//下面这个参数可以停止写文件，但是还在编码
+				//abort_request_ = true;
+				return true;
+			}
+
+			bool is_recording()
+			{
+				return is_recording_;
+			}
+
+			void set_recordStatus(bool recording)
+			{
+				is_recording_ = recording;
+			}
+
+			void set_newPath_options(std::string strFileName, const std::string opts)
+			{
+				path_ = strFileName;
+
+				for (auto it =
+					boost::sregex_iterator(
+						opts.begin(),
+						opts.end(),
+						boost::regex("-(?<NAME>[^\\s]+)(\\s+(?<VALUE>[^\\s]+))?"));
+					it != boost::sregex_iterator();
+					++it)
+				{
+					options_[(*it)["NAME"].str()] = (*it)["VALUE"].matched ? (*it)["VALUE"].str() : "";
+				}
+
+				if (options_.find("threads") == options_.end())
+					options_["threads"] = "auto";
+
+				is_running_ = true;
+
+				abort_request_ = false;
+				current_encoding_delay_ = 0;
+			}
+
+			uint32_t getRecordFrames(std::wstring& fileName)
+			{
+				bool bfindClip = false;
+				int pos = path_.find('.');
+				if (pos > 0)
+					bfindClip = u8(fileName) == path_.substr(0, pos);
+				else
+					bfindClip = u8(fileName) == path_;
+
+				if(bfindClip)
+					return  recordFramesNums_;
+				return 0;
+			}
 		private:
 
+		void path_parser()
+			{
+				/*example:
+				* udp://236.0.0.2:10002?rtype=dtnet&devtype=2162&devport=2&delaytime=1000&bitrate=8000000
+				* udp://236.0.0.2:10002?rtype=mcnet&localaddr=172.16.3.83
+				* d:/test.ts?rtype=mcfile
+				* udp://236.0.0.2:10002?pkt_size=1316
+				*/
+				std::string tmp_path = path_;
+				std::string path_ops = "";
+				int32_t nIdx = static_cast<int32_t>(path_.find('?'));
+				if (nIdx > 0)
+				{
+					tmp_path = path_.substr(0, nIdx);
+					full_path_ = tmp_path;
+					path_ops = path_.substr(nIdx + 1, path_.length());
+				}				
+
+				if (!path_ops.empty())
+				{
+					for (auto it =
+						boost::sregex_iterator(
+							path_ops.begin(),
+							path_ops.end(),
+							boost::regex("(?<NAME>[^=]+)(=(?<VALUE>[^&]+)&*)?"));
+						it != boost::sregex_iterator();
+						++it)
+					{
+						path_options_[(*it)["NAME"].str()] = (*it)["VALUE"].matched ? (*it)["VALUE"].str() : "";
+					}
+				}
+
+				std::map<std::string, std::string>::iterator it = path_options_.find("rtype");
+				if (it != path_options_.end())
+				{
+					if (0 == it->second.compare("mcfile"))
+					{
+						render_type_ = RENDER_MC_FILE;
+					}
+					else if (0 == it->second.compare("mcnet"))
+					{
+						render_type_ = RENDER_MC_NET;
+					}
+					else if (0 == it->second.compare("dtnet"))
+					{
+						render_type_ = RENDER_DT_NET;
+					}
+					path_options_.erase(it);
+				}
+				else //not specified render type,default ffmpeg 
+				{
+					full_path_ = path_;
+				}
+
+				static boost::regex prot_exp("^.+:.*");
+				static boost::regex prot_exp_disk("^.{1}:.*");
+				if (!boost::regex_match(tmp_path, prot_exp))//relative path
+				{
+					if (!full_path_.is_complete())
+					{
+						full_path_ =
+							u8(
+								env::media_folder()) +
+							tmp_path;
+					}
+					if (boost::filesystem::is_directory(full_path_))
+					{
+						CASPAR_THROW_EXCEPTION(user_error() << msg_info(L"the complete path [" + u16(full_path_.string()) + L"] is not a file path."));
+					}
+					else if (boost::filesystem::exists(full_path_))
+					{
+						boost::filesystem::remove(full_path_);
+						CASPAR_LOG(warning) << full_path_.c_str() << L"  has already existed, recreate it!";
+					}
+					boost::filesystem::create_directories(full_path_.parent_path());
+				}
+				else if (boost::regex_match(tmp_path, prot_exp_disk))//absolute path, if directory is not existed, create it
+				{
+					if (boost::filesystem::is_directory(full_path_))
+					{
+						CASPAR_THROW_EXCEPTION(user_error() << msg_info(L"the complete path [" + u16(full_path_.string()) + L"] is not a file path."));
+					}
+					else if (boost::filesystem::exists(full_path_))
+					{
+						boost::filesystem::remove(full_path_);
+						CASPAR_LOG(warning) << full_path_.c_str() << L"  has already existed, recreate it!";
+					}
+					boost::filesystem::create_directories(full_path_.parent_path());
+				}
+			}
 			static int interrupt_cb(void* ctx)
 			{
 				CASPAR_ASSERT(ctx);
@@ -721,7 +1454,8 @@ namespace caspar {
 
 			void configure_video_filters(
 				const AVCodec& codec,
-				std::string filtergraph)
+				std::string filtergraph,
+				const boost::optional<std::string>& preferred_pix_fmt)
 			{
 				video_graph_.reset(
 					avfilter_graph_alloc(),
@@ -741,9 +1475,13 @@ namespace caspar {
 						in_video_format_.width,
 						in_video_format_.height);
 
+				int pixFormat = AVPixelFormat::AV_PIX_FMT_NV12;
+				if (is_recodeMode_)
+					pixFormat = AV_PIX_FMT_BGRA;
+
 				const auto vsrc_options = (boost::format("video_size=%1%x%2%:pix_fmt=%3%:time_base=%4%/%5%:pixel_aspect=%6%/%7%:frame_rate=%8%/%9%")
 					% in_video_format_.width % in_video_format_.height
-					% AVPixelFormat::AV_PIX_FMT_NV12
+					% pixFormat
 					% in_video_format_.duration	% in_video_format_.time_scale
 					% sample_aspect_ratio.numerator() % sample_aspect_ratio.denominator()
 					% in_video_format_.time_scale % in_video_format_.duration).str();
@@ -779,6 +1517,17 @@ namespace caspar {
 #pragma warning (pop)
 
 				adjust_video_filter(codec, in_video_format_, filt_vsink, filtergraph);
+
+				if (preferred_pix_fmt)
+				{
+					auto requested_fmt = av_get_pix_fmt(preferred_pix_fmt->c_str());
+					auto valid_fmts = from_terminated_array<AVPixelFormat>(codec.pix_fmts, AVPixelFormat::AV_PIX_FMT_NONE);
+
+					if (!cpplinq::from(valid_fmts).contains(requested_fmt))
+						CASPAR_THROW_EXCEPTION(user_error() << msg_info(*preferred_pix_fmt + " is not supported by codec."));
+
+					set_pixel_format(filt_vsink, requested_fmt);
+				}
 
 				if (in_video_format_.width < 1280)
 					video_graph_->scale_sws_opts = av_strdup("out_color_matrix=bt601");
@@ -1037,14 +1786,28 @@ namespace caspar {
 							pkt.duration,
 							st.codec->time_base, st.time_base));
 
-				write_packet(
-					std::shared_ptr<AVPacket>(
-						new AVPacket(pkt),
-						[](AVPacket* p)
+				if (is_recodeMode_)
 				{
-					av_free_packet(p);
-					delete p;
-				}));
+					write_packet_record(
+						std::shared_ptr<AVPacket>(
+							new AVPacket(pkt),
+							[](AVPacket* p)
+					{
+						av_free_packet(p);
+						delete p;
+					}));
+				}
+				else 
+				{
+					write_packet(
+						std::shared_ptr<AVPacket>(
+							new AVPacket(pkt),
+							[](AVPacket* p)
+					{
+						av_free_packet(p);
+						delete p;
+					}));
+				}
 
 				return true;
 			}
@@ -1054,10 +1817,100 @@ namespace caspar {
 			{
 				write_executor_.begin_invoke([this, pkt_ptr]() mutable
 				{
-					FF(av_interleaved_write_frame(
-						oc_.get(),
-						pkt_ptr.get()));
+					if (nullptr == muxer_)
+					{
+						if (pkt_ptr && oc2_)
+						{
+							auto pkt_cpy = create_packet();
+							av_copy_packet(pkt_cpy.get(), pkt_ptr.get());
+							FF(av_interleaved_write_frame(
+								oc2_.get(),
+								pkt_cpy.get()));
+						}
+						FF(av_interleaved_write_frame(
+							oc_.get(),
+							pkt_ptr.get()));
+					}
+					else
+					{
+						write_packet_mc(pkt_ptr);
+					}
+					
 				});
+			}
+			void write_packet_record(
+				const std::shared_ptr<AVPacket>& pkt_ptr)
+			{
+				write_executor_record_->begin_invoke([this, pkt_ptr]() mutable
+				{
+					if (nullptr == muxer_)
+					{
+						if (pkt_ptr && oc2_)
+						{
+							auto pkt_cpy = create_packet();
+							av_copy_packet(pkt_cpy.get(), pkt_ptr.get());
+							FF(av_interleaved_write_frame(
+								oc2_.get(),
+								pkt_cpy.get()));
+						}
+						FF(av_interleaved_write_frame(
+							oc_.get(),
+							pkt_ptr.get()));
+					}
+					else
+					{
+						write_packet_mc(pkt_ptr);
+					}
+
+				});
+			}
+
+			void write_packet_mc(
+				const std::shared_ptr<AVPacket>& pkt_ptr)
+			{
+				if (pkt_ptr == nullptr)
+				{
+					return;
+				}
+				if (pkt_ptr->stream_index == video_st_->index)
+				{
+					muxer_->getvideobufstrm()->copybytes(muxer_->getvideobufstrm(), pkt_ptr->data, pkt_ptr->size);
+					v_au_struct videoinfo;
+					memset(&videoinfo, 0, sizeof(v_au_struct));
+					videoinfo.length = pkt_ptr->size;
+					pkt_ptr->dts = pkt_ptr->dts * 300;
+					pkt_ptr->pts = pkt_ptr->pts * 300;
+					videoinfo.DTS = pkt_ptr->dts;
+					videoinfo.PTS = pkt_ptr->pts;
+					muxer_->getvideobufstrm()->auxinfo(muxer_->getvideobufstrm(), 0, VIDEO_AU_CODE, (uint8_t*)&videoinfo, sizeof(v_au_struct));
+				}
+				else
+				{
+					for (int pad_id = 0; pad_id < audio_filter_->get_num_output_pads(); ++pad_id)
+					{
+						if (pkt_ptr->stream_index == audio_sts_.at(pad_id)->index)
+						{
+							int packetlen = pkt_ptr->size;
+							if (audio_sts_.at(pad_id)->codec->codec_id == AV_CODEC_ID_AAC) 
+							{
+								adts_header* adtsheader = adts_headers_[pad_id];
+							 	if (adtsheader != nullptr)
+							 	{
+							 		packetlen = pkt_ptr->size + 7;
+							 		uint8_t* pData = adtsheader->constructheader(packetlen);
+							 		muxer_->getaudiobufstrm(pad_id)->copybytes(muxer_->getaudiobufstrm(pad_id), pData, 7);
+							 	}
+							}
+							muxer_->getaudiobufstrm(pad_id)->copybytes(muxer_->getaudiobufstrm(pad_id), pkt_ptr->data, pkt_ptr->size);
+							a_au_struct audioinfo;
+							memset(&audioinfo, 0, sizeof(a_au_struct));
+							audioinfo.length = packetlen;
+							pkt_ptr->pts = pkt_ptr->pts * 300;
+							audioinfo.pts = pkt_ptr->pts;
+							muxer_->getaudiobufstrm(pad_id)->auxinfo(muxer_->getaudiobufstrm(pad_id), 0, AUDIO_AU_CODE, (uint8_t*)&audioinfo, sizeof(a_au_struct));
+						}
+					}
+				}
 			}
 
 			template<typename T>
@@ -1151,6 +2004,7 @@ namespace caspar {
 		struct ffmpeg_consumer_proxy : public core::frame_consumer
 		{
 			const std::string					path_;
+			const std::string					path_redundancy_;
 			const std::string					options_;
 			const bool							separate_key_;
 			const bool							mono_streams_;
@@ -1159,25 +2013,42 @@ namespace caspar {
 
 			std::unique_ptr<ffmpeg_consumer>	consumer_;
 			std::unique_ptr<ffmpeg_consumer>	key_only_consumer_;
-
+			//wxg record
+			core::video_format_desc             format_desc_;
+			core::audio_channel_layout          chn_layout_ = core::audio_channel_layout::invalid();
+			bool								isFilePath_ = false;
 		public:
 
-			ffmpeg_consumer_proxy(const std::string& path, const std::string& options, bool separate_key, bool mono_streams, bool compatibility_mode)
+			ffmpeg_consumer_proxy(const std::string& path, const std::string& path_redundancy,const std::string& options, bool separate_key, bool mono_streams, bool compatibility_mode)
 				: path_(path)
+				, path_redundancy_(path_redundancy)
 				, options_(options)
 				, separate_key_(separate_key)
 				, mono_streams_(mono_streams)
 				, compatibility_mode_(compatibility_mode)
 				, consumer_index_offset_(crc16(path))
 			{
+				//通过path判断是文件路径还是stream
+				isFilePath_ = !boost::contains(path_, L"://");
 			}
 
 			void initialize(const core::video_format_desc& format_desc, const core::audio_channel_layout& channel_layout, int) override
 			{
+				//wxg record
+				//---------------------------------------------
+				format_desc_ = format_desc;
+				chn_layout_ = channel_layout;
+
+				//---------------------------------------------
 				if (consumer_)
 					CASPAR_THROW_EXCEPTION(invalid_operation() << msg_info("Cannot reinitialize ffmpeg-consumer."));
 
-				consumer_.reset(new ffmpeg_consumer(path_, options_, mono_streams_));
+				consumer_.reset(new ffmpeg_consumer(path_, path_redundancy_, options_, mono_streams_));
+
+				if (isFilePath_)
+				{
+					return;
+				}
 				consumer_->initialize(format_desc, channel_layout);
 
 				if (separate_key_)
@@ -1186,7 +2057,7 @@ namespace caspar {
 					auto without_extension = u16(fill_file.parent_path().string() + "/" + fill_file.stem().string());
 					auto key_file = without_extension + L"_A" + u16(fill_file.extension().string());
 
-					key_only_consumer_.reset(new ffmpeg_consumer(u8(key_file), options_, mono_streams_));
+					key_only_consumer_.reset(new ffmpeg_consumer(u8(key_file), "",options_, mono_streams_));
 					key_only_consumer_->initialize(format_desc, channel_layout);
 				}
 			}
@@ -1246,6 +2117,69 @@ namespace caspar {
 			{
 				return consumer_->monitor_output();
 			}
+
+			//wxg record 初始化可以多次，录制过程中初始化实际没有影响
+			bool record_init(std::wstring strFileName) const override
+			{
+				if (consumer_->is_recording() || !isFilePath_)
+					return false;
+
+				std::string fileNameTem = u8(strFileName);
+				size_t pos = fileNameTem.find('.');
+				size_t len = fileNameTem.length();
+				std::string newFileName;
+				//TODO 暂不处理同时录制多个的文件名问题,只能有一个录制通道
+
+				if (pos > 0 && (pos < len))
+				{
+					newFileName = fileNameTem;   //已经带有后缀
+					//newFileName = fileNameTem.substr(0, pos) +"_" + path_ + fileNameTem.substr(pos, len - pos);
+				}
+				else
+				{
+					//从配置文件读后缀
+					size_t pos = path_.find('.');
+					if (pos == std::string::npos)
+						pos = 0;
+					newFileName = u8(strFileName) + path_.substr(pos);
+				}
+				
+				consumer_->set_newPath_options(newFileName, options_);
+				return true;
+			}
+
+			bool record_start() const override
+			{
+				if (consumer_->is_recording() || !isFilePath_)
+					return false;
+
+				consumer_->set_recordStatus(true);
+				consumer_->initialize_record(format_desc_, chn_layout_);
+				return true;
+			}
+
+			bool record_stop() const override
+			{
+				if (!consumer_->is_recording() || !isFilePath_)
+					return false;
+
+				consumer_->uninitiate_record();
+				consumer_->set_recordStatus(false);
+				return true;
+			}
+
+			bool is_recording() const override
+			{
+				return consumer_->is_recording();
+			}
+
+			uint32_t getRecordFrames(std::wstring& fileName) const override
+			{
+				if(is_recording())
+					return consumer_->getRecordFrames(fileName);
+				return 0;
+			}
+
 		};
 
 		void describe_ffmpeg_consumer(core::help_sink& sink, const core::help_repository& repo)
@@ -1281,9 +2215,10 @@ namespace caspar {
 			bool mono_streams = get_and_consume_flag(L"MONO_STREAMS", params2);
 			auto compatibility_mode = boost::iequals(params.at(0), L"FILE");
 			auto path = u8(params2.size() > 1 ? params2.at(1) : L"");
-			auto args = u8(boost::join(params2, L" "));
+			auto path_redundancy = u8(L"");
+			auto args = u8(boost::join(params2, L""));
 
-			return spl::make_shared<ffmpeg_consumer_proxy>(path, args, separate_key, mono_streams, compatibility_mode);
+			return spl::make_shared<ffmpeg_consumer_proxy>(path, path_redundancy, args, separate_key, mono_streams, compatibility_mode);
 		}
 
 		spl::shared_ptr<core::frame_consumer> create_preconfigured_ffmpeg_consumer(
@@ -1291,10 +2226,12 @@ namespace caspar {
 		{
 			return spl::make_shared<ffmpeg_consumer_proxy>(
 				u8(ptree_get<std::wstring>(ptree, L"path")),
+				u8(ptree.get<std::wstring>(L"path-redundancy",L"")),
 				u8(ptree.get<std::wstring>(L"args", L"")),
 				ptree.get<bool>(L"separate-key", false),
 				ptree.get<bool>(L"mono-streams", false),
-				false);
+				false
+				);
 		}
 
 	}

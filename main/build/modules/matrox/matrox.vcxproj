@@ -150,7 +150,7 @@
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ForcedIncludeFiles>common/compiler/vs/disable_silly_warnings.h</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>..\..\..\..\main\dependencies64\boost;..\..\..\..\main\dependencies64\tbb\include;..\..\..\..\main\dependencies64\RxCpp\include;..\..\..\..\main\dependencies64\asmlib;..\..\..\..\main\dependencies64\ffmpeg\include;..\..\..\..\main\dependencies64\medialooks\include;..\..\..\..\main\dependencies64\matrox\include;..\..\..\..\main\modules\matrox\..;..\..\..\..\main\modules\matrox\..\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\main\modules\matrox\..;..\..\..\..\main\modules\matrox\..\..;..\..\..\..\main\dependencies64\boost;..\..\..\..\main\dependencies64\tbb\include;..\..\..\..\main\dependencies64\RxCpp\include;..\..\..\..\main\dependencies64\asmlib;..\..\..\..\main\dependencies64\ffmpeg\include;..\..\..\..\main\dependencies64\medialooks\include;..\..\..\..\main\dependencies64\matrox\include;..\..\..\..\main\dependencies64\intel\ipp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions> /Zm192 /bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -189,7 +189,7 @@
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ForcedIncludeFiles>common/compiler/vs/disable_silly_warnings.h</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>..\..\..\..\main\dependencies64\boost;..\..\..\..\main\dependencies64\tbb\include;..\..\..\..\main\dependencies64\RxCpp\include;..\..\..\..\main\dependencies64\asmlib;..\..\..\..\main\dependencies64\ffmpeg\include;..\..\..\..\main\dependencies64\medialooks\include;..\..\..\..\main\dependencies64\matrox\include;..\..\..\..\main\modules\matrox\..;..\..\..\..\main\modules\matrox\..\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\main\modules\matrox\..;..\..\..\..\main\modules\matrox\..\..;..\..\..\..\main\dependencies64\boost;..\..\..\..\main\dependencies64\tbb\include;..\..\..\..\main\dependencies64\RxCpp\include;..\..\..\..\main\dependencies64\asmlib;..\..\..\..\main\dependencies64\ffmpeg\include;..\..\..\..\main\dependencies64\medialooks\include;..\..\..\..\main\dependencies64\matrox\include;..\..\..\..\main\dependencies64\intel\ipp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -248,6 +248,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\modules\matrox\cardinfo.h" />
     <ClInclude Include="..\..\..\modules\matrox\common.h" />
     <ClInclude Include="..\..\..\modules\matrox\consumer\matrox_consumer.h" />
     <ClInclude Include="..\..\..\modules\matrox\ErrorNotificationCallback.h" />
@@ -255,10 +256,9 @@
     <ClInclude Include="..\..\..\modules\matrox\matrox.h" />
     <ClInclude Include="..\..\..\modules\matrox\matrox_2022_capture.h" />
     <ClInclude Include="..\..\..\modules\matrox\matrox_2022_playback.h" />
-    <ClInclude Include="..\..\..\modules\matrox\matrox_interface_consumer.h" />
-    <ClInclude Include="..\..\..\modules\matrox\matrox_interface_producer.h" />
+    <ClInclude Include="..\..\..\modules\matrox\matrox_sdi_capture.h" />
+    <ClInclude Include="..\..\..\modules\matrox\matrox_sdi_playback.h" />
     <ClInclude Include="..\..\..\modules\matrox\MvErrorCallbackHandler.h" />
-    <ClInclude Include="..\..\..\modules\matrox\mvHostnodeFrame.h" />
     <ClInclude Include="..\..\..\modules\matrox\producer\matrox_producer.h" />
     <ClInclude Include="..\..\..\modules\matrox\SDIInConnectorStatusCallback.h" />
     <ClInclude Include="..\..\..\modules\matrox\SfpSdiStatusCallback.h" />
@@ -270,10 +270,9 @@
     <ClCompile Include="..\..\..\modules\matrox\matrox.cpp" />
     <ClCompile Include="..\..\..\modules\matrox\matrox_2022_capture.cpp" />
     <ClCompile Include="..\..\..\modules\matrox\matrox_2022_playback.cpp" />
-    <ClCompile Include="..\..\..\modules\matrox\matrox_interface_consumer.cpp" />
-    <ClCompile Include="..\..\..\modules\matrox\matrox_interface_producer.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\matrox_sdi_capture.cpp" />
+    <ClCompile Include="..\..\..\modules\matrox\matrox_sdi_playback.cpp" />
     <ClCompile Include="..\..\..\modules\matrox\MvErrorCallbackHandler.cpp" />
-    <ClCompile Include="..\..\..\modules\matrox\mvHostnodeFrame.cpp" />
     <ClCompile Include="..\..\..\modules\matrox\producer\matrox_producer.cpp" />
     <ClCompile Include="..\..\..\modules\matrox\SDIInConnectorStatusCallback.cpp" />
     <ClCompile Include="..\..\..\modules\matrox\SfpSdiStatusCallback.cpp" />

@@ -1,15 +1,12 @@
-//
-// Created by zibj 2016/10/25.
-//
-
 #pragma once
 
 namespace caspar {	namespace matrox	{
+	
 	enum type_mid
 	{
+		IVLID,
 		IP_TYPE,
-		SDI_TYPE,
-		IVLID
+		SDI_TYPE
 	};
 	struct producer_need {
 
@@ -23,17 +20,15 @@ namespace caspar {	namespace matrox	{
 		
 	};
 	struct consumer_need {
-
-		std::wstring		localhost = L"";
-		std::wstring		addr = L"";
-		short				port = 1001;
 		std::wstring		ratio = L"16:9";
-		short				card = 0;
-		short				sdi = 0;
-		type_mid			type = type_mid::IVLID;//无效
+		uint32_t			card = 0;
+		uint32_t			sdi = 0;
 		bool				key = false;
 		bool				vanc = false;
+		type_mid			type = type_mid::IVLID;//无效
+		std::wstring        args = L"";
 	};
+
 	struct FrameforProducer {
 		std::shared_ptr<uint8_t> pvideo;
 		std::shared_ptr<uint8_t> paudio;
@@ -47,7 +42,7 @@ namespace caspar {	namespace matrox	{
 		int height;
 		int usample;
 	};
-	struct Frame2022ForConsumer {
+	struct FrameForConsumer {
 		bool IsTop;//判断是否是顶场数据
 		std::shared_ptr<uint8_t> pvideo;
 		std::shared_ptr<uint8_t> paudio;

@@ -310,6 +310,82 @@ public:
 			return consumers;
 		});
 	}
+
+	bool record_init(int index, std::wstring strFileName, bool isAllChnRecord)
+	{
+		bool bRet = false;
+		if (isAllChnRecord)
+		{
+			for (auto& port:ports_)
+			{
+				if (port.second.consumer()->index() > 100000)
+					bRet = port.second.record_init(strFileName);
+			}
+		}
+		else
+		{
+			auto it = ports_.find(index);
+			if (it != ports_.end())
+			{
+				bRet = it->second.record_init(strFileName);
+			}
+		}
+
+		return bRet;
+	}
+
+	bool record_start(int index, bool isAllChnRecord)
+	{
+		bool bRet = false;
+		if (isAllChnRecord)
+		{
+			for (auto& port : ports_)
+			{
+				if (port.second.consumer()->index() > 100000)
+					bRet = port.second.record_start();
+			}
+		}
+		else
+		{
+			auto it = ports_.find(index);
+			if (it != ports_.end())
+			{
+				bRet = it->second.record_start();
+			}
+		}
+		return bRet;
+	}
+
+	bool record_stop(int index, bool isAllChnRecord) const
+	{
+		bool bRet = false;
+		if (isAllChnRecord)
+		{
+			for (auto& port : ports_)
+			{
+				if (port.second.consumer()->index() > 100000)
+					bRet = port.second.record_stop();
+			}
+		}
+		else
+		{
+			auto it = ports_.find(index);
+			if (it != ports_.end())
+			{
+				bRet = it->second.record_stop();
+			}
+		}
+		return bRet;
+	}
+
+	uint32_t getRecordFrames(std::wstring& fileName)
+	{
+		for (auto& port : ports_)
+		{
+			if (port.second.consumer()->index() > 100000)
+				return port.second.getRecordFrames(fileName);
+		}
+	}
 };
 
 output::output(spl::shared_ptr<diagnostics::graph> graph, const video_format_desc& format_desc, const core::audio_channel_layout& channel_layout, int channel_index) : impl_(new impl(std::move(graph), format_desc, channel_layout, channel_index)){}
@@ -322,4 +398,25 @@ std::future<boost::property_tree::wptree> output::delay_info() const{ return imp
 std::vector<spl::shared_ptr<const frame_consumer>> output::get_consumers() const { return impl_->get_consumers(); }
 std::future<void> output::operator()(const_frame frame, const video_format_desc& format_desc, const core::audio_channel_layout& channel_layout){ return (*impl_)(std::move(frame), format_desc, channel_layout); }
 monitor::subject& output::monitor_output() {return *impl_->monitor_subject_;}
+
+bool output::record_init(int index, std::wstring strFileName,bool isAllChnRecord)
+{
+	return impl_->record_init(index ,strFileName,isAllChnRecord);
+}
+
+bool output::record_start(int index, bool isAllChnRecord)
+{
+	return impl_->record_start(index,isAllChnRecord);
+}
+
+bool output::record_stop(int index, bool isAllChnRecord)
+{
+	return impl_->record_stop(index,isAllChnRecord);
+}
+
+uint32_t output::getRecordFrames(std::wstring& fileName)
+{
+	return impl_->getRecordFrames(fileName);
+}
+
 }}

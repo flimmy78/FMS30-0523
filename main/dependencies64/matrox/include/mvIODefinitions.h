@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////
 //
-//  (c) Copyright Matrox Electronic Systems Ltd., 2001. All rights reserved. 
+//  (c) Copyright Matrox Electronic Systems Ltd., 2001-2017. All rights reserved. 
 //
 //  This software code is subject to the terms and conditions outlined 
 //  in the non-disclosure agreement between Matrox and your company. 
@@ -208,41 +208,41 @@ enum EMvHardwareProfile
 {
    keMvHardwareProfileInvalid        = 0x00000000,   // Invalid value.
    keMvHardwareProfileSoftwareOnly   = 0x00000001,   // Only the software services are provided.
-   keMvHardwareProfileDSX1000        = 0x00000002,   // X.io card and X.effects card.
-   keMvHardwareProfileDSX1000IO      = 0x00000003,   // X.io card only.
-   keMvHardwareProfileDSX1000FX      = 0x00000004,   // X.effects card only.
+   keMvHardwareProfileDSX1000        = 0x00000002,   // X.io card and X.effects card. No longer supported.
+   keMvHardwareProfileDSX1000IO      = 0x00000003,   // X.io card only. No longer supported.
+   keMvHardwareProfileDSX1000FX      = 0x00000004,   // X.effects card only. No longer supported.
    keMvHardwareProfileDSXmio         = 0x00000005,   // X.mio2 card only.
-   keMvHardwareProfileDSXmiofx       = 0x00000006,   // X.mio2 card and X.effects card.
+   keMvHardwareProfileDSXmiofx       = 0x00000006,   // X.mio2 card and X.effects card. No longer supported.
    keMvHardwareProfileHelper         = 0x00000007,   // Only the helper services are provided.
-   keMvHardwareProfileDSX1000DX      = 0x00000008,   // X.io card and GPU FX card.
+   keMvHardwareProfileDSX1000DX      = 0x00000008,   // X.io card and GPU FX card. No longer supported.
    keMvHardwareProfileDSXmioDX       = 0x00000009,   // X.mio2 card and GPU FX card.
-   keMvHardwareProfileDSXle          = 0x0000000A,   // DSX LE card only.
+   keMvHardwareProfileDSXle          = 0x0000000A,   // DSX LE card only. No longer supported.
    keMvHardwareProfileDXBoardOnly    = 0x0000000B,   // GPU FX card only.
-   keMvHardwareProfileDSXleDX        = 0x0000000C,   // DSX LE card and GPU FX card.
+   keMvHardwareProfileDSXleDX        = 0x0000000C,   // DSX LE card and GPU FX card. No longer supported.
    keMvHardwareProfileDSXopen        = 0x0000000D,   // X.open card only.
    keMvHardwareProfileDSXopenDX      = 0x0000000E,   // X.open card and GPU FX card.
-   keMvHardwareProfileDSXopenfx      = 0x0000000F,   // X.open card and X.effects card.
-   keMvHardwareProfileRTX2           = 0x00000010,   // RT.X2 card only.
-   keMvHardwareProfileRTX2DX         = 0x00000011,   // RT.X2 card and GPU FX card.
+   keMvHardwareProfileDSXopenfx      = 0x0000000F,   // X.open card and X.effects card. No longer supported.
+   keMvHardwareProfileRTX2           = 0x00000010,   // RT.X2 card only. No longer supported.
+   keMvHardwareProfileRTX2DX         = 0x00000011,   // RT.X2 card and GPU FX card. No longer supported.
    keMvHardwareProfileDSXsd          = 0x00000012,   // DSX.SD card only.
    keMvHardwareProfileDSXsdDX        = 0x00000013,   // DSX.SD card and GPU FX card. 
    keMvHardwareProfileMXO            = 0x00000014,   // MXO external box. This profile is only for FlexChannelTester.  It doesn't have any output channel.
    keMvHardwareProfileMXODXwGPUPb    = 0x00000015,   // MXO external box and GPU FX card with GPU playback support.
    keMvHardwareProfileReserved16     = 0x00000016,   // 
    keMvHardwareProfileReserved17     = 0x00000017,   // 
-   keMvHardwareProfileDSXlefx        = 0x00000018,   // DSX LE card and X.effects card.
-   keMvHardwareProfileDSXmioDXwGPUPb = 0x00000019,   // X.io card and GPU FX card with GPU playback support.
+   keMvHardwareProfileDSXlefx        = 0x00000018,   // DSX LE card and X.effects card. No longer supported.
+   keMvHardwareProfileDSXmioDXwGPUPb = 0x00000019,   // X.io card and GPU FX card with GPU playback support. No longer supported.
    keMvHardwareProfileMXOwGPUPb      = 0x0000001A,   // MXO external box with GPU playback support.
-   keMvHardwareProfileDSXAVCio       = 0x0000001B,   // X.AVCio card only.
-   keMvHardwareProfileDSXAVCioDX     = 0x0000001C,   // X.AVCio card and GPU FX card.
+   keMvHardwareProfileDSXAVCio       = 0x0000001B,   // X.AVCio card only. No longer supported.
+   keMvHardwareProfileDSXAVCioDX     = 0x0000001C,   // X.AVCio card and GPU FX card. No longer supported.
    keMvHardwareProfileMXO2           = 0x0000001D,   // MXO2 external box.  
    keMvHardwareProfileMXO2DX         = 0x0000001E,   // MXO2 external box and GPU FX card. 
-   keMvHardwareProfileMAX            = 0x0000001F,   // MAX card only.
-   keMvHardwareProfileX264           = 0x0000001F,   // X.264 card only.
-   keMvHardwareProfileX264io         = 0x00000020,   // X.264io card only.
-   keMvHardwareProfileX264ioDX       = 0x00000021,   // X.264io card and GPU FX card.
+   keMvHardwareProfileMAX            = 0x0000001F,   // MAX card only. No longer supported.
+   keMvHardwareProfileX264           = 0x0000001F,   // X.264 card only. No longer supported.
+   keMvHardwareProfileX264io         = 0x00000020,   // X.264io card only. No longer supported.
+   keMvHardwareProfileX264ioDX       = 0x00000021,   // X.264io card and GPU FX card. No longer supported.
    keMvHardwareProfileReserved22     = 0x00000022,   // 
-   keMvHardwareProfileX264ioASI      = 0x00000023,   // X.264io/ASI card only.
+   keMvHardwareProfileX264ioASI      = 0x00000023,   // X.264io/ASI card only. No longer supported.
    keMvHardwareProfileDSXmio2plus    = 0x00000024,   // X.mio2 Plus card only.
    keMvHardwareProfileDSXle3         = 0x00000025,   // DSX LE3 card only.
    keMvHardwareProfileDSXle3DX       = 0x00000026,   // DSX LE3 card and GPU FX card.
@@ -320,6 +320,12 @@ enum EMvImageOrigin
 //
 // Summary:
 //    Specifies the memory location of a surface.
+// Remarks:
+// The memory locations are supported as follows:
+// - Memory locations keMvMemoryLocationHost and keMvMemoryLocationUser are for all Matrox DSX hardware.
+// - Memory location keMvMemoryLocationIOBoard is for Matrox buffer-based hardware, such as X.mio2. 
+// - Memory locations keMvMemoryLocationHostForGPU, keMvMemoryLocationGraphicDXIn, keMvMemoryLocationGraphicDXOut, and keMvMemoryLocationGraphicDX are for Matrox buffer-based hardware, such as X.mio2 that use a Flex Engine profile with the DX attribute.
+// - Memory locations keMvMemoryLocationGraphicIn, keMvMemoryLocationGraphicOut, and keMvMemoryLocationGraphic are no longer supported.
 //
 enum EMvMemoryLocation
 {
@@ -428,257 +434,293 @@ enum EMvScanMode
 
 //
 // Summary:
-//    Describes the pixel organization of a surface.
-//
+// Describes the pixel organization of a surface. <p> <b>Note:</b> <p>
+// For Matrox topology-based hardware, only certain surface formats can be used in card nodes. <p>
+// The memory location (EMvMemoryLocation) for each surface format is indicated in the description and is supported as follows:
+// - Memory locations keMvMemoryLocationHost and keMvMemoryLocationUser are for all Matrox DSX hardware.
+// - Memory location keMvMemoryLocationIOBoard is for Matrox buffer-based hardware, such as X.mio2. 
+// - Memory locations keMvMemoryLocationHostForGPU, keMvMemoryLocationGraphicDXIn, keMvMemoryLocationGraphicDXOut, and keMvMemoryLocationGraphicDX are for Matrox buffer-based hardware, such as X.mio2 that use a Flex Engine profile with the DX attribute.
+// 
 enum EMvSurfaceFormat
 {
    keMvSurfaceFormatInvalid,     // Invalid value.
-   keMvSurfaceFormatARGBGraphic, // This type of surface usually holds graphics.  Each pixel is 
-                                 // composed of four components in the following order: alpha, red, green, and blue. 
-                                 // The bit depth of this surface is 4 x 
-                                 // ComponentBitCount. Can be allocated in host and graphics 
-                                 // engine memory. Black is 0, white is 255.
+   keMvSurfaceFormatARGBGraphic, // This type of surface usually holds graphics. <p>  
+                                 // Each pixel is composed of four components in the following order: alpha, red, green, and blue. <p>
+                                 // The bit depth per component of this surface is 8 bits. <p> 
+                                 // Can be allocated in keMvMemoryLocationHost, keMvMemoryLocationUser, and keMvMemoryLocationIOBoard. 
+                                 // For Matrox topology-based hardware, this surface format can be used in card nodes. <p>
+                                 // For each R, G, and B component, 0 is the minimum intensity and 255 is the maximum intensity. <p> Transparency is 0, opaque is 255.
 
-   keMvSurfaceFormatRGBGraphic,  // Same as ARGB surface, but without the alpha component. The bit 
-                                 // depth of this surface is 3 x ComponentBitCount. Can be 
-                                 // allocated in host memory only. Black is 0, white is 255.
+   keMvSurfaceFormatRGBGraphic,  // Same as ARGB surface, but without the alpha component. <p>  
+                                 // The bit depth per component of this surface is 8 bits. <p>  
+                                 // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser. <p> 
+                                 // For each R, G, and B component, 0 is the minimum intensity and 255 is the maximum intensity.
 
-   keMvSurfaceFormatARGBVideo,   // This type of surface usually holds graphics. Each pixel is 
-                                 // composed of four components in the following order: alpha, red, green, and blue. 
-                                 // The bit depth of this surface is 4 x 
-                                 // ComponentBitCount. Can be allocated in host and graphics 
-                                 // engine memory. Black is 16, white is 235. Can contain super 
-                                 // white and/or super black.
+   keMvSurfaceFormatARGBVideo,   // This type of surface usually holds graphics. <p>  
+                                 // Each pixel is composed of four components in the following order: alpha, red, green, and blue. <p> 
+                                 // The bit depth per component of this surface is 8 bits. <p> 
+                                 // Can be allocated in keMvMemoryLocationHost, keMvMemoryLocationUser, and keMvMemoryLocationIOBoard. <p> 
+                                 // For each R, G, and B component, normal color intensities vary between 16 and 235. Super white varies between 0 and 16, while super black varies between 235 and 255. <p>
+                                 // Transparency is 0, opaque is 255.
 
-   keMvSurfaceFormatRGBVideo,    // Same as ARGB surface, but without the alpha component. The bit 
-                                 // depth of this surface is 3 x ComponentBitCount. Can be 
-                                 // allocated in host memory only. Black is 16, white is 235.
-                                 // Can contain super white and/or super black.
+   keMvSurfaceFormatRGBVideo,    // Same as ARGB surface, but without the alpha component. <p>  
+                                 // The bit depth per component of this surface is 8 bits. <p>  
+                                 // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser. <p>
+                                 // For each R, G, and B component, normal color intensities vary between 16 and 235. Super white varies between 0 and 16, while super black varies between 235 and 255.
 
    keMvSurfaceFormatYUYV422,     // Also called YUY2, this type of surface holds video or ancillary data.  
-                                 // For each two pixels, the data organization is YU YV. The bit depth of
-                                 // this surface is 2 x ComponentBitCount. Can be allocated in 
-                                 // host memory, I/O local memory, and graphics engine 
-                                 // memory.
+                                 // For each two pixels, the data organization is YU YV. <p>
+                                 // The bit depth per component of this surface is 8 or 10 bits. <p> 
+                                 // Can be allocated in keMvMemoryLocationHost, keMvMemoryLocationUser, and keMvMemoryLocationIOBoard.
+                                 // For Matrox topology-based hardware, this surface format can be used in card nodes. 
 
-   keMvSurfaceFormatYUAYVA4224,  // This type of surface holds video. For each two pixels, the data 
-                                 // organization is YUA YVA. The bit depth of this surface is 3 x
-                                 // ComponentBitCount. Can be allocated in host memory only.
+   keMvSurfaceFormatYUAYVA4224,  // This type of surface holds video. For each two pixels, the data organization is YUA YVA. <p>
+                                 // The bit depth per component of this surface is 8 or 10 bits. <p>
+                                 // Can be allocated in keMvMemoryLocationHost, keMvMemoryLocationUser, and keMvMemoryLocationIOBoard. 
+                                 // For Matrox topology-based hardware, this surface format can be used in card nodes. <p>
+                                 // For 8-bit surfaces, transparency is 0, opaque is 255. For 10-bit surfaces, transparency is 0, opaque is 1023.
 
-   keMvSurfaceFormatA,     // This type of surface holds alpha information only. The bit depth of 
-                           // this surface is 1 x ComponentBitCount. Can be allocated in host and 
-                           // graphics engine memory.
+   keMvSurfaceFormatA,     // This type of surface holds alpha information only. <p> 
+                           // The bit depth per component of this surface is 8 bits. <p>
+                           // Can be allocated in keMvMemoryLocationHost, keMvMemoryLocationUser, keMvMemoryLocationHostForGPU, keMvMemoryLocationGraphicDXIn, keMvMemoryLocationGraphicDXOut, and keMvMemoryLocationGraphicDX.
 
-   keMvSurfaceFormatDepthStencil,   // This type of surface holds a Z-buffer and a Stencil-buffer 
-                                    // required for some 3D processing. This surface can be 
-                                    // allocated only with a ComponentBitCount of 8. Each pixel has
-                                    // 24 bits of Z and 8 bits of Stencil. Can be allocated in 
-                                    // graphics engine memory only.
+   keMvSurfaceFormatDepthStencil,   // This type of surface holds a Z-buffer and a Stencil-buffer required for some 3D processing. <p>
+                                    // Each pixel has 24 bits of Z and 8 bits of Stencil. The user application should use a component bit count of 8 bits when allocating this type of surface. <p> 
+                                    // Can be allocated in keMvMemoryLocationHost, keMvMemoryLocationUser, keMvMemoryLocationHostForGPU, keMvMemoryLocationGraphicDXIn, keMvMemoryLocationGraphicDXOut, and keMvMemoryLocationGraphicDX.
 
-   keMvSurfaceFormatDuDv,  // This type of surface is used by the bump mapping (distortion) effects. 
+   keMvSurfaceFormatDuDv,  // This type of surface is used by the bump mapping (distortion) effects. <p>
+                           // Can be allocated in keMvMemoryLocationHost, keMvMemoryLocationUser, keMvMemoryLocationHostForGPU, keMvMemoryLocationGraphicDXIn, keMvMemoryLocationGraphicDXOut, and keMvMemoryLocationGraphicDX.
 
-   keMvSurfaceFormatDuDvL, // This type of surface is used by the bump mapping (distortion) effects 
-                           // using luminance. 
+   keMvSurfaceFormatDuDvL, // This type of surface is used by the bump mapping (distortion) effects using luminance. <p>
+                           // Can be allocated in keMvMemoryLocationHost, keMvMemoryLocationUser, keMvMemoryLocationHostForGPU, keMvMemoryLocationGraphicDXIn, keMvMemoryLocationGraphicDXOut, and keMvMemoryLocationGraphicDX.
 
-   keMvSurfaceFormatDvCam_411,   // This type of surface contains NTSC YUV411 video data compressed 
-                                 // by a DV codec at 25 Mb/sec. 
+   keMvSurfaceFormatDvCam_411,   // This type of surface contains NTSC YUV411 video data compressed by a DV codec at 25 Mb/sec. <p>
+                                 // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser. 
 
-   keMvSurfaceFormatDvCam_420,   // This type of surface contains PAL YUV420 video data compressed 
-                                 // by a DV codec at 25 Mb/sec.
+   keMvSurfaceFormatDvCam_420,   // This type of surface contains PAL YUV420 video data compressed by a DV codec at 25 Mb/sec. <p>
+                                 // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatDvCPro_411,  // This type of surface contains NTSC or PAL YUV411 video data 
-                                 // compressed by a DV codec at 25 Mb/sec.
+   keMvSurfaceFormatDvCPro_411,  // This type of surface contains NTSC or PAL YUV411 video data compressed by a DV codec at 25 Mb/sec. <p>
+                                 // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatDv50_422,    // This type of surface contains YUV422 video data compressed by a 
-                                 // DV codec at 50 Mb/sec.
+   keMvSurfaceFormatDv50_422,    // This type of surface contains YUV422 video data compressed by a DV codec at 50 Mb/sec. <p>
+                                 // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
    keMvSurfaceFormatD12_1080_3to2_422,       // This type of surface contains DV100 data for resolution
-                                             // 1080i at 23.98 fps and 29.97 fps (scaling ratio of 2/3).
+                                             // 1080i at 23.98 fps and 29.97 fps (scaling ratio of 2/3). <p>
+                                             // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
    keMvSurfaceFormatD12_1080_4to3_422,       // This type of surface contains DV100 data for resolution
-                                             // 1080i at 50 fps (scaling ratio of 3/4).
+                                             // 1080i at 50 fps (scaling ratio of 3/4). <p>
+                                             // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
    keMvSurfaceFormatD12_720_4to3_422_Fr1,    // This type of surface contains DV100 data for resolution
-                                             // 720p at 23.98 fps, 29.97 fps, and 59.94 fps (scaling ratio
-                                             // of 3/4) frame 0, 2, 4, ...
+                                             // 720p at 23.98 fps, 29.97 fps, and 59.94 fps (scaling ratio of 3/4) frame 0, 2, 4, ... <p>
+                                             // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser. 
 
    keMvSurfaceFormatD12_720_4to3_422_Fr2,    // This type of surface contains DV100 data for resolution
-                                             // 720p at 23.98 fps, 29.97 fps, and 59.94 fps (scaling ratio
-                                             // of 3/4) frame 1, 3, 5, ...
+                                             // 720p at 23.98 fps, 29.97 fps, and 59.94 fps (scaling ratio of 3/4) frame 1, 3, 5, ... <p>
+                                             // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser. 
 
-   keMvSurfaceFormatMpegIBPMainProfileMainLevel_420,     // This type of surface contains YUV420 video 
-                                                         // data compressed by an MPEG codec. The 
-                                                         // surface can be an I, B, or P-frame. The 
-                                                         // specific information of this MPEG surface
-                                                         // is described by the MPEG_IBP_Specific structure 
-                                                         // in the surface description. This surface 
-                                                         // supports SD (standard definition) video 
-                                                         // resolutions.
+   keMvSurfaceFormatMpegIBPMainProfileMainLevel_420,     // This type of surface contains YUV420 video data compressed by an MPEG codec. <p>
+                                                         // The surface can be an I, B, or P-frame. <p>
+                                                         // The specific information of this MPEG surface is described by the MPEG_IBP_Specific structure
+                                                         // in the surface description. <p> 
+                                                         // This surface supports SD (standard definition) video resolutions. <p>
+                                                         // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatMpegIBPMainProfileHighLevel_420,     // This type of surface contains YUV420 video
-                                                         // data compressed by an MPEG codec. The surface
-                                                         // can be an I, B, or P-frame. The specific 
-                                                         // information of this MPEG surface is described
-                                                         // by the MPEG_IBP_Specific structure in the
-                                                         // surface description. This surface supports
-                                                         // HD (high definition) video resolutions.
+   keMvSurfaceFormatMpegIBPMainProfileHighLevel_420,     // This type of surface contains YUV420 video data compressed by an MPEG codec. <p>
+                                                         // The surface can be an I, B, or P-frame. <p>
+                                                         // The specific information of this MPEG surface is described by the MPEG_IBP_Specific structure in the
+                                                         // surface description. <p>
+                                                         // This surface supports HD (high definition) video resolutions. <p>
+                                                         // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatMpegIBP422ProfileMainLevel_422,      // This type of surface contains YUV422 video
-                                                         // data compressed by an MPEG codec. The surface
-                                                         // can be an I, B, or P-frame. The specific 
-                                                         // information of this MPEG surface is described
-                                                         // by the MPEG_IBP_Specific structure in the 
-                                                         // surface description. This surface supports
-                                                         // SD video resolutions.
+   keMvSurfaceFormatMpegIBP422ProfileMainLevel_422,      // This type of surface contains YUV422 video data compressed by an MPEG codec. <p>
+                                                         // The surface can be an I, B, or P-frame. <p>  
+                                                         // The specific information of this MPEG surface is described by the MPEG_IBP_Specific structure in the 
+                                                         // surface description. <p> 
+                                                         // This surface supports SD video resolutions. <p>
+                                                         // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatMpegIBP422ProfileHighLevel_422,      // This type of surface contains YUV422 video 
-                                                         // data compressed by an MPEG codec. The
-                                                         // surface can be an I, B, or P-frame. The
-                                                         // specific information of this MPEG surface
-                                                         // is described by the MPEG_IBP_Specific structure
-                                                         // in the surface description. This surface 
-                                                         // supports HD video resolutions.
+   keMvSurfaceFormatMpegIBP422ProfileHighLevel_422,      // This type of surface contains YUV422 video data compressed by an MPEG codec. <p>
+                                                         // The surface can be an I, B, or P-frame. <p>
+                                                         // The specific information of this MPEG surface is described by the MPEG_IBP_Specific structure
+                                                         // in the surface description. <p> 
+                                                         // This surface supports HD video resolutions. <p>
+                                                         // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatMpegIFrameMainProfileMainLevel_420,  // This type of surface contains YUV422 video
-                                                         // data compressed by an MPEG codec. The surface
-                                                         // is an I-frame that supports SD video resolutions.
+   keMvSurfaceFormatMpegIFrameMainProfileMainLevel_420,  // This type of surface contains YUV422 video data compressed by an MPEG codec. <p>
+                                                         // The surface is an I-frame that supports SD video resolutions. <p>
+                                                         // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatMpegIFrameMainProfileHighLevel_420,  // This type of surface contains YUV422 video
-                                                         // data compressed by an MPEG codec. The surface
-                                                         // is an I-frame that supports HD video resolutions.
+   keMvSurfaceFormatMpegIFrameMainProfileHighLevel_420,  // This type of surface contains YUV422 video data compressed by an MPEG codec. <p>
+                                                         // The surface is an I-frame that supports HD video resolutions. <p>
+                                                         // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
    keMvSurfaceFormatMpegIFrame422ProfileMainLevel_422,   // This type of surface contains data of type
-                                                         // MPEG-2 I-frame 422 Profile @ Main Level (SD resolutions).
+                                                         // MPEG-2 I-frame 422 Profile @ Main Level (SD resolutions). <p>
+                                                         // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
                                                          
    keMvSurfaceFormatMpegIFrame422ProfileHighLevel_422,   // This type of surface contains data of type
-                                                         // MPEG-2 I-frame 422 Profile @ High
-                                                         // Level (HD resolutions).
+                                                         // MPEG-2 I-frame 422 Profile @ High Level (HD resolutions). <p>
+                                                         // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatMpegD10_422,                         // This type of surface contains YUV422 video data 
-                                                         // compressed by an MPEG-D10 codec. The surface is an 
-                                                         // I-frame.
+   keMvSurfaceFormatMpegD10_422,                         // This type of surface contains YUV422 video data compressed by an MPEG-D10 codec. <p>
+                                                         // The surface is an I-frame. <p>
+                                                         // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatRLE,                                 // This type of surface contains a bitmap compressed by a 
-                                                         // run-length encoding (RLE) algorithm. The 
-                                                         // ComponentBitCount can be 8, 10, or 16.
+   keMvSurfaceFormatRLE,                                 // This type of surface contains a bitmap compressed by a run-length encoding (RLE) algorithm. <p>
+                                                         // The bit depth per component of this surface is 8, 10, or 16 bits. <p>
+                                                         // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
  
    keMvSurfaceFormatEffectPatternData,    // This type of surface contains raw data that is used to 
                                           // store private effect data associated with a GFX 
-                                          // (Matrox effect pattern) file.
+                                          // (Matrox effect pattern) file. <p>
+                                          // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
    keMvSurfaceFormatMJpegBaseline_422,    // This type of surface contains YUV422 video data 
-                                          // compressed by a Motion-JPEG lossy (baseline) codec. 
+                                          // compressed by a Motion-JPEG lossy (baseline) codec. <p>
+                                          // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
    keMvSurfaceFormatMJpegLossless_422,    // This type of surface contains YUV422 video data 
                                           // compressed by a Motion-JPEG lossless 
-                                          // (uncompressed quality) codec. 
+                                          // (uncompressed quality) codec. <p>
+                                          // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatHDOffline,   // This type of surface contains data for the HD offline codec. 
+   keMvSurfaceFormatHDOffline,   // This type of surface contains data for the HD offline codec. <p>
+                                 // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatAYUV4444,    // This type of surface contains AYUV4444 video data. Each pixel 
-                                 // is composed of four components in the following order: alpha, Y, U, and V. 
-                                 // The bit depth of this surface is 4 x ComponentBitCount. 
-                                 // Can be allocated in host memory (any profile) and graphics engine 
-                                 // memory (GPU FX card only). 
+   keMvSurfaceFormatAYUV4444,    // This type of surface contains AYUV4444 video data. <p> 
+                                 // Each pixel is composed of four components in the following order: alpha, Y, U, and V. <p>
+                                 // The bit depth per component of this surface is 8 or 10 bits. <p>
+                                 // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser. <p>
+                                 // For 8-bit surfaces, transparency is 0, opaque is 255. For 10-bit surfaces, transparency is 0, opaque is 1023. 
 
-   keMvSurfaceFormatDigiserverVBI,     // This type of surface contains Matrox DigiServer VBI 
-                                       // information. Used to maintain backward compatibility
-                                       // with DigiServer VBI files.
+   keMvSurfaceFormatDigiserverVBI,     // This type of surface contains Matrox DigiServer VBI information. <p>
+                                       // Used to maintain backward compatibility with DigiServer VBI files. <p>
+                                       // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser. 
 
    keMvSurfaceFormatMpegIFrame422ProfileMainLevel_WithAlpha,   // This type of surface contains data 
                                                                // of type MPEG-2 I-frame 422 Profile 
-                                                               // @ Main Level (SD resolution) with alpha.
+                                                               // @ Main Level (SD resolution) with alpha. <p>
+                                                               // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
                                                            
    keMvSurfaceFormatMpegIFrame422ProfileHighLevel_WithAlpha,   // This type of surface contains data
                                                                // of type MPEG-2 I-frame 422 Profile
-                                                               // @ High Level (HD resolution)
-                                                               // with alpha.
+                                                               // @ High Level (HD resolution) with alpha. <p>
+                                                               // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatAlphaLuminance,    // This type of surface holds alpha and luminance information
-                                       // and is used for 3D effect processing. The component bit
-                                       // count supported for this surface is 8 bits. Can be
-                                       // allocated in graphics engine memory only.
-   keMvSurfaceFormatBGRAGraphic, // This type of surface usually holds graphics.  Each pixel is 
-                                 // composed of four components in the following order: blue, green, red, and alpha. 
-                                 // The bit depth of this surface is 4 x 
-                                 // ComponentBitCount. Can be allocated in host and graphics 
-                                 // engine memory. Black is 0, white is 255.    
-   keMvSurfaceFormatBGRAVideo,   // This type of surface usually holds graphics. Each pixel is 
-                                 // composed of four components in the following order: blue, green, red, and alpha. 
-                                 // The bit depth of this surface is 4 x 
-                                 // ComponentBitCount. Can be allocated in host and graphics 
-                                 // engine memory. Black is 16, white is 235. Can contain super 
-                                 // white and/or super black.
+   keMvSurfaceFormatAlphaLuminance,    // This type of surface holds alpha and luminance information and is used for 3D effect processing. <p>
+                                       // The bit depth per component of this surface is 8 bits. <p>
+                                       // Can be allocated in keMvMemoryLocationHost, keMvMemoryLocationUser, keMvMemoryLocationHostForGPU, keMvMemoryLocationGraphicDXIn, keMvMemoryLocationGraphicDXOut, and keMvMemoryLocationGraphicDX.
 
-   keMvSurfaceFormatFlexAVClip,        // This type of surface contains compressed data used by the 
-                                       // Flex Clip Reader/Writer.
+   keMvSurfaceFormatBGRAGraphic, // This type of surface usually holds graphics.  <p>  
+                                 // Each pixel is composed of four components in the following order: blue, green, red, and alpha. <p>
+                                 // The bit depth per component of this surface is 8 bits. <p>
+                                 // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser. <p>
+                                 // For each R, G, and B component, 0 is the minimum intensity and 255 is the maximum intensity. <p>Transparency is 0, opaque is 255.  
+                                 
+   keMvSurfaceFormatBGRAVideo,   // This type of surface usually holds graphics. <p>
+                                 // Each pixel is composed of four components in the following order: blue, green, red, and alpha. <p>
+                                 // The bit depth per component of this surface is 8 bits. <p>
+                                 // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser. <p> 
+                                 // For each R, G, and B component, normal color intensities vary between 16 and 235. Super white varies between 0 and 16, while super black varies between 235 and 255. <p>
+                                 // Transparency is 0, opaque is 255.
+
+   keMvSurfaceFormatFlexAVClip,        // This type of surface contains compressed data used by the Flex Clip Reader/Writer. <p>
+                                       // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
    keMvSurfaceFormatD12_720p50_4to3_422_Fr1,    // This type of surface contains DV100 data for 
                                                 // resolution 720p at 25 fps and 50 fps (scaling 
-                                                // ratio of  3/4) frame 0, 2, 4, ...
+                                                // ratio of  3/4) frame 0, 2, 4, ... <p>
+                                                // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
    keMvSurfaceFormatD12_720p50_4to3_422_Fr2,    // This type of surface contains DV100 data for 
                                                 // resolution 720p at 25 fps and 50 fps (scaling 
-                                                // ratio of  3/4) frame 1, 3, 5, ...
+                                                // ratio of  3/4) frame 1, 3, 5, ... <p>
+                                                // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatAVCIntraClass50,            // This type of surface contains AVC-Intra Class 50 data.
-   keMvSurfaceFormatAVCIntraClass100,           // This type of surface contains AVC-Intra Class 100 data.
-   keMvSurfaceFormatAVCIntra,                   // This type of surface contains AVC-Intra Class 50 or Class 100 data.
+   keMvSurfaceFormatAVCIntraClass50,            // This type of surface contains AVC-Intra Class 50 data. <p>
+                                                // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatProRes,                  // This type of surface contains ProRes 422 (standard or HQ) data.
+   keMvSurfaceFormatAVCIntraClass100,           // This type of surface contains AVC-Intra Class 100 data. <p>
+                                                // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
+
+   keMvSurfaceFormatAVCIntra,                   // This type of surface contains AVC-Intra Class 50 or Class 100 data. <p>
+                                                // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
+
+   keMvSurfaceFormatProRes,                  // This type of surface contains ProRes 422 (standard or HQ) data. <p>
+                                             // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
    
-   keMvSurfaceFormatAVC,                        // This type of surface contains AVC data.
+   keMvSurfaceFormatAVC,                        // This type of surface contains AVC video data compressed by an H.264 codec. <p> The surface can be an I, B, or P-frame. <p>
+                                                // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatRLEAnimation,               // This type of surface contains video data compressed by 
-                                                //Apple RLE. It will be decoded to RGB.
+   keMvSurfaceFormatRLEAnimation,               // This type of surface contains video data compressed by Apple RLE. It will be decoded to RGB. <p>
+                                                // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatRLEAnimation_WithAlpha,     // This type of surface contains video data compressed by 
-                                                //Apple RLE 32-bit. It will be decoded to ARGB.
+   keMvSurfaceFormatRLEAnimation_WithAlpha,     // This type of surface contains video data compressed by Apple RLE 32-bit. It will be decoded to ARGB. <p>
+                                                // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatA2R10G10B10Graphic,         // This type of surface holds ARGB graphics. Each pixel is 
-                                                // composed of four components in the following order: alpha, red, green, and blue. 
-                                                // The bit depth of this surface is 32 bits. Alpha 
-                                                // has two bits, and the R, G, and B components each have 10 bits. 
-                                                // Can be allocated in host memory. 
-                                                // Use this format for graphic card surfaces.
+   keMvSurfaceFormatA2R10G10B10Graphic,         // This type of surface holds ARGB graphics. <p>
+                                                // Each pixel is composed of four components in the following order: alpha, red, green, and blue. <p>
+                                                // Alpha has 2 bits, and the R, G, and B components each have 10 bits. <p>
+                                                // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser. <p>
+                                                // Use this format for graphic card surfaces. <p>
+                                                // Transparency is 0, opaque is 3.
 
-   keMvSurfaceFormatA2R10G10B10Video,           // This type of surface holds ARGB video. Each pixel is 
-                                                // composed of four components in the following order: alpha, red, green, and blue. 
-                                                // The bit depth of this surface is 32 bits. Alpha 
-                                                // has two bits, and the R, G, and B components each have 10 bits. 
-                                                // Can be allocated in host and in I/O local memory. 
+   keMvSurfaceFormatA2R10G10B10Video,           // This type of surface holds ARGB video. <p>
+                                                // Each pixel is composed of four components in the following order: alpha, red, green, and blue. <p>
+                                                // Alpha has 2 bits, and the R, G, and B components each have 10 bits. 
                                                 // R, G, and B values should be between 0x040 and 0x3AC, and must 
-                                                // never be lower than 0x04 or higher than 0x3FC.
-                                                // Use this format for SDI RGB dual-link surfaces.
+                                                // never be lower than 0x04 or higher than 0x3FC. <p>
+                                                // Use this format for SDI RGB dual-link surfaces. <p>
+                                                // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser. <p>
+                                                // Transparency is 0, opaque is 3.
 
-   keMvSurfaceFormatMatroxAncillaryData,        // This type of surface holds digital ancillary data.
-                                                // Can be allocated in host memory only. <b>Note:</b> This surface format is for topology-based DSX cards only.
+   keMvSurfaceFormatMatroxAncillaryData,        // This type of surface holds digital ancillary data. <p>
+                                                // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser. 
+                                                // For Matrox topology-based hardware, this surface format can be used in card nodes.
 
-   keMvSurfaceFormatV210,                       // This type of surface holds YUV 10-bit data in the v210 format.
+   keMvSurfaceFormatV210,                       // This type of surface holds YUV 10-bit data in the v210 format. <p>
+                                                // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
+                                                // For Matrox topology-based hardware, this surface format can be used in card nodes. 
    
-   keMvSurfaceFormat2VUY,        // This type of surface holds video in the 2vuy 8 bit Mac format. For each 
-                                 // two pixels, the data organization is YU YV. The bit depth of
-                                 // this surface is 2 x 8 bits. Can be allocated in 
-                                 // host memory only. Only valid in the Matrox SDK for Mac.
-   keMvSurfaceFormatMpeg2Transport,  // This type of surface contains MPEG-2 transport stream data. 
-                                 // It can contain any number of audio and/or video streams, optionally 
-                                 // compressed. It must follow the ISO 13818-1 specification.
+   keMvSurfaceFormat2VUY,        // This type of surface holds video in the 2VUY 8-bit format. <p>
+                                 // For each two pixels, the data organization is YU YV. <p>
+                                 // The bit depth per component of this surface is 8 bits.<p>
+                                 // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
+                                 // For Matrox topology-based hardware, this surface format can be used in card nodes.
 
-   keMvSurfaceFormatDNxHD,       // This type of surface contains Avid DNxHD data.
+   keMvSurfaceFormatMpeg2Transport,  // This type of surface contains MPEG-2 transport stream data. <p>
+                                 // It can contain any number of audio and/or video streams, optionally compressed. <p>
+                                 // It must follow the ISO 13818-1 specification. <p>
+                                 // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatDNxHD_WithAlpha,       // This type of surface contains Avid DNxHD data with alpha.
+   keMvSurfaceFormatDNxHD,       // This type of surface contains Avid DNxHD data. <p>
+                                 // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatSMPTE436Data, // This type of surface holds SMPTE 436 data. Can be ANC packets or VBI lines.
+   keMvSurfaceFormatDNxHD_WithAlpha,       // This type of surface contains Avid DNxHD data with alpha. <p>
+                                           // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
 
-   keMvSurfaceFormatABGRGraphic,  // This type of surface holds ABGR graphics. Each pixel is composed of four components in 
-                                  // the following order: red, green, blue, and alpha.The bit depth of this surface is 16-bit.  
-                                  // Can be allocated in host and graphics engine memory. Black is 0, white is 65535.
+   keMvSurfaceFormatSMPTE436Data,   // This type of surface holds SMPTE 436 data. <p>
+                                    // Can be ancillary data packets or VBI lines. <p>
+                                    // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.  
 
-   keMvSurfaceFormatMPEG4SStP,       // This type of surface contains MPEG-4 Simple Studio Profile (SStP) data.
+   keMvSurfaceFormatABGRGraphic,  // This type of surface holds ABGR graphics. <p>
+                                  // Each pixel is composed of four components in the following order: red, green, blue, and alpha. <p>
+                                  // The bit depth per component of this surface is 8 bits. <p>
+                                  // Can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser. <p> 
+                                  // For each R, G, and B component, 0 is the minimum intensity and 255 is the maximum intensity. <p>Transparency is 0, opaque is 255.
 
-   keMvSurfaceFormatData,  // This type of surface contains a user specified amount of data. It is the responsibility 
-                           // of the application to know what to do with the data. Use IMvFlexEngine::CreateFixedSizeSurface()
-                           // or IMvFlexEngine::CreateSurfaceForUserBufferEx().
+   keMvSurfaceFormatMPEG4SStP,         // This type of surface contains MPEG-4 Simple Studio Profile (SStP) data. <p>
+                                       // This is a compressed format which can be allocated in keMvMemoryLocationHost and keMvMemoryLocationUser.
+
+   keMvSurfaceFormatData,  // This type of surface contains a user specified amount of data. <p>  
+                           // Can be allocated in keMvMemoryLocationHost, keMvMemoryLocationUser, and keMvMemoryLocationIOBoard. <p>
+                           // The user application is responsible for allocating the data. <p> 
+                           // Use IMvFlexEngine::CreateFixedSizeSurface() or IMvFlexEngine::CreateSurfaceForUserBufferEx(). <p>
+                           // Can be used with any DSX Flex module for copy operations, IMvAVContentPoolManager, and IMvMPEG2TSDemuxer.
 
    keMvSurfaceFormatLast               // End of list indicator.
 };
@@ -835,7 +877,7 @@ enum EMvGenlockSource
    keGenlockSourceAnalogVideo             = 0x10,  // Analog video input genlock source.
    keGenlockSourceDVIVideo                = 0x20,  // DVI video input genlock source.
    keGenlockSourceHDMIVideo               = 0x40,  // HDMI video input genlock source.
-   keGenlockSourceSMPTE2059               = 0x80,  // SMPTE 2059 source.
+   keGenlockSourceSMPTE2059               = 0x80,  // Genlock over IP signal conforming to SMPTE ST2059-2.
    keGenlockSourceAll                     = keGenlockSourceInvalid  // All defined values.
                                          |  keGenlockSourceInternal
                                          |  keGenlockSourceBlackBurst
@@ -1091,7 +1133,7 @@ struct SMvUserBufferSurfaceDescription
 };
 
 // Summary:
-//    Describes VANC data in a host-memory user buffer already allocated by the user.
+//    Describes ancillary data in a host-memory user buffer already allocated by the user.
 //
 //struct SMvUserBufferVancDescription
 //{

@@ -207,7 +207,7 @@ namespace caspar {
 				L"delay until foreground layer becomes slide_show3 and then\n"
 				L">> LOADBG 1-10 EMPTY MIX 20 AUTO\n", L"Plays a slide show of 3 images for 100 frames each and fades to black.");
 		}
-		
+
 		spl::shared_ptr<core::frame_producer> create_producer(const core::frame_producer_dependencies& dependencies, const std::vector<std::wstring>& params)
 		{
 			auto length = get_param(L"LENGTH", params, std::numeric_limits<uint32_t>::max());

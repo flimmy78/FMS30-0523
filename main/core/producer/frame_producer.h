@@ -106,6 +106,8 @@ public:
 	virtual void								leading_producer(const spl::shared_ptr<frame_producer>&) {}
 	virtual int									producer_type() = 0;
 	virtual void                                set_logokiller(std::wstring) = 0;
+	virtual uint32_t                            get_frameNumber() = 0;
+	virtual double                              get_frameRate() = 0;
 };
 
 class frame_producer_base : public frame_producer
@@ -131,6 +133,8 @@ public:
 
 	virtual int					producer_type() override;
 	virtual void                set_logokiller(std::wstring s) override;
+	virtual uint32_t            get_frameNumber() override;
+	virtual double              get_frameRate() override;
 private:
 	virtual draw_frame			receive() override;
 	virtual draw_frame			receive_impl() = 0;

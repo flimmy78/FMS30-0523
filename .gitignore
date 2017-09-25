@@ -27,3 +27,5 @@ main/dependencies64/boost/boost/numeric/odeint/util/ublas_matrix_expression.patc
 /main/build/accelerator/Debug
 /main/build
 main/dependencies64/ffmpeg/bin/win32/nppi64_80.dll
+/main/dependencies64/ffmpeg-debug
+/main/deploy/general/server/media/ban

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////
 //
-//  (c) Copyright Matrox Electronic Systems Ltd., 2001. All rights reserved. 
+//  (c) Copyright Matrox Electronic Systems Ltd., 2001-2017. All rights reserved. 
 //
 //  This software code is subject to the terms and conditions outlined 
 //  in the non-disclosure agreement between Matrox and your company. 
@@ -3099,280 +3099,472 @@ enum EMvVideoConnectorLabel
    keMvVideoConnectorLabelSdiOutL,      // The video connector is SDI output L.
    keMvVideoConnectorLabelLast,          // End of list indicator for the SDI output labels.
 
-   keMvVideoConnectorLabelSdiIpInA = 2000,   // The video connector is SDI IP input A.
-   keMvVideoConnectorLabelSdiIpInB,          // The video connector is SDI IP input B.
-   keMvVideoConnectorLabelSdiIpInC,          // The video connector is SDI IP input C.
-   keMvVideoConnectorLabelSdiIpInD,          // The video connector is SDI IP input D.
-   keMvVideoConnectorLabelSdiIpInE,          // The video connector is SDI IP input E.
-   keMvVideoConnectorLabelSdiIpInF,          // The video connector is SDI IP input F.
-   keMvVideoConnectorLabelSdiIpInG,          // The video connector is SDI IP input G.
-   keMvVideoConnectorLabelSdiIpInH,          // The video connector is SDI IP input H.
-   keMvVideoConnectorLabelSdiIpInI,          // The video connector is SDI IP input I.
-   keMvVideoConnectorLabelSdiIpInJ,          // The video connector is SDI IP input J.
-   keMvVideoConnectorLabelSdiIpInK,          // The video connector is SDI IP input K.
-   keMvVideoConnectorLabelSdiIpInL,          // The video connector is SDI IP input L.
-   keMvVideoConnectorLabelSdiIpInM,          // The video connector is SDI IP input M.
-   keMvVideoConnectorLabelSdiIpInN,          // The video connector is SDI IP input N.
-   keMvVideoConnectorLabelSdiIpInO,          // The video connector is SDI IP input O.
-   keMvVideoConnectorLabelSdiIpInP,          // The video connector is SDI IP input P.
-   keMvVideoConnectorLabelSdiIpInLast,       // End of list indicator for the SDI IP input labels.
+   keMvVideoConnectorLabelSdiIpInA = 2000,   // The video connector is input A for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInB,          // The video connector is input B for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInC,          // The video connector is input C for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInD,          // The video connector is input D for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInE,          // The video connector is input E for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInF,          // The video connector is input F for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInG,          // The video connector is input G for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInH,          // The video connector is input H for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInI,          // The video connector is input I for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInJ,          // The video connector is input J for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInK,          // The video connector is input K for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInL,          // The video connector is input L for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInM,          // The video connector is input M for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInN,          // The video connector is input N for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInO,          // The video connector is input O for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInP,          // The video connector is input P for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpInLast,       // End of list indicator for the input labels for an IP stream conforming to SMPTE 2022-6.
 
-   keMvVideoConnectorLabelSdiIpOutA = 3000,  // The video connector is SDI IP output A.
-   keMvVideoConnectorLabelSdiIpOutB,         // The video connector is SDI IP output B.
-   keMvVideoConnectorLabelSdiIpOutC,         // The video connector is SDI IP output C.
-   keMvVideoConnectorLabelSdiIpOutD,         // The video connector is SDI IP output D.
-   keMvVideoConnectorLabelSdiIpOutE,         // The video connector is SDI IP output E.
-   keMvVideoConnectorLabelSdiIpOutF,         // The video connector is SDI IP output F.
-   keMvVideoConnectorLabelSdiIpOutG,         // The video connector is SDI IP output G.
-   keMvVideoConnectorLabelSdiIpOutH,         // The video connector is SDI IP output H.
-   keMvVideoConnectorLabelSdiIpOutI,         // The video connector is SDI IP output I.
-   keMvVideoConnectorLabelSdiIpOutJ,         // The video connector is SDI IP output J.
-   keMvVideoConnectorLabelSdiIpOutK,         // The video connector is SDI IP output K.
-   keMvVideoConnectorLabelSdiIpOutL,         // The video connector is SDI IP output L.
-   keMvVideoConnectorLabelSdiIpOutM,         // The video connector is SDI IP output M.
-   keMvVideoConnectorLabelSdiIpOutN,         // The video connector is SDI IP output N.
-   keMvVideoConnectorLabelSdiIpOutO,         // The video connector is SDI IP output O.
-   keMvVideoConnectorLabelSdiIpOutP,         // The video connector is SDI IP output P.
-   keMvVideoConnectorLabelSdiIpOutLast,      // End of list indicator for the SDI IP output labels.
+   keMvVideoConnectorLabelSdiIpOutA = 3000,  // The video connector is output A for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutB,         // The video connector is output B for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutC,         // The video connector is output C for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutD,         // The video connector is output D for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutE,         // The video connector is output E for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutF,         // The video connector is output F for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutG,         // The video connector is output G for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutH,         // The video connector is output H for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutI,         // The video connector is output I for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutJ,         // The video connector is output J for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutK,         // The video connector is output K for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutL,         // The video connector is output L for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutM,         // The video connector is output M for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutN,         // The video connector is output N for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutO,         // The video connector is output O for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutP,         // The video connector is output P for an IP stream conforming to SMPTE 2022-6.
+   keMvVideoConnectorLabelSdiIpOutLast,      // End of list indicator for the output labels for an IP stream conforming to SMPTE 2022-6.
 
-   keMvVideoConnectorLabelAspenVideoInA = 4000,   // The video connector is ASPEN video input A.
-   keMvVideoConnectorLabelAspenVideoInB,          // The video connector is ASPEN video input B.
-   keMvVideoConnectorLabelAspenVideoInC,          // The video connector is ASPEN video input C.
-   keMvVideoConnectorLabelAspenVideoInD,          // The video connector is ASPEN video input D.
-   keMvVideoConnectorLabelAspenVideoInE,          // The video connector is ASPEN video input E.
-   keMvVideoConnectorLabelAspenVideoInF,          // The video connector is ASPEN video input F.
-   keMvVideoConnectorLabelAspenVideoInG,          // The video connector is ASPEN video input G.
-   keMvVideoConnectorLabelAspenVideoInH,          // The video connector is ASPEN video input H.
-   keMvVideoConnectorLabelAspenVideoInI,          // The video connector is ASPEN video input I.
-   keMvVideoConnectorLabelAspenVideoInJ,          // The video connector is ASPEN video input J.
-   keMvVideoConnectorLabelAspenVideoInK,          // The video connector is ASPEN video input K.
-   keMvVideoConnectorLabelAspenVideoInL,          // The video connector is ASPEN video input L.
-   keMvVideoConnectorLabelAspenVideoInM,          // The video connector is ASPEN video input M.
-   keMvVideoConnectorLabelAspenVideoInN,          // The video connector is ASPEN video input N.
-   keMvVideoConnectorLabelAspenVideoInO,          // The video connector is ASPEN video input O.
-   keMvVideoConnectorLabelAspenVideoInP,          // The video connector is ASPEN video input P.
-   keMvVideoConnectorLabelAspenVideoInLast,       // End of list indicator for the ASPEN video input labels.
+   keMvVideoConnectorLabelAspenVideoInA = 4000,   // The video connector is video input A for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInB,          // The video connector is video input B for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInC,          // The video connector is video input C for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInD,          // The video connector is video input D for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInE,          // The video connector is video input E for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInF,          // The video connector is video input F for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInG,          // The video connector is video input G for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInH,          // The video connector is video input H for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInI,          // The video connector is video input I for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInJ,          // The video connector is video input J for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInK,          // The video connector is video input K for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInL,          // The video connector is video input L for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInM,          // The video connector is video input M for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInN,          // The video connector is video input N for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInO,          // The video connector is video input O for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInP,          // The video connector is video input P for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoInLast,       // End of list indicator for the video input labels for an IP stream conforming to the ASPEN protocol.
 
-   keMvVideoConnectorLabelAspenVideoOutA = 4100,  // The video connector is ASPEN video output A.
-   keMvVideoConnectorLabelAspenVideoOutB,         // The video connector is ASPEN video output B.
-   keMvVideoConnectorLabelAspenVideoOutC,         // The video connector is ASPEN video output C.
-   keMvVideoConnectorLabelAspenVideoOutD,         // The video connector is ASPEN video output D.
-   keMvVideoConnectorLabelAspenVideoOutE,         // The video connector is ASPEN video output E.
-   keMvVideoConnectorLabelAspenVideoOutF,         // The video connector is ASPEN video output F.
-   keMvVideoConnectorLabelAspenVideoOutG,         // The video connector is ASPEN video output G.
-   keMvVideoConnectorLabelAspenVideoOutH,         // The video connector is ASPEN video output H.
-   keMvVideoConnectorLabelAspenVideoOutI,         // The video connector is ASPEN video output I.
-   keMvVideoConnectorLabelAspenVideoOutJ,         // The video connector is ASPEN video output J.
-   keMvVideoConnectorLabelAspenVideoOutK,         // The video connector is ASPEN video output K.
-   keMvVideoConnectorLabelAspenVideoOutL,         // The video connector is ASPEN video output L.
-   keMvVideoConnectorLabelAspenVideoOutM,         // The video connector is ASPEN video output M.
-   keMvVideoConnectorLabelAspenVideoOutN,         // The video connector is ASPEN video output N.
-   keMvVideoConnectorLabelAspenVideoOutO,         // The video connector is ASPEN video output O.
-   keMvVideoConnectorLabelAspenVideoOutP,         // The video connector is ASPEN video output P.
-   keMvVideoConnectorLabelAspenVideoOutLast,      // End of list indicator for the ASPEN video output labels.
+   keMvVideoConnectorLabelAspenVideoOutA = 4100,  // The video connector is video output A for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutB,         // The video connector is video output B for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutC,         // The video connector is video output C for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutD,         // The video connector is video output D for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutE,         // The video connector is video output E for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutF,         // The video connector is video output F for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutG,         // The video connector is video output G for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutH,         // The video connector is video output H for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutI,         // The video connector is video output I for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutJ,         // The video connector is video output J for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutK,         // The video connector is video output K for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutL,         // The video connector is video output L for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutM,         // The video connector is video output M for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutN,         // The video connector is video output N for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutO,         // The video connector is video output O for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutP,         // The video connector is video output P for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVideoOutLast,      // End of list indicator for the video output labels for an IP stream conforming to the ASPEN protocol.
 
-   keMvVideoConnectorLabelAspenAudioInA = 4200,   // The video connector is ASPEN audio input A.
-   keMvVideoConnectorLabelAspenAudioInB,          // The video connector is ASPEN audio input B.
-   keMvVideoConnectorLabelAspenAudioInC,          // The video connector is ASPEN audio input C.
-   keMvVideoConnectorLabelAspenAudioInD,          // The video connector is ASPEN audio input D.
-   keMvVideoConnectorLabelAspenAudioInE,          // The video connector is ASPEN audio input E.
-   keMvVideoConnectorLabelAspenAudioInF,          // The video connector is ASPEN audio input F.
-   keMvVideoConnectorLabelAspenAudioInG,          // The video connector is ASPEN audio input G.
-   keMvVideoConnectorLabelAspenAudioInH,          // The video connector is ASPEN audio input H.
-   keMvVideoConnectorLabelAspenAudioInI,          // The video connector is ASPEN audio input I.
-   keMvVideoConnectorLabelAspenAudioInJ,          // The video connector is ASPEN audio input J.
-   keMvVideoConnectorLabelAspenAudioInK,          // The video connector is ASPEN audio input K.
-   keMvVideoConnectorLabelAspenAudioInL,          // The video connector is ASPEN audio input L.
-   keMvVideoConnectorLabelAspenAudioInM,          // The video connector is ASPEN audio input M.
-   keMvVideoConnectorLabelAspenAudioInN,          // The video connector is ASPEN audio input N.
-   keMvVideoConnectorLabelAspenAudioInO,          // The video connector is ASPEN audio input O.
-   keMvVideoConnectorLabelAspenAudioInP,          // The video connector is ASPEN audio input P.
-   keMvVideoConnectorLabelAspenAudioInLast,       // End of list indicator for the ASPEN audio input labels.
+   keMvVideoConnectorLabelAspenAudioInA = 4200,   // The video connector is audio input A for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInB,          // The video connector is audio input B for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInC,          // The video connector is audio input C for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInD,          // The video connector is audio input D for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInE,          // The video connector is audio input E for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInF,          // The video connector is audio input F for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInG,          // The video connector is audio input G for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInH,          // The video connector is audio input H for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInI,          // The video connector is audio input I for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInJ,          // The video connector is audio input J for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInK,          // The video connector is audio input K for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInL,          // The video connector is audio input L for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInM,          // The video connector is audio input M for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInN,          // The video connector is audio input N for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInO,          // The video connector is audio input O for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInP,          // The video connector is audio input P for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioInLast,       // End of list indicator for the audio input labels for an IP stream conforming to the ASPEN protocol.
 
-   keMvVideoConnectorLabelAspenAudioOutA = 4300,  // The video connector is ASPEN audio output A.
-   keMvVideoConnectorLabelAspenAudioOutB,         // The video connector is ASPEN audio output B.
-   keMvVideoConnectorLabelAspenAudioOutC,         // The video connector is ASPEN audio output C.
-   keMvVideoConnectorLabelAspenAudioOutD,         // The video connector is ASPEN audio output D.
-   keMvVideoConnectorLabelAspenAudioOutE,         // The video connector is ASPEN audio output E.
-   keMvVideoConnectorLabelAspenAudioOutF,         // The video connector is ASPEN audio output F.
-   keMvVideoConnectorLabelAspenAudioOutG,         // The video connector is ASPEN audio output G.
-   keMvVideoConnectorLabelAspenAudioOutH,         // The video connector is ASPEN audio output H.
-   keMvVideoConnectorLabelAspenAudioOutI,         // The video connector is ASPEN audio output I.
-   keMvVideoConnectorLabelAspenAudioOutJ,         // The video connector is ASPEN audio output J.
-   keMvVideoConnectorLabelAspenAudioOutK,         // The video connector is ASPEN audio output K.
-   keMvVideoConnectorLabelAspenAudioOutL,         // The video connector is ASPEN audio output L.
-   keMvVideoConnectorLabelAspenAudioOutM,         // The video connector is ASPEN audio output M.
-   keMvVideoConnectorLabelAspenAudioOutN,         // The video connector is ASPEN audio output N.
-   keMvVideoConnectorLabelAspenAudioOutO,         // The video connector is ASPEN audio output O.
-   keMvVideoConnectorLabelAspenAudioOutP,         // The video connector is ASPEN audio output P.
-   keMvVideoConnectorLabelAspenAudioOutLast,      // End of list indicator for the ASPEN audio output labels.
+   keMvVideoConnectorLabelAspenAudioOutA = 4300,  // The video connector is audio output A for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutB,         // The video connector is audio output B for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutC,         // The video connector is audio output C for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutD,         // The video connector is audio output D for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutE,         // The video connector is audio output E for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutF,         // The video connector is audio output F for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutG,         // The video connector is audio output G for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutH,         // The video connector is audio output H for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutI,         // The video connector is audio output I for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutJ,         // The video connector is audio output J for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutK,         // The video connector is audio output K for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutL,         // The video connector is audio output L for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutM,         // The video connector is audio output M for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutN,         // The video connector is audio output N for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutO,         // The video connector is audio output O for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutP,         // The video connector is audio output P for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenAudioOutLast,      // End of list indicator for the audio output labels for an IP stream conforming to the ASPEN protocol.
 
-   keMvVideoConnectorLabelAspenVancInA = 4400,   // The video connector is ASPEN VANC input A.
-   keMvVideoConnectorLabelAspenVancInB,          // The video connector is ASPEN VANC input B.
-   keMvVideoConnectorLabelAspenVancInC,          // The video connector is ASPEN VANC input C.
-   keMvVideoConnectorLabelAspenVancInD,          // The video connector is ASPEN VANC input D.
-   keMvVideoConnectorLabelAspenVancInE,          // The video connector is ASPEN VANC input E.
-   keMvVideoConnectorLabelAspenVancInF,          // The video connector is ASPEN VANC input F.
-   keMvVideoConnectorLabelAspenVancInG,          // The video connector is ASPEN VANC input G.
-   keMvVideoConnectorLabelAspenVancInH,          // The video connector is ASPEN VANC input H.
-   keMvVideoConnectorLabelAspenVancInI,          // The video connector is ASPEN VANC input I.
-   keMvVideoConnectorLabelAspenVancInJ,          // The video connector is ASPEN VANC input J.
-   keMvVideoConnectorLabelAspenVancInK,          // The video connector is ASPEN VANC input K.
-   keMvVideoConnectorLabelAspenVancInL,          // The video connector is ASPEN VANC input L.
-   keMvVideoConnectorLabelAspenVancInM,          // The video connector is ASPEN VANC input M.
-   keMvVideoConnectorLabelAspenVancInN,          // The video connector is ASPEN VANC input N.
-   keMvVideoConnectorLabelAspenVancInO,          // The video connector is ASPEN VANC input O.
-   keMvVideoConnectorLabelAspenVancInP,          // The video connector is ASPEN VANC input P.
-   keMvVideoConnectorLabelAspenVancInLast,       // End of list indicator for the ASPEN VANC input labels.
+   keMvVideoConnectorLabelAspenVancInA = 4400,   // The video connector is ancillary data input A for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInB,          // The video connector is ancillary data input B for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInC,          // The video connector is ancillary data input C for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInD,          // The video connector is ancillary data input D for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInE,          // The video connector is ancillary data input E for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInF,          // The video connector is ancillary data input F for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInG,          // The video connector is ancillary data input G for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInH,          // The video connector is ancillary data input H for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInI,          // The video connector is ancillary data input I for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInJ,          // The video connector is ancillary data input J for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInK,          // The video connector is ancillary data input K for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInL,          // The video connector is ancillary data input L for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInM,          // The video connector is ancillary data input M for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInN,          // The video connector is ancillary data input N for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInO,          // The video connector is ancillary data input O for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInP,          // The video connector is ancillary data input P for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancInLast,       // End of list indicator for the ancillary data input labels for an IP stream conforming to the ASPEN protocol.
 
-   keMvVideoConnectorLabelAspenVancOutA = 4500,  // The video connector is ASPEN VANC output A.
-   keMvVideoConnectorLabelAspenVancOutB,         // The video connector is ASPEN VANC output B.
-   keMvVideoConnectorLabelAspenVancOutC,         // The video connector is ASPEN VANC output C.
-   keMvVideoConnectorLabelAspenVancOutD,         // The video connector is ASPEN VANC output D.
-   keMvVideoConnectorLabelAspenVancOutE,         // The video connector is ASPEN VANC output E.
-   keMvVideoConnectorLabelAspenVancOutF,         // The video connector is ASPEN VANC output F.
-   keMvVideoConnectorLabelAspenVancOutG,         // The video connector is ASPEN VANC output G.
-   keMvVideoConnectorLabelAspenVancOutH,         // The video connector is ASPEN VANC output H.
-   keMvVideoConnectorLabelAspenVancOutI,         // The video connector is ASPEN VANC output I.
-   keMvVideoConnectorLabelAspenVancOutJ,         // The video connector is ASPEN VANC output J.
-   keMvVideoConnectorLabelAspenVancOutK,         // The video connector is ASPEN VANC output K.
-   keMvVideoConnectorLabelAspenVancOutL,         // The video connector is ASPEN VANC output L.
-   keMvVideoConnectorLabelAspenVancOutM,         // The video connector is ASPEN VANC output M.
-   keMvVideoConnectorLabelAspenVancOutN,         // The video connector is ASPEN VANC output N.
-   keMvVideoConnectorLabelAspenVancOutO,         // The video connector is ASPEN VANC output O.
-   keMvVideoConnectorLabelAspenVancOutP,         // The video connector is ASPEN VANC output P.
-   keMvVideoConnectorLabelAspenVancOutLast       // End of list indicator for the ASPEN VANC output labels.
+   keMvVideoConnectorLabelAspenVancOutA = 4500,  // The video connector is ancillary data output A for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutB,         // The video connector is ancillary data output B for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutC,         // The video connector is ancillary data output C for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutD,         // The video connector is ancillary data output D for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutE,         // The video connector is ancillary data output E for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutF,         // The video connector is ancillary data output F for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutG,         // The video connector is ancillary data output G for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutH,         // The video connector is ancillary data output H for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutI,         // The video connector is ancillary data output I for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutJ,         // The video connector is ancillary data output J for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutK,         // The video connector is ancillary data output K for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutL,         // The video connector is ancillary data output L for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutM,         // The video connector is ancillary data output M for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutN,         // The video connector is ancillary data output N for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutO,         // The video connector is ancillary data output O for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutP,         // The video connector is ancillary data output P for an IP stream conforming to the ASPEN protocol.
+   keMvVideoConnectorLabelAspenVancOutLast,       // End of list indicator for the ancillary data output labels for an IP stream conforming to the ASPEN protocol.
+   
+   keMvVideoConnectorLabelIpVideoInA = 5000,   // The video connector is video input A for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInB,          // The video connector is video input B for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInC,          // The video connector is video input C for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInD,          // The video connector is video input D for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInE,          // The video connector is video input E for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInF,          // The video connector is video input F for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInG,          // The video connector is video input G for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInH,          // The video connector is video input H for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInI,          // The video connector is video input I for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInJ,          // The video connector is video input J for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInK,          // The video connector is video input K for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInL,          // The video connector is video input L for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInM,          // The video connector is video input M for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInN,          // The video connector is video input N for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInO,          // The video connector is video input O for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInP,          // The video connector is video input P for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoInLast,       // End of list indicator for the video input labels for an IP stream conforming to the SMPTE 2110-20 draft version.
+
+   keMvVideoConnectorLabelIpVideoOutA = 5100,  // The video connector is video output A for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutB,         // The video connector is video output B for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutC,         // The video connector is video output C for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutD,         // The video connector is video output D for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutE,         // The video connector is video output E for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutF,         // The video connector is video output F for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutG,         // The video connector is video output G for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutH,         // The video connector is video output H for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutI,         // The video connector is video output I for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutJ,         // The video connector is video output J for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutK,         // The video connector is video output K for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutL,         // The video connector is video output L for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutM,         // The video connector is video output M for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutN,         // The video connector is video output N for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutO,         // The video connector is video output O for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutP,         // The video connector is video output P for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvVideoConnectorLabelIpVideoOutLast,      // End of list indicator for the video output labels for an IP stream conforming to the SMPTE 2110-20 draft version.
+
+   keMvVideoConnectorLabelIpAudioInA = 5200,   // The video connector is audio input A for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInB,          // The video connector is audio input B for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInC,          // The video connector is audio input C for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInD,          // The video connector is audio input D for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInE,          // The video connector is audio input E for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInF,          // The video connector is audio input F for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInG,          // The video connector is audio input G for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInH,          // The video connector is audio input H for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInI,          // The video connector is audio input I for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInJ,          // The video connector is audio input J for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInK,          // The video connector is audio input K for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInL,          // The video connector is audio input L for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInM,          // The video connector is audio input M for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInN,          // The video connector is audio input N for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInO,          // The video connector is audio input O for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInP,          // The video connector is audio input P for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioInLast,       // End of list indicator for the audio input labels for an IP stream conforming to the SMPTE 2110-30 draft version.
+
+   keMvVideoConnectorLabelIpAudioOutA = 5300,  // The video connector is audio output A for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutB,         // The video connector is audio output B for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutC,         // The video connector is audio output C for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutD,         // The video connector is audio output D for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutE,         // The video connector is audio output E for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutF,         // The video connector is audio output F for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutG,         // The video connector is audio output G for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutH,         // The video connector is audio output H for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutI,         // The video connector is audio output I for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutJ,         // The video connector is audio output J for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutK,         // The video connector is audio output K for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutL,         // The video connector is audio output L for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutM,         // The video connector is audio output M for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutN,         // The video connector is audio output N for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutO,         // The video connector is audio output O for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutP,         // The video connector is audio output P for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvVideoConnectorLabelIpAudioOutLast,      // End of list indicator for the audio output labels for an IP stream conforming to the SMPTE 2110-30 draft version.
+
+   keMvVideoConnectorLabelIpAncInA = 5400,   // The video connector is ancillary data input A for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInB,          // The video connector is ancillary data input B for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInC,          // The video connector is ancillary data input C for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInD,          // The video connector is ancillary data input D for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInE,          // The video connector is ancillary data input E for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInF,          // The video connector is ancillary data input F for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInG,          // The video connector is ancillary data input G for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInH,          // The video connector is ancillary data input H for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInI,          // The video connector is ancillary data input I for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInJ,          // The video connector is ancillary data input J for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInK,          // The video connector is ancillary data input K for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInL,          // The video connector is ancillary data input L for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInM,          // The video connector is ancillary data input M for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInN,          // The video connector is ancillary data input N for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInO,          // The video connector is ancillary data input O for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInP,          // The video connector is ancillary data input P for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncInLast,       // End of list indicator for the ancillary data input labels for an IP stream conforming to the SMPTE 2110-40 draft version.
+
+   keMvVideoConnectorLabelIpAncOutA = 5500,  // The video connector is ancillary data output A for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutB,         // The video connector is ancillary data output B for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutC,         // The video connector is ancillary data output C for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutD,         // The video connector is ancillary data output D for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutE,         // The video connector is ancillary data output E for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutF,         // The video connector is ancillary data output F for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutG,         // The video connector is ancillary data output G for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutH,         // The video connector is ancillary data output H for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutI,         // The video connector is ancillary data output I for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutJ,         // The video connector is ancillary data output J for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutK,         // The video connector is ancillary data output K for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutL,         // The video connector is ancillary data output L for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutM,         // The video connector is ancillary data output M for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutN,         // The video connector is ancillary data output N for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutO,         // The video connector is ancillary data output O for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutP,         // The video connector is ancillary data output P for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvVideoConnectorLabelIpAncOutLast       // End of list indicator for the ancillary data output labels for an IP stream conforming to the SMPTE 2110-40 draft version.
 };
 
-#define MV_VIDEO_CONNECTOR_LABEL_ENUM_TO_STRING(eLabel) \
-   ((eLabel == keMvVideoConnectorLabelInvalid) ? ("Invalid") : \
-   (eLabel == keMvVideoConnectorLabelLast)    ? ("Last") : \
-   (eLabel == keMvVideoConnectorLabelSdiInA)  ? ("SDI IN A") : \
-   (eLabel == keMvVideoConnectorLabelSdiInB)  ? ("SDI IN B") : \
-   (eLabel == keMvVideoConnectorLabelSdiInC)  ? ("SDI IN C") : \
-   (eLabel == keMvVideoConnectorLabelSdiInD)  ? ("SDI IN D") : \
-   (eLabel == keMvVideoConnectorLabelSdiInE)  ? ("SDI IN E") : \
-   (eLabel == keMvVideoConnectorLabelSdiInF)  ? ("SDI IN F") : \
-   (eLabel == keMvVideoConnectorLabelSdiInG)  ? ("SDI IN G") : \
-   (eLabel == keMvVideoConnectorLabelSdiInH)  ? ("SDI IN H") : \
-   (eLabel == keMvVideoConnectorLabelSdiInI)  ? ("SDI IN I") : \
-   (eLabel == keMvVideoConnectorLabelSdiInJ)  ? ("SDI IN J") : \
-   (eLabel == keMvVideoConnectorLabelSdiInK)  ? ("SDI IN K") : \
-   (eLabel == keMvVideoConnectorLabelSdiInL)  ? ("SDI IN L") : \
-   (eLabel == keMvVideoConnectorLabelSdiOutA) ? ("SDI OUT A") : \
-   (eLabel == keMvVideoConnectorLabelSdiOutB) ? ("SDI OUT B") : \
-   (eLabel == keMvVideoConnectorLabelSdiOutC) ? ("SDI OUT C") : \
-   (eLabel == keMvVideoConnectorLabelSdiOutD) ? ("SDI OUT D") : \
-   (eLabel == keMvVideoConnectorLabelSdiOutE) ? ("SDI OUT E") : \
-   (eLabel == keMvVideoConnectorLabelSdiOutF) ? ("SDI OUT F") : \
-   (eLabel == keMvVideoConnectorLabelSdiOutG) ? ("SDI OUT G") : \
-   (eLabel == keMvVideoConnectorLabelSdiOutH) ? ("SDI OUT H") : \
-   (eLabel == keMvVideoConnectorLabelSdiOutI) ? ("SDI OUT I") : \
-   (eLabel == keMvVideoConnectorLabelSdiOutJ) ? ("SDI OUT J") : \
-   (eLabel == keMvVideoConnectorLabelSdiOutK) ? ("SDI OUT K") : \
-   (eLabel == keMvVideoConnectorLabelSdiOutL) ? ("SDI OUT L") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInA)   ? ("SDI IP IN A") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInB)   ? ("SDI IP IN B") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInC)   ? ("SDI IP IN C") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInD)   ? ("SDI IP IN D") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInE)   ? ("SDI IP IN E") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInF)   ? ("SDI IP IN F") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInG)   ? ("SDI IP IN G") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInH)   ? ("SDI IP IN H") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInI)   ? ("SDI IP IN I") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInJ)   ? ("SDI IP IN J") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInK)   ? ("SDI IP IN K") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpInL)   ? ("SDI IP IN L") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpOutA)  ? ("SDI IP OUT A") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpOutB)  ? ("SDI IP OUT B") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpOutC)  ? ("SDI IP OUT C") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpOutD)  ? ("SDI IP OUT D") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpOutE)  ? ("SDI IP OUT E") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpOutF)  ? ("SDI IP OUT F") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpOutG)  ? ("SDI IP OUT G") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpOutH)  ? ("SDI IP OUT H") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpOutI)  ? ("SDI IP OUT I") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpOutJ)  ? ("SDI IP OUT J") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpOutK)  ? ("SDI IP OUT K") : \
-   (eLabel == keMvVideoConnectorLabelSdiIpOutL)  ? ("SDI IP OUT L") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoInA)   ? ("ASPEN video IN A") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoInB)   ? ("ASPEN video IN B") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoInC)   ? ("ASPEN video IN C") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoInD)   ? ("ASPEN video IN D") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoInE)   ? ("ASPEN video IN E") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoInF)   ? ("ASPEN video IN F") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoInG)   ? ("ASPEN video IN G") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoInH)   ? ("ASPEN video IN H") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoInI)   ? ("ASPEN video IN I") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoInJ)   ? ("ASPEN video IN J") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoInK)   ? ("ASPEN video IN K") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoInL)   ? ("ASPEN video IN L") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoOutA)  ? ("ASPEN video OUT A") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoOutB)  ? ("ASPEN video OUT B") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoOutC)  ? ("ASPEN video OUT C") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoOutD)  ? ("ASPEN video OUT D") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoOutE)  ? ("ASPEN video OUT E") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoOutF)  ? ("ASPEN video OUT F") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoOutG)  ? ("ASPEN video OUT G") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoOutH)  ? ("ASPEN video OUT H") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoOutI)  ? ("ASPEN video OUT I") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoOutJ)  ? ("ASPEN video OUT J") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoOutK)  ? ("ASPEN video OUT K") : \
-   (eLabel == keMvVideoConnectorLabelAspenVideoOutL)  ? ("ASPEN video OUT L") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioInA)   ? ("ASPEN audio IN A") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioInB)   ? ("ASPEN audio IN B") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioInC)   ? ("ASPEN audio IN C") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioInD)   ? ("ASPEN audio IN D") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioInE)   ? ("ASPEN audio IN E") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioInF)   ? ("ASPEN audio IN F") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioInG)   ? ("ASPEN audio IN G") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioInH)   ? ("ASPEN audio IN H") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioInI)   ? ("ASPEN audio IN I") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioInJ)   ? ("ASPEN audio IN J") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioInK)   ? ("ASPEN audio IN K") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioInL)   ? ("ASPEN audio IN L") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutA)  ? ("ASPEN audio OUT A") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutB)  ? ("ASPEN audio OUT B") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutC)  ? ("ASPEN audio OUT C") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutD)  ? ("ASPEN audio OUT D") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutE)  ? ("ASPEN audio OUT E") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutF)  ? ("ASPEN audio OUT F") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutG)  ? ("ASPEN audio OUT G") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutH)  ? ("ASPEN audio OUT H") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutI)  ? ("ASPEN audio OUT I") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutJ)  ? ("ASPEN audio OUT J") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutK)  ? ("ASPEN audio OUT K") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutL)  ? ("ASPEN audio OUT L") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutM)  ? ("ASPEN audio OUT M") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutN)  ? ("ASPEN audio OUT N") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutO)  ? ("ASPEN audio OUT O") : \
-   (eLabel == keMvVideoConnectorLabelAspenAudioOutP)  ? ("ASPEN audio OUT P") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancInA)    ? ("ASPEN VANC IN A") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancInB)    ? ("ASPEN VANC IN B") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancInC)    ? ("ASPEN VANC IN C") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancInD)    ? ("ASPEN VANC IN D") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancInE)    ? ("ASPEN VANC IN E") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancInF)    ? ("ASPEN VANC IN F") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancInG)    ? ("ASPEN VANC IN G") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancInH)    ? ("ASPEN VANC IN H") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancInI)    ? ("ASPEN VANC IN I") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancInJ)    ? ("ASPEN VANC IN J") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancInK)    ? ("ASPEN VANC IN K") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancInL)    ? ("ASPEN VANC IN L") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancOutA)   ? ("ASPEN VANC OUT A") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancOutB)   ? ("ASPEN VANC OUT B") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancOutC)   ? ("ASPEN VANC OUT C") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancOutD)   ? ("ASPEN VANC OUT D") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancOutE)   ? ("ASPEN VANC OUT E") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancOutF)   ? ("ASPEN VANC OUT F") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancOutG)   ? ("ASPEN VANC OUT G") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancOutH)   ? ("ASPEN VANC OUT H") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancOutI)   ? ("ASPEN VANC OUT I") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancOutJ)   ? ("ASPEN VANC OUT J") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancOutK)   ? ("ASPEN VANC OUT K") : \
-   (eLabel == keMvVideoConnectorLabelAspenVancOutL)   ? ("ASPEN VANC OUT L") : \
-   ("???"))
+// The macro was changed because the previous one was becoming too big causing the compiler to return :
+// fatal error C1026: parser stack overflow, program too complex.
+#define MV_VIDEO_CONNECTOR_LABEL_ENUM_TO_STRING(eLabel) ConnectorLabelEnumToString((EMvVideoConnectorLabel)(eLabel))
 
+inline const char * ConnectorLabelEnumToString(EMvVideoConnectorLabel eLabel)
+{
+   switch (eLabel)
+   {
+      case keMvVideoConnectorLabelInvalid: return "Invalid";
+      case keMvVideoConnectorLabelLast:    return "Last";
+      case keMvVideoConnectorLabelSdiInA:  return "SDI IN A";
+      case keMvVideoConnectorLabelSdiInB:  return "SDI IN B";
+      case keMvVideoConnectorLabelSdiInC:  return "SDI IN C";
+      case keMvVideoConnectorLabelSdiInD:  return "SDI IN D";
+      case keMvVideoConnectorLabelSdiInE:  return "SDI IN E";
+      case keMvVideoConnectorLabelSdiInF:  return "SDI IN F";
+      case keMvVideoConnectorLabelSdiInG:  return "SDI IN G";
+      case keMvVideoConnectorLabelSdiInH:  return "SDI IN H";
+      case keMvVideoConnectorLabelSdiInI:  return "SDI IN I";
+      case keMvVideoConnectorLabelSdiInJ:  return "SDI IN J";
+      case keMvVideoConnectorLabelSdiInK:  return "SDI IN K";
+      case keMvVideoConnectorLabelSdiInL:  return "SDI IN L";
+      case keMvVideoConnectorLabelSdiOutA: return "SDI OUT A";
+      case keMvVideoConnectorLabelSdiOutB: return "SDI OUT B";
+      case keMvVideoConnectorLabelSdiOutC: return "SDI OUT C";
+      case keMvVideoConnectorLabelSdiOutD: return "SDI OUT D";
+      case keMvVideoConnectorLabelSdiOutE: return "SDI OUT E";
+      case keMvVideoConnectorLabelSdiOutF: return "SDI OUT F";
+      case keMvVideoConnectorLabelSdiOutG: return "SDI OUT G";
+      case keMvVideoConnectorLabelSdiOutH: return "SDI OUT H";
+      case keMvVideoConnectorLabelSdiOutI: return "SDI OUT I";
+      case keMvVideoConnectorLabelSdiOutJ: return "SDI OUT J";
+      case keMvVideoConnectorLabelSdiOutK: return "SDI OUT K";
+      case keMvVideoConnectorLabelSdiOutL: return "SDI OUT L";
+      case keMvVideoConnectorLabelSdiIpInA:   return "SDI IP IN A";
+      case keMvVideoConnectorLabelSdiIpInB:   return "SDI IP IN B";
+      case keMvVideoConnectorLabelSdiIpInC:   return "SDI IP IN C";
+      case keMvVideoConnectorLabelSdiIpInD:   return "SDI IP IN D";
+      case keMvVideoConnectorLabelSdiIpInE:   return "SDI IP IN E";
+      case keMvVideoConnectorLabelSdiIpInF:   return "SDI IP IN F";
+      case keMvVideoConnectorLabelSdiIpInG:   return "SDI IP IN G";
+      case keMvVideoConnectorLabelSdiIpInH:   return "SDI IP IN H";
+      case keMvVideoConnectorLabelSdiIpInI:   return "SDI IP IN I";
+      case keMvVideoConnectorLabelSdiIpInJ:   return "SDI IP IN J";
+      case keMvVideoConnectorLabelSdiIpInK:   return "SDI IP IN K";
+      case keMvVideoConnectorLabelSdiIpInL:   return "SDI IP IN L";
+      case keMvVideoConnectorLabelSdiIpOutA:  return "SDI IP OUT A";
+      case keMvVideoConnectorLabelSdiIpOutB:  return "SDI IP OUT B";
+      case keMvVideoConnectorLabelSdiIpOutC:  return "SDI IP OUT C";
+      case keMvVideoConnectorLabelSdiIpOutD:  return "SDI IP OUT D";
+      case keMvVideoConnectorLabelSdiIpOutE:  return "SDI IP OUT E";
+      case keMvVideoConnectorLabelSdiIpOutF:  return "SDI IP OUT F";
+      case keMvVideoConnectorLabelSdiIpOutG:  return "SDI IP OUT G";
+      case keMvVideoConnectorLabelSdiIpOutH:  return "SDI IP OUT H";
+      case keMvVideoConnectorLabelSdiIpOutI:  return "SDI IP OUT I";
+      case keMvVideoConnectorLabelSdiIpOutJ:  return "SDI IP OUT J";
+      case keMvVideoConnectorLabelSdiIpOutK:  return "SDI IP OUT K";
+      case keMvVideoConnectorLabelSdiIpOutL:  return "SDI IP OUT L";
+      case keMvVideoConnectorLabelAspenVideoInA:   return "ASPEN video IN A";
+      case keMvVideoConnectorLabelAspenVideoInB:   return "ASPEN video IN B";
+      case keMvVideoConnectorLabelAspenVideoInC:   return "ASPEN video IN C";
+      case keMvVideoConnectorLabelAspenVideoInD:   return "ASPEN video IN D";
+      case keMvVideoConnectorLabelAspenVideoInE:   return "ASPEN video IN E";
+      case keMvVideoConnectorLabelAspenVideoInF:   return "ASPEN video IN F";
+      case keMvVideoConnectorLabelAspenVideoInG:   return "ASPEN video IN G";
+      case keMvVideoConnectorLabelAspenVideoInH:   return "ASPEN video IN H";
+      case keMvVideoConnectorLabelAspenVideoInI:   return "ASPEN video IN I";
+      case keMvVideoConnectorLabelAspenVideoInJ:   return "ASPEN video IN J";
+      case keMvVideoConnectorLabelAspenVideoInK:   return "ASPEN video IN K";
+      case keMvVideoConnectorLabelAspenVideoInL:   return "ASPEN video IN L";
+      case keMvVideoConnectorLabelAspenVideoOutA:  return "ASPEN video OUT A";
+      case keMvVideoConnectorLabelAspenVideoOutB:  return "ASPEN video OUT B";
+      case keMvVideoConnectorLabelAspenVideoOutC:  return "ASPEN video OUT C";
+      case keMvVideoConnectorLabelAspenVideoOutD:  return "ASPEN video OUT D";
+      case keMvVideoConnectorLabelAspenVideoOutE:  return "ASPEN video OUT E";
+      case keMvVideoConnectorLabelAspenVideoOutF:  return "ASPEN video OUT F";
+      case keMvVideoConnectorLabelAspenVideoOutG:  return "ASPEN video OUT G";
+      case keMvVideoConnectorLabelAspenVideoOutH:  return "ASPEN video OUT H";
+      case keMvVideoConnectorLabelAspenVideoOutI:  return "ASPEN video OUT I";
+      case keMvVideoConnectorLabelAspenVideoOutJ:  return "ASPEN video OUT J";
+      case keMvVideoConnectorLabelAspenVideoOutK:  return "ASPEN video OUT K";
+      case keMvVideoConnectorLabelAspenVideoOutL:  return "ASPEN video OUT L";
+      case keMvVideoConnectorLabelAspenAudioInA:   return "ASPEN audio IN A";
+      case keMvVideoConnectorLabelAspenAudioInB:   return "ASPEN audio IN B";
+      case keMvVideoConnectorLabelAspenAudioInC:   return "ASPEN audio IN C";
+      case keMvVideoConnectorLabelAspenAudioInD:   return "ASPEN audio IN D";
+      case keMvVideoConnectorLabelAspenAudioInE:   return "ASPEN audio IN E";
+      case keMvVideoConnectorLabelAspenAudioInF:   return "ASPEN audio IN F";
+      case keMvVideoConnectorLabelAspenAudioInG:   return "ASPEN audio IN G";
+      case keMvVideoConnectorLabelAspenAudioInH:   return "ASPEN audio IN H";
+      case keMvVideoConnectorLabelAspenAudioInI:   return "ASPEN audio IN I";
+      case keMvVideoConnectorLabelAspenAudioInJ:   return "ASPEN audio IN J";
+      case keMvVideoConnectorLabelAspenAudioInK:   return "ASPEN audio IN K";
+      case keMvVideoConnectorLabelAspenAudioInL:   return "ASPEN audio IN L";
+      case keMvVideoConnectorLabelAspenAudioOutA:  return "ASPEN audio OUT A";
+      case keMvVideoConnectorLabelAspenAudioOutB:  return "ASPEN audio OUT B";
+      case keMvVideoConnectorLabelAspenAudioOutC:  return "ASPEN audio OUT C";
+      case keMvVideoConnectorLabelAspenAudioOutD:  return "ASPEN audio OUT D";
+      case keMvVideoConnectorLabelAspenAudioOutE:  return "ASPEN audio OUT E";
+      case keMvVideoConnectorLabelAspenAudioOutF:  return "ASPEN audio OUT F";
+      case keMvVideoConnectorLabelAspenAudioOutG:  return "ASPEN audio OUT G";
+      case keMvVideoConnectorLabelAspenAudioOutH:  return "ASPEN audio OUT H";
+      case keMvVideoConnectorLabelAspenAudioOutI:  return "ASPEN audio OUT I";
+      case keMvVideoConnectorLabelAspenAudioOutJ:  return "ASPEN audio OUT J";
+      case keMvVideoConnectorLabelAspenAudioOutK:  return "ASPEN audio OUT K";
+      case keMvVideoConnectorLabelAspenAudioOutL:  return "ASPEN audio OUT L";
+      case keMvVideoConnectorLabelAspenAudioOutM:  return "ASPEN audio OUT M";
+      case keMvVideoConnectorLabelAspenAudioOutN:  return "ASPEN audio OUT N";
+      case keMvVideoConnectorLabelAspenAudioOutO:  return "ASPEN audio OUT O";
+      case keMvVideoConnectorLabelAspenAudioOutP:  return "ASPEN audio OUT P";
+      case keMvVideoConnectorLabelAspenVancInA:    return "ASPEN VANC IN A";
+      case keMvVideoConnectorLabelAspenVancInB:    return "ASPEN VANC IN B";
+      case keMvVideoConnectorLabelAspenVancInC:    return "ASPEN VANC IN C";
+      case keMvVideoConnectorLabelAspenVancInD:    return "ASPEN VANC IN D";
+      case keMvVideoConnectorLabelAspenVancInE:    return "ASPEN VANC IN E";
+      case keMvVideoConnectorLabelAspenVancInF:    return "ASPEN VANC IN F";
+      case keMvVideoConnectorLabelAspenVancInG:    return "ASPEN VANC IN G";
+      case keMvVideoConnectorLabelAspenVancInH:    return "ASPEN VANC IN H";
+      case keMvVideoConnectorLabelAspenVancInI:    return "ASPEN VANC IN I";
+      case keMvVideoConnectorLabelAspenVancInJ:    return "ASPEN VANC IN J";
+      case keMvVideoConnectorLabelAspenVancInK:    return "ASPEN VANC IN K";
+      case keMvVideoConnectorLabelAspenVancInL:    return "ASPEN VANC IN L";
+      case keMvVideoConnectorLabelAspenVancOutA:   return "ASPEN VANC OUT A";
+      case keMvVideoConnectorLabelAspenVancOutB:   return "ASPEN VANC OUT B";
+      case keMvVideoConnectorLabelAspenVancOutC:   return "ASPEN VANC OUT C";
+      case keMvVideoConnectorLabelAspenVancOutD:   return "ASPEN VANC OUT D";
+      case keMvVideoConnectorLabelAspenVancOutE:   return "ASPEN VANC OUT E";
+      case keMvVideoConnectorLabelAspenVancOutF:   return "ASPEN VANC OUT F";
+      case keMvVideoConnectorLabelAspenVancOutG:   return "ASPEN VANC OUT G";
+      case keMvVideoConnectorLabelAspenVancOutH:   return "ASPEN VANC OUT H";
+      case keMvVideoConnectorLabelAspenVancOutI:   return "ASPEN VANC OUT I";
+      case keMvVideoConnectorLabelAspenVancOutJ:   return "ASPEN VANC OUT J";
+      case keMvVideoConnectorLabelAspenVancOutK:   return "ASPEN VANC OUT K";
+      case keMvVideoConnectorLabelAspenVancOutL:   return "ASPEN VANC OUT L";
+      case keMvVideoConnectorLabelIpVideoInA:   return "IP video IN A";
+      case keMvVideoConnectorLabelIpVideoInB:   return "IP video IN B";
+      case keMvVideoConnectorLabelIpVideoInC:   return "IP video IN C";
+      case keMvVideoConnectorLabelIpVideoInD:   return "IP video IN D";
+      case keMvVideoConnectorLabelIpVideoInE:   return "IP video IN E";
+      case keMvVideoConnectorLabelIpVideoInF:   return "IP video IN F";
+      case keMvVideoConnectorLabelIpVideoInG:   return "IP video IN G";
+      case keMvVideoConnectorLabelIpVideoInH:   return "IP video IN H";
+      case keMvVideoConnectorLabelIpVideoInI:   return "IP video IN I";
+      case keMvVideoConnectorLabelIpVideoInJ:   return "IP video IN J";
+      case keMvVideoConnectorLabelIpVideoInK:   return "IP video IN K";
+      case keMvVideoConnectorLabelIpVideoInL:   return "IP video IN L";
+      case keMvVideoConnectorLabelIpVideoOutA:  return "IP video OUT A";
+      case keMvVideoConnectorLabelIpVideoOutB:  return "IP video OUT B";
+      case keMvVideoConnectorLabelIpVideoOutC:  return "IP video OUT C";
+      case keMvVideoConnectorLabelIpVideoOutD:  return "IP video OUT D";
+      case keMvVideoConnectorLabelIpVideoOutE:  return "IP video OUT E";
+      case keMvVideoConnectorLabelIpVideoOutF:  return "IP video OUT F";
+      case keMvVideoConnectorLabelIpVideoOutG:  return "IP video OUT G";
+      case keMvVideoConnectorLabelIpVideoOutH:  return "IP video OUT H";
+      case keMvVideoConnectorLabelIpVideoOutI:  return "IP video OUT I";
+      case keMvVideoConnectorLabelIpVideoOutJ:  return "IP video OUT J";
+      case keMvVideoConnectorLabelIpVideoOutK:  return "IP video OUT K";
+      case keMvVideoConnectorLabelIpVideoOutL:  return "IP video OUT L";
+      case keMvVideoConnectorLabelIpAudioInA:   return "IP audio IN A";
+      case keMvVideoConnectorLabelIpAudioInB:   return "IP audio IN B";
+      case keMvVideoConnectorLabelIpAudioInC:   return "IP audio IN C";
+      case keMvVideoConnectorLabelIpAudioInD:   return "IP audio IN D";
+      case keMvVideoConnectorLabelIpAudioInE:   return "IP audio IN E";
+      case keMvVideoConnectorLabelIpAudioInF:   return "IP audio IN F";
+      case keMvVideoConnectorLabelIpAudioInG:   return "IP audio IN G";
+      case keMvVideoConnectorLabelIpAudioInH:   return "IP audio IN H";
+      case keMvVideoConnectorLabelIpAudioInI:   return "IP audio IN I";
+      case keMvVideoConnectorLabelIpAudioInJ:   return "IP audio IN J";
+      case keMvVideoConnectorLabelIpAudioInK:   return "IP audio IN K";
+      case keMvVideoConnectorLabelIpAudioInL:   return "IP audio IN L";
+      case keMvVideoConnectorLabelIpAudioOutA:  return "IP audio OUT A";
+      case keMvVideoConnectorLabelIpAudioOutB:  return "IP audio OUT B";
+      case keMvVideoConnectorLabelIpAudioOutC:  return "IP audio OUT C";
+      case keMvVideoConnectorLabelIpAudioOutD:  return "IP audio OUT D";
+      case keMvVideoConnectorLabelIpAudioOutE:  return "IP audio OUT E";
+      case keMvVideoConnectorLabelIpAudioOutF:  return "IP audio OUT F";
+      case keMvVideoConnectorLabelIpAudioOutG:  return "IP audio OUT G";
+      case keMvVideoConnectorLabelIpAudioOutH:  return "IP audio OUT H";
+      case keMvVideoConnectorLabelIpAudioOutI:  return "IP audio OUT I";
+      case keMvVideoConnectorLabelIpAudioOutJ:  return "IP audio OUT J";
+      case keMvVideoConnectorLabelIpAudioOutK:  return "IP audio OUT K";
+      case keMvVideoConnectorLabelIpAudioOutL:  return "IP audio OUT L";
+      case keMvVideoConnectorLabelIpAudioOutM:  return "IP audio OUT M";
+      case keMvVideoConnectorLabelIpAudioOutN:  return "IP audio OUT N";
+      case keMvVideoConnectorLabelIpAudioOutO:  return "IP audio OUT O";
+      case keMvVideoConnectorLabelIpAudioOutP:  return "IP audio OUT P";
+      case keMvVideoConnectorLabelIpAncInA:     return "IP ANC IN A";
+      case keMvVideoConnectorLabelIpAncInB:     return "IP ANC IN B";
+      case keMvVideoConnectorLabelIpAncInC:     return "IP ANC IN C";
+      case keMvVideoConnectorLabelIpAncInD:     return "IP ANC IN D";
+      case keMvVideoConnectorLabelIpAncInE:     return "IP ANC IN E";
+      case keMvVideoConnectorLabelIpAncInF:     return "IP ANC IN F";
+      case keMvVideoConnectorLabelIpAncInG:     return "IP ANC IN G";
+      case keMvVideoConnectorLabelIpAncInH:     return "IP ANC IN H";
+      case keMvVideoConnectorLabelIpAncInI:     return "IP ANC IN I";
+      case keMvVideoConnectorLabelIpAncInJ:     return "IP ANC IN J";
+      case keMvVideoConnectorLabelIpAncInK:     return "IP ANC IN K";
+      case keMvVideoConnectorLabelIpAncInL:     return "IP ANC IN L";
+      case keMvVideoConnectorLabelIpAncOutA:    return "IP ANC OUT A";
+      case keMvVideoConnectorLabelIpAncOutB:    return "IP ANC OUT B";
+      case keMvVideoConnectorLabelIpAncOutC:    return "IP ANC OUT C";
+      case keMvVideoConnectorLabelIpAncOutD:    return "IP ANC OUT D";
+      case keMvVideoConnectorLabelIpAncOutE:    return "IP ANC OUT E";
+      case keMvVideoConnectorLabelIpAncOutF:    return "IP ANC OUT F";
+      case keMvVideoConnectorLabelIpAncOutG:    return "IP ANC OUT G";
+      case keMvVideoConnectorLabelIpAncOutH:    return "IP ANC OUT H";
+      case keMvVideoConnectorLabelIpAncOutI:    return "IP ANC OUT I";
+      case keMvVideoConnectorLabelIpAncOutJ:    return "IP ANC OUT J";
+      case keMvVideoConnectorLabelIpAncOutK:    return "IP ANC OUT K";
+      case keMvVideoConnectorLabelIpAncOutL:    return "IP ANC OUT L";
+      default: return "???"; 
+   }
+};
 
 //
 // Summary:
@@ -3577,13 +3769,19 @@ enum EMvConnectorType
    keMvconnectorTypeEmbeddedAudioOutputPair,    // SDI embedded audio output pair connector.
    keMvconnectorTypeAesEbuAudioInputPair,       // AES/EBU audio input pair connector.
    keMvconnectorTypeAesEbuAudioOutputPair,      // AES/EBU audio output pair connector.
-   keMvconnectorTypeSdiIpInput,                 // SDI IP input connector.
-   keMvconnectorTypeSdiIpOutput,                // SDI IP output connector.
-   keMvconnectorTypeSdiIpAudioInputPair,        // SDI IP audio input pair connector.
-   keMvconnectorTypeSdiIpAudioOutputPair,       // SDI IP audio output pair connector.
-   keMvconnectorTypeAspenVideoOutput,           // ASPEN video output connector.
-   keMvconnectorTypeAspenAudioOutput,           // ASPEN audio output connector.
-   keMvconnectorTypeAspenVancOutput,            // ASPEN vanc output connector.
+   keMvconnectorTypeSdiIpInput,                 // Input connector for an IP stream conforming to SMPTE 2022-6.
+   keMvconnectorTypeSdiIpOutput,                // Output connector for an IP stream conforming to SMPTE 2022-6.
+   keMvconnectorTypeSdiIpAudioInputPair,        // Audio input pair connector for an IP stream conforming to SMPTE 2022-6.
+   keMvconnectorTypeSdiIpAudioOutputPair,       // Audio output pair connector for an IP stream conforming to SMPTE 2022-6.
+   keMvconnectorTypeAspenVideoOutput,           // Video output connector for an IP stream conforming to the ASPEN protocol.
+   keMvconnectorTypeAspenAudioOutput,           // Audio output connector for an IP stream conforming to the ASPEN protocol.
+   keMvconnectorTypeAspenVancOutput,            // Ancillary data output connector for an IP stream conforming to the ASPEN protocol.
+   keMvconnectorTypeIpVideoOutput,              // Video output connector for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvconnectorTypeIpAudioOutput,              // Audio output connector for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvconnectorTypeIpAncOutput,                // Ancillary data output connector for an IP stream conforming to the SMPTE 2110-40 draft version.
+   keMvconnectorTypeIpVideoInput,               // Video input connector for an IP stream conforming to the SMPTE 2110-20 draft version.
+   keMvconnectorTypeIpAudioInput,               // Audio input connector for an IP stream conforming to the SMPTE 2110-30 draft version.
+   keMvconnectorTypeIpAncInput,                 // Ancillary data input connector for an IP stream conforming to the SMPTE 2110-40 draft version.
    keMvconnectorTypeLast                        // End of list indicator.
 };
 
@@ -3602,6 +3800,12 @@ enum EMvConnectorType
     (eValue == keMvconnectorTypeAspenVideoOutput)           ? ("Aspen video output") : \
     (eValue == keMvconnectorTypeAspenAudioOutput)           ? ("Aspen audio output") : \
     (eValue == keMvconnectorTypeAspenVancOutput)            ? ("Aspen VANC output") : \
+    (eValue == keMvconnectorTypeIpVideoOutput)              ? ("IP video output") : \
+    (eValue == keMvconnectorTypeIpAudioOutput)              ? ("IP audio output") : \
+    (eValue == keMvconnectorTypeIpAncOutput)                ? ("IP ANC output") : \
+    (eValue == keMvconnectorTypeIpVideoInput)               ? ("IP video input") : \
+    (eValue == keMvconnectorTypeIpAudioInput)               ? ("IP audio input") : \
+    (eValue == keMvconnectorTypeIpAncInput)                 ? ("IP ANC input") : \
     (eValue == keMvconnectorTypeLast)                       ? ("Last") : \
     ("???"))
 
@@ -3611,14 +3815,24 @@ enum EMvConnectorType
 //
 struct SMvSeatInfoPublic
 {
-   uint32_t       uiFirmCode;             // Seat firm code.
-   uint32_t       uiProductCode;          // Seat product code.
+   uint32_t       uiFirmCode;             // Seat firm code. Reserved for Matrox.
+   uint32_t       uiProductCode;          // Seat product code. Reserved for Matrox.
    wchar_t        szSerialNumber[32];     // Seat serial number.
-   unsigned char  acLeasedBy[6];          // Mac address of the machine that reserved this machine.
+   unsigned char  acLeasedBy[6];          // Mac address of the machine that reserved this seat.
    uint32_t       uiUntil;                // Seat reservation end time.
    wchar_t        szLicenseExpiry[32];    // Seat service date expiration.
    uint32_t       uiNumberOfCores;        // Number of cores supported by this seat.
    bool           bSeatInUse;             // If true, indicates that the seat is currently being used by a process.
+};
+
+//
+// Summary:
+//	   Describes the current value of the DSX Core target seat.
+//
+struct SMvDSXCoreTargetSeat
+{  
+   char     szSeatSerialNumber[32];    // Indicates the serial number of the DSX Core target seat.
+   unsigned long ulProductCode;        // Indicates the DSX Core product code. Reserved for Matrox.
 };
 
 //
@@ -3693,4 +3907,99 @@ struct SMvSfpSerialId
 
 };
 
+//
+// Summary:
+//    Identifies the SFP+ diagnostic error and warning flags.
+// Remarks:
+//    - High flags are set when real time diagnostic measurements are above the SFP+ manufacturer's higher thresholds.
+//    - Low flags are set when real time diagnostic measurements are below the SFP+ manufacturer's lower thresholds.
+//
+typedef union UMvSfpDiagnosticFlags
+{
+   uint32_t ui32All;
+   struct
+   {
+      uint32_t bTempHigh:1;
+      uint32_t bTempLow:1;
+      uint32_t bVoltageHigh:1;
+      uint32_t bVoltageLow:1;
+      uint32_t bTxBiasHigh:1;
+      uint32_t bTxBiasLow:1;
+      uint32_t bTxPowerHigh:1;
+      uint32_t bTxPowerLow:1;
+      uint32_t bRxPowerHigh:1;
+      uint32_t bRxPowerLow:1;
+      uint32_t bLaserTempHigh:1;
+      uint32_t bLaserTempLow:1;
+      uint32_t bTecCurrentHigh:1;
+      uint32_t bTecCurrentLow:1;
+   }sFlags;
+}TMvSfpDiagnosticFlags;
 
+//
+// Summary:
+//    Describes the SFP+ diagnostic and status fields.
+
+struct SMvSfpDiagnostic
+{
+   int32_t  i32Temperature;         // Indicates the temperature. Range: -128 to 128 Celsius.
+   uint32_t ui32Vcc;                // Indicates the supply voltage in the transceiver. Range: 0 to 6553 mV.
+   uint32_t ui32TxBias;             // Indicates the transmit bias current. Range: 0 to 131000 uA.
+   uint32_t ui32TxPower;            // Indicates the transmit output power. Range: 0 to 6553 uW.
+   uint32_t ui32RxPower;            // Indicates the receive input power. Range: 0 to 6553 uW.
+   uint32_t ui32InputEqualization;  // Indicates the input equalization. Range: 0 to 10dB.
+   uint32_t ui32OutputEmphasis;     // Indicates the output emphasis. Range: 0 to 7dB.
+   int32_t  i32LaserTempWavelength; // Indicates the laser color temperature or wavelength. Range:  -128 to 128 Celsius. This value is optional.
+   int32_t  i32TecCurrent;          // Indicates the thermoelectric cooling current. A positive value indicates cooling. Range: -3276 to 3276 mA. This value is optional.
+
+   bool bIsDisablePinActive;        // If true, the transmit input pin is disabled.
+   bool bIsRs0PinActive;            // If true, the RS0 input pin is active.
+   bool bIsRs1PinActive;            // If true, the RS1 input pin is active.
+   bool bIsTxFaultPinActive;        // If true, the TX_Fault output pin is active.
+   bool bIsRxLosPinActive;          // If true, the RX_LOS output pin is active.
+   bool bIsPowerLevelOperationHigh; // If true, the operating power level is high (maximum power dissipation). Value of 0: 1.0 Watt max. Value of 1: 1.5 or 2.0 Watt max.
+   bool bIsTxCdrUnlocked;           // If true, the transmit Clock and Data Recovery (CDR) is enabled. A value of 1 indicates that the CDR lock is disabled. In bypass mode, set to 0.
+   bool bIsRxCdrUnlocked;           // If true, the receive CDR is enabled. A value of 1 indicates that the CDR lock is disabled. In bypass mode, set to 0.
+
+   TMvSfpDiagnosticFlags sWarnings; // Indicates warning flags set by the SFP+ manufacturer when real time diagnostic measurements exceed recommendations.
+   TMvSfpDiagnosticFlags sAlarms;   // Indicates alarm flags set by the SFP+ manufacturer when real time diagnostic measurements exceed limits higher than the warnings.
+};
+
+//
+// Summary:
+//    Identifies the type of membership request made when using a multicast address.
+//
+enum EMvMulticastMembershipType
+{
+   keMvMulticastMembershipTypeInvalid = 0,   // Invalid value.
+   keMvMulticastMembershipTypeNone,          // Indicates that a membership request has not been made.
+   keMvMulticastMembershipTypeIGMPv2,        // Indicates that a membership request to Internet Group Management Protocol (IGMP) version 2 has been made.
+   keMvMulticastMembershipTypeLast           // End of list indicator.
+};
+
+#define MV_MULTICAST_MEMBERSHIP_TYPE_ENUM_TO_STRING(eValue) \
+   ((eValue == keMvMulticastMembershipTypeInvalid) ? ("Invalid") : \
+   (eValue == keMvMulticastMembershipTypeNone)     ? ("None") : \
+   (eValue == keMvMulticastMembershipTypeIGMPv2)   ? ("IGMPv2") : \
+   ("???"))
+
+
+//
+// Summary:
+//    Identifies the standard to which the IP stream conforms.
+//
+enum EMvFlowStandard
+{
+   keMvFlowstandardInvalid, // Invalid value.
+   keMvFlowstandardST2022,  // Specifies that the IP stream conforms to the SMPTE 2022-6 standard.
+   keMvFlowstandardAspen,   // Specifies that the IP stream conforms the ASPEN protocol.
+   keMvFlowstandardST2110,  // Specifies that the IP stream conforms the SMPTE ST 2110 draft version.
+   keMvFlowstandardLast,    // End of list indicator.
+};
+
+#define MV_FLOW_STANDARD_ENUM_TO_STRING(eValue) \
+   ((eValue == keMvFlowstandardInvalid) ? ("Invalid") : \
+   (eValue == keMvFlowstandardST2022)   ? ("ST2022") : \
+   (eValue == keMvFlowstandardAspen)    ? ("Aspen") : \
+   (eValue == keMvFlowstandardST2110)   ? ("ST2110") : \
+   ("???"))

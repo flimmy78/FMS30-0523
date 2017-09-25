@@ -317,7 +317,7 @@ private:
 			int layer_index = -1;
 			std::wstring channel_spec;
 
-			if (!tokens.empty())
+			if (!tokens.empty() && !boost::iequals(result.command_name, L"CINF"))
 			{
 				channel_spec = tokens.front();
 				std::wstring channelid_str = boost::trim_copy(channel_spec);
@@ -379,6 +379,12 @@ private:
 			}
 			else
 			{
+				//add by zibj 20170802 begin 解决形如 "CLS 00" 无法正确解析子文件夹参数bug
+				if (tokens.empty() && !channel_spec.empty())
+				{
+					tokens.push_front(channel_spec);
+				}
+				//add by zibj 20170802 end
 				result.command = repo_->create_command(result.command_name, client, tokens);
 
 				if (result.command)

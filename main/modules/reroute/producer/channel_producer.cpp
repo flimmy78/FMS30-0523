@@ -241,7 +241,7 @@ public:
 			frame_buffer_.pop();
 			return frame;
 		}
-
+		
 		auto read_frame = consumer_->receive();
 		if(read_frame == core::const_frame::empty() || read_frame.image_data().empty())
 			return core::draw_frame::late();
@@ -257,7 +257,7 @@ public:
 		std::memcpy(frame.image_data().begin(), read_frame.image_data().begin(), read_frame.image_data().size());
 
 		frame_buffer_.push(core::draw_frame(std::move(frame)));
-
+		
 		return receive_impl();
 	}	
 

@@ -166,7 +166,7 @@ public:
 	size_t depth() const { return depth_; }
 	size_t width() const { return width_; }
 	size_t height() const { return height_; }
-	const uint8_t* data() const { return data_.data(); }
+	const uint8_t* data() { return data_.data(); }
 
 private:
 	int fit(node_iterator it, const size_t width, const size_t height)

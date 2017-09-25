@@ -1,6 +1,6 @@
 //==============================================================================
 //
-// (c) Copyright Matrox Electronic Systems Ltd., 2013-2015. All rights reserved. 
+// (c) Copyright Matrox Electronic Systems Ltd., 2013-2017. All rights reserved. 
 //
 // This code and information is provided "as is" without warranty of any kind, 
 // either expressed or implied, including but not limited to the implied 
@@ -63,7 +63,7 @@ struct SMvTransferStreamSettings
                                          // than the node depth minus the node's write-to-read delay minus three frames.
                                          // That is, <p>
                                          // <i> Advance delay < node depth - node's write-to-read delay - 3 frames </i>
-   EMvNodeContent eNodeContentToProcess; // Indicates the type of data in the stream to process. For example, video data only, VANC data only, or 
+   EMvNodeContent eNodeContentToProcess; // Indicates the type of data in the stream to process. For example, video data only, ancillary data only, or 
                                          // any other data combination.
 };
 
@@ -101,7 +101,7 @@ struct SMvNodeNotificationCallbackParameters
    uint32_t         ui32AudioSize;           // Indicates the size (in bytes) of the audio data. 
    uint8_t*         pAudioBuffer;            // Pointer to the start of the audio data buffer.
    uint32_t         ui32AncHeight;           // Usable height of the ancillary data in lines.
-   uint32_t         ui32AncRowPitchInBytes;  // Indicates the size (in bytes) of one YUYV 4:2:2 VANC line including padding.
+   uint32_t         ui32AncRowPitchInBytes;  // Indicates the size (in bytes) of one YUYV 4:2:2 ancillary data line including padding.
    EMvSurfaceFormat eAncFormat;              // Indicates the data organization of the ancillary data.
    uint8_t*         pAncBuffer;              // Pointer to the start of the ancillary data.
    
@@ -137,13 +137,22 @@ struct SMvEncoderStreamSettings
                                          // than the node depth minus the node's write-to-read delay minus three frames.
                                          // That is, <p>
                                          // <i> Advance delay < node depth - node's write-to-read delay - 3 frames </i>
-   bool bProcessVanc;                    // If true, VANC data is sent to the encoder stream for processing.
+   bool bProcessVanc;                    // If true, ancillary data is sent to the encoder stream for processing.
 };
 
 
 //
 // Summary:
 //    Describes the muxer stream settings.
+// Remarks:
+//    - The maximum allowable delay is the difference between the presentation time stamp (PTS) and 
+//      the Program Clock Reference (PCR). That is, Max delay = PTS - PCR
+//    - For AVC, the maximum allowable delay is the video elementary stream's Coded Picture Buffer (CPB)
+//      divided by the maximum bit rate (or, if no Hypothetical Reference Decoder (HRD) is found, the 
+//      maximum value for the profile). That is, Max delay = CPB / Max bit rate
+//    - If ui32VideoMaxStreamDelay is too low, a temporal bit rate peak can surge a frame past the reduced lead time, and 
+//      the resulting video elementary stream may contain PCRs with a higher PTS value than the video frames following it.
+//    - If you would like the muxer to determine the value to use for ui32VideoMaxStreamDelay, set ui32VideoMaxStreamDelay to 0.
 //
 struct SMvMuxerStreamSettings
 {
@@ -151,18 +160,13 @@ struct SMvMuxerStreamSettings
    uint16_t                         ui16ProgramPID;                  // Specifies the packet ID of the unique program contained in the stream.
    uint16_t                         ui16VideoPID;                    // Specifies the packet ID of the video elementary stream.
    uint16_t                         ui16AudioPID;                    // Specifies the packet ID of the audio elementary stream.
-   uint16_t                         ui16VancPID;                     // Specifies the packet ID of the VANC elementary stream.
+   uint16_t                         ui16VancPID;                     // Specifies the packet ID of the ancillary data elementary stream.
    uint16_t                         ui16PCRPID;                      // Specifies the packet ID of the Program Clock Reference (PCR) elementary stream.
    EMvMPEG2MuxerBitRateOption       eMPEG2MuxerBitRateOption;        // Specifies the bit rate encoding option of the stream. The recommended option for streaming is variable bit rate (VBR).
-   EMvMPEG2MuxerVancProcessingType  eMPEG2MuxerVancProcessingType;   // Specifies the type of the elements to process in the VANC. Currently, only SCTE 35 streams are supported.
-   uint64_t                         ui64AverageTSBitrate;            // Specifies the average bitrate to be used by the muxer.
-   uint32_t                         ui32VideoMaxStreamDelay;         // specify the maximum PTS and PCR difference (in ms) for video stream, 0 = automatically computed.
-   //Maximum delay is the maximum PTS and PCR difference. For AVC it is calculated by the stream's 
-   //CPB size divided by the maximum bitrate (or the maximum values for the profile if no HRD is found). 
-   //Setting it to a lower value will reduce the lead time between the video and PCR/audio. 
-   //Care should be taken when setting this value. If  the value is too low, a temporal bitrate peak can 
-   //surge a frame beyond the reduced lead time, and the resulting stream may contain PCRs with a higher
-   //PTS value than the video frames following it.
+   EMvMPEG2MuxerVancProcessingType  eMPEG2MuxerVancProcessingType;   // Specifies the type of the elements to process in the ancillary data. Currently, only SCTE 35 streams are supported.
+   uint64_t                         ui64AverageTSBitrate;            // Specifies the average bit rate to be used by the muxer.
+   uint32_t                         ui32VideoMaxStreamDelay;         // Specifies the maximum video stream delay (in ms). See the remarks for details.
+   
 };
 
 
@@ -288,7 +292,7 @@ struct SMvWriterStreamSettings
 {
    uint32_t    ui32Size;                                    // Structure size in bytes.
    bool        bRecordVideo;                                // If true, video data is captured.
-   bool        bRecordAncillaryData;                        // If true, VANC data is captured. Applicable only if bRecordVideo is set to true.
+   bool        bRecordAncillaryData;                        // If true, ancillary data is captured. Applicable only if bRecordVideo is set to true.
    bool        bOverrideTimeCode;                           // If true, the time code value indicated in this structure is used as the initial time code.
    uint32_t    ui32TimeCodeHour;                            // Hour value of the time code.
    uint32_t    ui32TimeCodeMinute;                          // Minute value of the time code.
@@ -311,7 +315,7 @@ struct SMvMOVWriterStreamSettings
    uint32_t                         fourCCBrand;            // Four character code identifier.
    uint64_t                         ui64PresetFileDuration; // Indicates the preset file duration.
    bool                             bIncludeClapAtom;       // If true, CLAP atoms are included in the MOV files.
-   EMvVANCLocation                  eVANCLocation;          // Indicates where to save the VANC data.
+   EMvVANCLocation                  eVANCLocation;          // Indicates where to save the ancillary data.
    EMvClipOptionMOVVANCTrackOption  eCCType;                // Indicates whether the closed caption information is saved to a CEA-608 or CEA-708 track.
    bool                             bOptimizeMOVAudioPackaging; // If true, allows optimizing the type of audio packaging for native MOV recording.
 };
@@ -335,7 +339,7 @@ struct SMvMP4WriterStreamSettings
 struct SMvMXFWriterStreamSettings
 {
    uint32_t                   ui32Size;         // Structure size in bytes.
-   EMvVANCLocation            eVANCLocation;    // Indicates where to save the VANC data.
+   EMvVANCLocation            eVANCLocation;    // Indicates where to save the ancillary data.
    EMvClipOptionMxfFillLabel  eMvFillLabel;     // Indicates which fill label to use when generating an MXF file.
    bool                       bTDIRTmpFile;     // If true, RIP files are saved to TMP files.
    wchar_t                    wszMaterialPackageName[MAX_PATH];  // Specifies the material package name to write.
@@ -393,9 +397,9 @@ struct SMvReaderStreamVideoInformation
    bool                       bIsSingleFrame;         // If true, the in-point (ui64InPoint) is repeated for the entire duration.
    bool                       bRepeatLastFrame;       // If true, the reader stream repeats the last decompressed frame at the output. Otherwise, black is output. 
    uint64_t                   ui64StreamIdentifier;   // Specifies which stream to decode.
-   CLSID                      clsidH264Decoder;       // Specifies the CLSID of H264 Decoder to decode the H.264 file. This can be set by app. For non H.264 file, it should be GUID_NULL.
-   uint32_t                   ui32HardwareProfile;    // Specifies hardware profile when using hardware decoder to decode H.264 files. This can be set by app.
-   uint32_t                   ui32CardIndex;          // Specifies card Index when using hardware decoder to decode H.264 files. This can be set by app.
+   CLSID                      clsidH264Decoder;       // Specifies the H.264 decoder CLSID for decoding the H.264 file. This can be set by the user application. For non H.264 files, use GUID_NULL.
+   uint32_t                   ui32HardwareProfile;    // Specifies the hardware profile for decoding H.264 files using the H.264 hardware decoder. This can be set by the user application.
+   uint32_t                   ui32CardIndex;          // Specifies the card index for decoding H.264 files using the H.264 hardware decoder. This can be set by the user application.
 };
 
 //
@@ -487,7 +491,7 @@ struct SMvReaderStreamSettings
                                              // frames may be skipped as a result.
    bool     bProcessAudioOnSeek;             // If true, the audio contained in the file is returned when seeking. Otherwise, silence is returned.  
    bool     bProcessAncillaryDataOnSeek;     // If true, the ancillary data of the file is returned when seeking. Otherwise, it is not returned.
-   EMvNodeContent eNodeContentToProcess;     // Indicates the type of data in the stream to process. For example, video data only, VANC data only, or 
+   EMvNodeContent eNodeContentToProcess;     // Indicates the type of data in the stream to process. For example, video data only, ancillary data only, or 
                                              // any other data combination.
 };
 
@@ -1002,18 +1006,38 @@ struct SMvRTPReceiverStreamNetworkSettings
 
 //
 // Summary:
+//    Specifies the time server to which the universal clock is synchronized.
+//
+enum EMvUniversalClockType
+{
+   keMvUniversalClockTypeInvalid,            // Invalid value.
+   keMvUniversalClockTypeFreeRunning,        // The universal clock is not synchronized to any server.
+   keMvUniversalClockTypeNtpSync,            // The universal clock is synchronized to an NTP server.
+   keMvUniversalClockTypePtpSync,            // The universal clock is synchronized to a PTP server.
+   keMvUniversalClockTypeLast                // End of list indicator.
+};
+//
+// Summary:
 //    Indicates the information required to create a new universal clock or to load a previously created universal clock.
 //
 struct SMvUniversalClockInfo
 {
    uint32_t          ui32Size;                     // Structure size in bytes.
    const char *      szClockName;                  // Pointer to the string containing the name of the universal clock.
-   const char *      szNtpServerNameOrIP;          // Pointer to the string containing the IPv4 address (such as 172.17.1.20) or the machine name of 
-                                                   // the NTP (Network Time Protocol) time server (such as time.aserver.com) to synchronize to.
+   const char *      szServerNameOrIP;             // Provides a pointer to the string containing the IPv4 address (such as 172.17.1.20) or the machine name 
+                                                   // of the time server (such as time.aserver.com). <p>
+                                                   // When eType is set to keMvUniversalClockTypeNtpSync, a pointer to the string containing the IPv4 address 
+                                                   // or the machine name of the NTP time server must be specified.<p>
+                                                   // When eType is set to keMvUniversalClockTypePtpSync, this field is optional. 
+                                                   // If the IPv4 address or the machine name of the PTP server is not specified, 
+                                                   // the default PTP broadcast address (224.0.1.129) is used. 
    SMvResolutionInfo sMvResolutionInfo;            // Structure containing the resolution settings.
    uint32_t          ui32NtpMinUpdatePeriodInMs;   // Indicates the minimum period of time between two successive calls to the NTP server. 
                                                    // This parameter allows the universal clock to be configured so that the NTP server is not flooded while allowing 
                                                    // for fast sampling. The default value is 500 ms. The minimum is 1 ms.
+   EMvUniversalClockType eType;                    // Indicates the time server to which the universal clock is synchronized.
+   const char *      szLocalAdapterIP;             // If multiple network cards are available, indicate the IP address of the card you would like to bind to when synchronizing to a time server.
+   uint8_t           ui8ClockDomain;               // Indicates the PTP clock domain.
 };
 
 //

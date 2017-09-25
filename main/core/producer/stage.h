@@ -84,7 +84,8 @@ public:
 	void							add_layer_consumer(void* token, int layer, const spl::shared_ptr<write_frame_consumer>& layer_consumer);
 	void							remove_layer_consumer(void* token, int layer);
 	void                            set_logokiller(int index, std::wstring);
-
+	int								getTimecode(int index);
+	double							getFramerate(int index);
 	monitor::subject& monitor_output();	
 
 	// frame_observable

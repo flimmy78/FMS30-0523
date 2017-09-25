@@ -202,7 +202,7 @@ public:
 		
 		auto vertex_stream = font_.create_vertex_stream(text_.value().get(), x_, y_, parent_width_, parent_height_, &metrics, shear_.value().get());
 		auto frame = atlas_frame_.with_geometry(frame_geometry(frame_geometry::geometry_type::quad_list, std::move(vertex_stream)));
-	
+
 		this->constraints_.width.set(metrics.width * this->scale_x_.value().get());
 		this->constraints_.height.set(metrics.height * this->scale_y_.value().get());
 		current_bearing_y_.value().set(metrics.bearingY);

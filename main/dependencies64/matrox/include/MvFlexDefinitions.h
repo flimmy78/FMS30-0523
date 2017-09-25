@@ -1,16 +1,16 @@
 //==============================================================================
 //
-// (c) Copyright Matrox Electronic Systems Ltd., 2003-2015. All rights reserved. 
+// (c) Copyright Matrox Electronic Systems Ltd., 2003-2017. All rights reserved.
 //
-// This code and information is provided "as is" without warranty of any kind, 
-// either expressed or implied, including but not limited to the implied 
+// This code and information is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the implied
 // warranties of merchantability and/or fitness for a particular purpose.
 //
-// Disclaimer: Matrox Electronic Systems Ltd. reserves the right to make 
-// changes in specifications and code at any time and without notice. 
-// No responsibility is assumed by Matrox Electronic Systems Ltd. for 
-// its use; nor for any infringements of patents or other rights of 
-// third parties resulting from its use. No license is granted under 
+// Disclaimer: Matrox Electronic Systems Ltd. reserves the right to make
+// changes in specifications and code at any time and without notice.
+// No responsibility is assumed by Matrox Electronic Systems Ltd. for
+// its use; nor for any infringements of patents or other rights of
+// third parties resulting from its use. No license is granted under
 // any patents or patent rights of Matrox Electronic Systems Ltd.
 //
 //-------------------------------------------------------------------------------
@@ -68,13 +68,13 @@ enum EMvMPEG2MuxerBitRateOption
 };
 
 // Summary:
-// Specifies the VANC processing type of the MPEG-2 muxer.
+// Specifies the ancillary data processing type of the MPEG-2 muxer.
 // Currently only SCTE 35 streams are supported.
 //
 enum EMvMPEG2MuxerVancProcessingType
 {
    keMvMPEG2MuxerVancProcessingTypeInvalid,  // Invalid value.
-   keMvMPEG2MuxerVancProcessingTypeNone,     // No VANC processing is required.
+   keMvMPEG2MuxerVancProcessingTypeNone,     // No ancillary data processing is required.
    keMvMPEG2MuxerVancProcessingTypeSCTE35,   // Specifies that SCTE 35 streams are to be processed.
    keMvMPEG2MuxerVancProcessingTypeLast      // End of list indicator.
 };
@@ -123,19 +123,19 @@ enum EMvWorkAudioSamplesType
 //
 enum EMvWorkSurfaceType
 {
-   keMvWorkSurfaceTypeInvalid = 0x00000000,              // Invalid value.       
-   keMvWorkSurfaceTypeEditResFrameARGBVideo_AllMipmaps,  // Specifies an RGBA-video work surface allocated 
+   keMvWorkSurfaceTypeInvalid = 0x00000000,              // Invalid value.
+   keMvWorkSurfaceTypeEditResFrameARGBVideo_AllMipmaps,  // Specifies an RGBA-video work surface allocated
    // at the edit resolution in frames with all mipmaps.
    keMvWorkSurfaceTypeEditResFieldARGBVideo_AllMipmaps,  // Specifies an RGBA-video work surface allocated
    // at the edit resolution in fields with all mipmaps.
-   keMvWorkSurfaceTypeEditResARGBVideo_AllMipmaps,       // Specifies an RGBA-video work surface allocated 
-   // at the edit resolution with all mipmaps. Will be 
-   // allocated in frames or fields depending on the scan 
+   keMvWorkSurfaceTypeEditResARGBVideo_AllMipmaps,       // Specifies an RGBA-video work surface allocated
+   // at the edit resolution with all mipmaps. Will be
+   // allocated in frames or fields depending on the scan
    // mode of the editing resolution.
    keMvWorkSurfaceTypeEditRes24Z8S,                      // Specifies a depth work surface allocated at the
    // edit resolution with 24 bits of Z and 8 bits of stencil.
    keMvWorkSurfaceTypeAlphaRamp8bits,                    // Specifies a 256x1 alpha 8-bit surface. No mipmaps are allocated.
-   keMvWorkSurfaceType1DBorder,                          // Specifies an RGBA-video surface allocated at the 
+   keMvWorkSurfaceType1DBorder,                          // Specifies an RGBA-video surface allocated at the
    // half edit resolution width and a height of 2. No mipmaps are allocated.
    keMvWorkSurfaceTypeLast,                              // End of list indicator.
    keMvWorkSurfaceTypeForceDWord = 0x7FFFFFFF            // Force the enumerated values to be 32 bits.
@@ -143,7 +143,7 @@ enum EMvWorkSurfaceType
 
 //
 // Summary:
-//    Specifies whether to capture both video and audio, or video only. 
+//    Specifies whether to capture both video and audio, or video only.
 //
 enum EMvVideoAudioBufferType
 {
@@ -155,7 +155,7 @@ enum EMvVideoAudioBufferType
 
 //
 // Summary:
-//    Specifies whether to save audio as stereo or mono in each track. 
+//    Specifies whether to save audio as stereo or mono in each track.
 //
 enum EMvPCMMovAudioStreamSaveType
 {
@@ -165,68 +165,68 @@ enum EMvPCMMovAudioStreamSaveType
    kePCMMovAudioStreamSaveTypeLast                    // End of list indicator.
 };
 
-// 
+//
 // Summary:
 //    Used to set or get codec options.
 //
 // Remarks:
-//    - The last character in the enum specifies the type of parameter to pass when calling 
+//    - The last character in the enum specifies the type of parameter to pass when calling
 //      SetCodecOption(), GetCodecOption(), or IsCodecOptionSupported(). For example, 'b' is for bool,
 //      'ul' is for unsigned long, and 'st' is for structure.
 //
 enum EMvCodecOption
 {
-   keMvCodecOptionInvalid,                               // Invalid value.
-   keMvCodecOptionDvFilteringPAL420_b,                   // If true, sets the DV codec PAL 4:2:0 decode to filter (used when chroma key is applied to the output buffer).
-   keMvCodecOptionReturnErrorOnCorruption_b,             // If true, enables error reporting when the data to decode 
-   // is corrupted. By default, the codec handles the 
-   // corruption and does not put an error in the output surface.
-   keMvCodecOptionMpeg2CompressionOptions_st,            // Used to pass the compression configuration structure for the MPEG-2 codec.
-   keMvCodecOptionIbpDecodeLastFrame_b,                  // If true, indicates that the last IBP frame has to be decoded.
-   keMvCodecOptionAspectRatio_e,                         // Sets the aspect ratio if it is different from the usual default for the current settings.
-   keMvCodecOptionAACDecompressionOptionInit_st,         // Provides the information necessary to initialize the AAC codec during decompression.
-   keMvCodecOptionAACCompressionOptionInit_st,           // Sets the options that will be used by the AAC codec during compression.
-   keMvCodecOptionPreroll_ui64,                          // Used to get the preroll of the codec. This is mostly for hardware codecs. It depends on the codec usage (compression or decompression).
-   keMvCodecOptionCompletionCallback_pI,                 // Sets the completion callback interface that will be called not when the data is ready, but when the description is valid on the surface.  This is mainly used during compression with VBR mode.
-   keMvCodecOptionHWAVCH264DecompressionOptionInit_st,   // Provides the information necessary to initialize the H.264/AVC hardware codec during decompression.
-   keMvCodecOptionHWAVCH264CompressionOptionInit_st,     // Provides the information necessary to initialize the H.264/AVC hardware codec during compression.
-   keMvCodecOptionGetCompressionPipelineDepth_ui32,      // Indicates the required number of audio samples or frames that must be fed to the encoder before data can be output.
-   keMvCodecOptionGetDecompressionPipelineDepth_ui32,    // Indicates the required number of audio samples or frames that must be fed to the decoder before data can be output.
-   keMvCodecOptionGetAVCH264CompressionGOPStructure_st,  // Indicates the organization of a compressed GOP (IDR, I, P, B), if there is one.
-   keMvCodecOptionGetPropagationDelay_ui64,              // Used to get the propagation delay of the codec.  This is mostly for hardware codecs. It depends on the codec usage (compression or decompression).
-   keMvCodecOptionStartPreroll_ui64,                     // Used to get the start preroll of the codec.  This is mostly for hardware codecs. It depends on the codec usage (compression or decompression).  The start preroll needs to be respected for the first frame only while the preroll needs to be respected for every frame (including the first one).
-   keMvCodecOptionOptimalNumOfAdvancedPuts_ui32,         // Indicates the optimal number of advanced Puts() relative to Gets().
-   keMvCodecOptionMaxPropagationDelayByFrames_ui32,      // Indicates the maximum propagation delay in frame units.
-   keMvCodecOptionGetNearestSupportedShuttlingSpeed_st,  // From a given speed, the codec will return what is the nearest speed it can really achieve.
-   keMvCodecOptionAVCIntraCompressionOptions_st,         // Provides compression options for the AVC-Intra encoder.
-   keMvCodecOptionH264SWDecompressionOptions_st,         // Provides decompression options for the H.264/AVC software decoder.
-   keMvCodecOptionProResCompressionOptions_st,           // Provides compression options for the ProRes encoder.
-   keMvCodecOptionProResDecompressionOptions_st,         // Provides decompression options for the ProRes decoder.
-   keMvCodecOptionMaxCompressedFrameSizeByBytes_ui32,    // Provides the maximum size of a compressed frame from the video encoder.
-   keMvCodecOptionDNxHDCompressionOptions_st,            // Provides compression options for the DNxHD encoder.
-   keMvCodecOptionDNxHDDecompressionOptions_st,          // Provides decompression options for the DNxHD decoder.
-   keMvCodecOptionNTSCClosedCaptionOutputFormat_e,       // Indicates how the codec should output closed caption data when reading NTSC.
-   keMvCodecOptionDolbyEDecompressionOptionInit_st,      // Provides decompression options for the Dolby E decoder.
-   keMvCodecOptionDolbyECompressionOptionInit_st,        // Provides compression options for the Dolby E encoder.
-   keMvCodecOptionDolbyEUserInterface_h,                 // Provides the parent window with a handle to display the Dolby E configuration window.
-   keMvCodecOptionDolbyESettings_st,                     // Sets or gets the current Dolby E settings.
-   keMvCodecOptionProRes4444CaptureWithAlpha_b,          // If true, indicates that ProRes 4444 capture will include alpha (alpha is optional).
-   KeMvCodecOptionTargetCompressedFrameSizeByBytes_ui32, // Provides the target size of a compressed frame from the video encoder.
-   keMvCodecOptionH264CompressionOptions_st,             // Provides compression options for the H.264/AVC QSV (Intel Quick Sync Video) encoder.
-   keMvCodecOptionMPEG4SStPCompressionOptions_st,        // Provides compression options for the Sony MPEG-4 Simple Studio Profile (SStP) encoder.
-   keMvCodecOptionMPEG4SStPDecompressionOptions_st,      // Provides decompression options for the Sony MPEG-4 SStP decoder.
-   keMvCodecOptionCompletionObserver_pI,                 // Provides a completion observer object to be notified when an operation is completed, such as when a decompression stream is closed.
-   keMvCodecOptionH264SWCompressionOptions_st,           // Provides compression options for the H.264/AVC software encoder.
-   keMvCodecOptionM264CompressionOptions_st,             // Provides compression options for the M264 hardware encoder.
-   keMvCodecOptionCodecReturnsCompressedFields_b,        // If true, the codec returns compressed fields. Otherwise, it returns compressed frames.
-   keMvCodecOptionExtraH264CompressionOptions_st,        // Gets additional settings from the codec which are not in the regular compression options
-   keMvCodecOptionM264DecompressionOptions_st,           // Provides decompression options for the M264 hardware decoder.
-   keMvCodecOptionForceOutputObserver_pI,                // Provides an observer object to be notified when the all the frames have been output.
-   keMvCodecOptionFlushObserver_pI,                      // Provides an observer object to be notified when the all the frames have been output from the decoder after calling Flush().
-   keMvCodecOptionAsyncErrorCallback_pI,                 // Provides a callback for asynchronous errors from the codec.
-   keMvCodecOptionLast                                   // Number of codec options + 1.  End of list indicator.
+   keMvCodecOptionInvalid,                                     // Invalid value.
+   keMvCodecOptionDvFilteringPAL420_b,                         // If true, sets the DV codec PAL 4:2:0 decode to filter (used when chroma key is applied to the output buffer).
+   keMvCodecOptionReturnErrorOnCorruption_b,                   // If true, enables error reporting when the data to decode
+                                                               // is corrupted. By default, the codec handles the
+                                                               // corruption and does not put an error in the output surface.
+   keMvCodecOptionMpeg2CompressionOptions_st,                  // Used to pass the compression configuration structure for the MPEG-2 codec.
+   keMvCodecOptionIbpDecodeLastFrame_b,                        // If true, indicates that the last IBP frame has to be decoded.
+   keMvCodecOptionAspectRatio_e,                               // Sets the aspect ratio if it is different from the usual default for the current settings.
+   keMvCodecOptionAACDecompressionOptionInit_st,               // Provides the information necessary to initialize the AAC codec during decompression.
+   keMvCodecOptionAACCompressionOptionInit_st,                 // Sets the options that will be used by the AAC codec during compression.
+   keMvCodecOptionPreroll_ui64,                                // Used to get the preroll of the codec. This is mostly for hardware codecs. It depends on the codec usage (compression or decompression).
+   keMvCodecOptionCompletionCallback_pI,                       // Sets the completion callback interface that will be called when the data is ready.
+   keMvCodecOptionCompletionObserver_pI,                       // Provides a completion observer object to be notified when an operation is completed.
+   keMvCodecOptionVideoEncoderOperationCompletionCallback_pI,  // Provides an object that implements the IMvVideoEncoderOperationCompletionCallback interface to be notified when an operation is completed.
+   keMvCodecOptionVideoDecoderOperationCompletionCallback_pI,  // Provides an object that implements the IMvVideoDecoderOperationCompletionCallback interface to be notified when an operation is completed.
+   keMvCodecOptionHWAVCH264DecompressionOptionInit_st,         // Provides the information necessary to initialize the Matrox H.264/AVC hardware codec during decompression.
+   keMvCodecOptionHWAVCH264CompressionOptionInit_st,           // Provides the information necessary to initialize the Matrox H.264/AVC hardware codec during compression.
+   keMvCodecOptionGetCompressionPipelineDepth_ui32,            // Indicates the required number of audio samples or frames that must be fed to the encoder before data can be output.
+   keMvCodecOptionGetDecompressionPipelineDepth_ui32,          // Indicates the required number of audio samples or frames that must be fed to the decoder before data can be output.
+   keMvCodecOptionGetAVCH264CompressionGOPStructure_st,        // Indicates the organization of a compressed GOP (IDR, I, P, B), if there is one.
+   keMvCodecOptionGetPropagationDelay_ui64,                    // Used to get the propagation delay of the codec.  This is mostly for hardware codecs. It depends on the codec usage (compression or decompression).
+   keMvCodecOptionStartPreroll_ui64,                           // Used to get the start preroll of the codec.  This is mostly for hardware codecs. It depends on the codec usage (compression or decompression).  The start preroll needs to be respected for the first frame only while the preroll needs to be respected for every frame (including the first one).
+   keMvCodecOptionOptimalNumOfAdvancedPuts_ui32,               // Indicates the optimal number of advanced Puts() relative to Gets().
+   keMvCodecOptionMaxPropagationDelayByFrames_ui32,            // Indicates the maximum propagation delay in frame units.
+   keMvCodecOptionGetNearestSupportedShuttlingSpeed_st,        // From a given speed, the codec will return what is the nearest speed it can really achieve.
+   keMvCodecOptionAVCIntraCompressionOptions_st,               // Provides compression options for the AVC-Intra encoder.
+   keMvCodecOptionH264SWDecompressionOptions_st,               // Provides decompression options for the Matrox H.264/AVC software decoder.
+   keMvCodecOptionProResCompressionOptions_st,                 // Provides compression options for the ProRes encoder.
+   keMvCodecOptionProResDecompressionOptions_st,               // Provides decompression options for the ProRes decoder.
+   keMvCodecOptionMaxCompressedFrameSizeByBytes_ui32,          // Provides the maximum size of a compressed frame from the video encoder.
+   keMvCodecOptionDNxHDCompressionOptions_st,                  // Provides compression options for the DNxHD encoder.
+   keMvCodecOptionDNxHDDecompressionOptions_st,                // Provides decompression options for the DNxHD decoder.
+   keMvCodecOptionNTSCClosedCaptionOutputFormat_e,             // Indicates how the codec should output closed caption data when reading NTSC.
+   keMvCodecOptionDolbyEDecompressionOptionInit_st,            // Provides decompression options for the Dolby E decoder.
+   keMvCodecOptionDolbyECompressionOptionInit_st,              // Provides compression options for the Dolby E encoder.
+   keMvCodecOptionDolbyEUserInterface_h,                       // Provides the parent window with a handle to display the Dolby E configuration window.
+   keMvCodecOptionDolbyESettings_st,                           // Sets or gets the current Dolby E settings.
+   keMvCodecOptionProRes4444CaptureWithAlpha_b,                // If true, indicates that ProRes 4444 capture will include alpha (alpha is optional).
+   KeMvCodecOptionTargetCompressedFrameSizeByBytes_ui32,       // Provides the target size of a compressed frame from the video encoder.
+   keMvCodecOptionH264CompressionOptions_st,                   // Provides compression options for the H.264/AVC QSV (Intel Quick Sync Video) encoder.
+   keMvCodecOptionMPEG4SStPCompressionOptions_st,              // Provides compression options for the Sony MPEG-4 Simple Studio Profile (SStP) encoder.
+   keMvCodecOptionMPEG4SStPDecompressionOptions_st,            // Provides decompression options for the Sony MPEG-4 SStP decoder.
+   keMvCodecOptionH264SWCompressionOptions_st,                 // Provides compression options for the Matrox H.264/AVC software encoder.
+   keMvCodecOptionM264CompressionOptions_st,                   // Provides compression options for the Matrox M264 hardware encoder.
+   keMvCodecOptionCodecReturnsCompressedFields_b,              // If true, the codec returns compressed fields. Otherwise, it returns compressed frames.
+   keMvCodecOptionExtraH264CompressionOptions_st,              // Gets additional settings from the codec which are not in the regular compression options
+   keMvCodecOptionM264DecompressionOptions_st,                 // Provides decompression options for the Matrox M264 hardware decoder.
+   keMvCodecOptionAsyncErrorCallback_pI,                       // Provides a callback for asynchronous errors from the codec.
+   keMvCodecOptionH264SW3DecompressionOptions_st,              // Provides decompression options for the Matrox H.264/AVC software decoder 3.
+   keMvCodecOptionLast                                         // Number of codec options + 1.  End of list indicator.
 };
-
 
 // This macro is used to get the string corresponding to the EMvCodecOption enum value.
 #define MV_CODEC_OPTION_ENUM_TO_STRING(eMvCodecOption) \
@@ -240,6 +240,7 @@ enum EMvCodecOption
    (eMvCodecOption == keMvCodecOptionAACCompressionOptionInit_st) ? ("AAC Compression Option (Init)") : \
    (eMvCodecOption == keMvCodecOptionPreroll_ui64) ? ("Preroll") : \
    (eMvCodecOption == keMvCodecOptionCompletionCallback_pI) ? ("Completion Callback") : \
+   (eMvCodecOption == keMvCodecOptionVideoDecoderOperationCompletionCallback_pI) ? ("Decoder Operation Completion Callback") : \
    (eMvCodecOption == keMvCodecOptionHWAVCH264DecompressionOptionInit_st) ? ("AVC/H.264 Decompression Option (Init)") : \
    (eMvCodecOption == keMvCodecOptionHWAVCH264CompressionOptionInit_st) ? ("AVC/H.264 Compression Option (Init)") : \
    (eMvCodecOption == keMvCodecOptionGetCompressionPipelineDepth_ui32) ? ("AAC Compression Pipeline Depth") : \
@@ -255,6 +256,32 @@ enum EMvCodecOption
    (eMvCodecOption == keMvCodecOptionExtraH264CompressionOptions_st) ? ("Get Additional H.264 Compression settings") : \
    (eMvCodecOption == keMvCodecOptionLast) ? ("Last") : \
    ("???"))
+
+//
+// Summary:
+//    Specifies the type of operation that was completed.
+//
+enum EMvVideoEncoderOperationCompletionType
+{
+   keMvVideoEncoderOperationCompletionTypeInvalid,             // Invalid value.
+   keMvVideoEncoderOperationCompletionTypeClose,               // Indicates that the encoder finished encoding and has been closed.
+   keMvVideoEncoderOperationCompletionTypeCompressedVideo,     // Indicates that the compressed video frame has been encoded.
+   keMvVideoEncoderOperationCompletionTypeLast                 // End of list indicator.
+};
+
+//
+// Summary:
+//    Specifies the type of operation that was completed.
+//
+enum EMvVideoDecoderOperationCompletionType
+{
+   keMvVideoDecoderOperationCompletionTypeInvalid,                // Invalid value.
+   keMvVideoDecoderOperationCompletionTypeForceOutputPictures,    // Indicates that the decoder has decompressed all the compressed data.
+   keMvVideoDecoderOperationCompletionTypeClose,                  // Indicates that the decoder finished decoding and has been closed.
+   keMvVideoDecoderOperationCompletionTypeVideo,                  // Indicates that the surface that was decoded contains video data.
+   keMvVideoDecoderOperationCompletionTypeVideoAndVanc,           // Indicates that the surface that was decoded contains video and ancillary data. Not implemented yet.
+   keMvVideoDecoderOperationCompletionTypeLast                    // End of list indicator.
+};
 
 //
 // Summary:
@@ -291,7 +318,7 @@ struct SMvMpeg2SeqHeader
 // Summary:
 //    Describes MPEG-2 sequence header extension.
 //
-struct SMvMpeg2SeqExt 
+struct SMvMpeg2SeqExt
 {
    unsigned long ulProfile;
    unsigned long ulLevel;
@@ -311,8 +338,8 @@ struct SMvMpeg2SeqExt
 struct SMvMpeg2SeqHeaderInfo
 {
    uint32_t            size;
-   SMvMpeg2SeqHeader   sSeqHeader; 
-   SMvMpeg2SeqExt      sSeqExt;    
+   SMvMpeg2SeqHeader   sSeqHeader;
+   SMvMpeg2SeqExt      sSeqExt;
 };
 
 
@@ -336,9 +363,9 @@ struct SMvCodecInfo
 struct SMvConversionOptions
 {
    uint32_t size;                // Size of the structure.
-   BOOL     bUseFiltering;       // Specifies if chrominance filtering is desired when converting an ARGB 
+   BOOL     bUseFiltering;       // Specifies if chrominance filtering is desired when converting an ARGB
    // surface to YUYV422.
-   BOOL     bUseInterpolation;   // Specifies if chrominance interpolation is desired when converting an 
+   BOOL     bUseInterpolation;   // Specifies if chrominance interpolation is desired when converting an
    // YUYV422 or YUAYVA4224 surface to an ARGB surface.
 };
 
@@ -360,10 +387,10 @@ struct SMvThreadPoolInfo
 struct SMvAudioEffectCapabilities
 {
    uint32_t size;                            // Size of the structure.
-   bool     bUseKeyFrames;                   
-   GUID     guidEffectGUID;                  
-   GUID     guidDefaultParametricEffectGUID; 
-   unsigned long ulVersion;                  
+   bool     bUseKeyFrames;
+   GUID     guidEffectGUID;
+   GUID     guidDefaultParametricEffectGUID;
+   unsigned long ulVersion;
 };
 // DOM-IGNORE-END
 
@@ -375,7 +402,7 @@ struct SMvAudioEffectCapabilities
 struct SMvEngineProfileInfo
 {
    uint32_t                   size;                   // Size of the structure.
-   SMvHardwareProfileInfo     sHardwareProfileInfo;   // Describes the hardware profile on which the 
+   SMvHardwareProfileInfo     sHardwareProfileInfo;   // Describes the hardware profile on which the
    // Flex Engine is created.
    SMvResolutionInfo          sEditResolution;        // Structure that defines the editing resolution.
 };
@@ -391,7 +418,7 @@ struct SMvEngineProfileInfo
 // - Functional Diagram
 //
 // <CODE>
-//       Lin-------o--->(Lin * fLeftToLeft)-----------(+)-----> Lout = Lin*fLeftToLeft + 
+//       Lin-------o--->(Lin * fLeftToLeft)-----------(+)-----> Lout = Lin*fLeftToLeft +
 //                 |                                   ^               Rin*fRightToLeft
 //       Rin---o------->(Rin * fRightToLeft)-----------|
 //             |   |
@@ -407,16 +434,16 @@ struct SMvAudioMixerInfo
 {
    uint32_t Size;                   // Size of the structure.
    float    fLeftToLeftInitial;     // Initial gain of input left channel to send to left channel output.
-   float    fLeftToLeftFinal;       // Final gain of input left channel to send to left channel output.    
+   float    fLeftToLeftFinal;       // Final gain of input left channel to send to left channel output.
 
-   float    fLeftToRightInitial;    // Initial gain of input left channel to send to right channel output.     
-   float    fLeftToRightFinal;      // Final gain of input left channel to send to right channel output.    
+   float    fLeftToRightInitial;    // Initial gain of input left channel to send to right channel output.
+   float    fLeftToRightFinal;      // Final gain of input left channel to send to right channel output.
 
-   float    fRightToRightInitial;   // Initial gain of input right channel to send to right channel output.   
-   float    fRightToRightFinal;     // Final gain of input right channel to send to right channel output.    
+   float    fRightToRightInitial;   // Initial gain of input right channel to send to right channel output.
+   float    fRightToRightFinal;     // Final gain of input right channel to send to right channel output.
 
-   float    fRightToLeftInitial;    // Initial gain of input right channel to send to left channel output.   
-   float    fRightToLeftFinal;      // Final gain of input right channel to send to left channel output.    
+   float    fRightToLeftInitial;    // Initial gain of input right channel to send to left channel output.
+   float    fRightToLeftFinal;      // Final gain of input right channel to send to left channel output.
 };
 
 //
@@ -442,7 +469,7 @@ struct SMvAudioMonoVolumeInfo
 enum EMvNTSCClosedCaptionFormat
 {
    keMvNTSCClosedCaptionFormatInvalid,       // Invalid value.
-   keMvNTSCClosedCaptionFormatLine21   = 1,  // Indicates that the NTSC closed caption format will be output as CEA-608 (analog line 21). 
+   keMvNTSCClosedCaptionFormatLine21   = 1,  // Indicates that the NTSC closed caption format will be output as CEA-608 (analog line 21).
    keMvNTSCClosedCaptionFormatDigital  = 2,  // Indicates that the NTSC closed caption format will be output as SMPTE 334 caption data packet (CDP).
    keMvNTSCClosedCaptionFormatBoth     = 3,  // Indicates that both NTSC closed caption formats CEA-608 (analog line 21) and SMPTE 334 CDP will be output.
    keMvNTSCClosedCaptionFormatLast           // End of list indicator.
@@ -460,13 +487,13 @@ enum EMvNTSCClosedCaptionFormat
 
 //
 // Summary:
-//    Specifies the type of VANC format.
+//    Specifies the type of ancillary data format.
 //
 enum EMvVANCFormatType
 {
    keMvVancFormatTypeInvalid,           // Invalid value.
-   keMvVancFormatTypeLegacy,            // Indicates that the YUV422 VANC surface format is used.
-   keMvVancFormatTypeMatroxAncillary,   // Indicates that the MatroxAncillaryDataFormat VANC surface format is used.
+   keMvVancFormatTypeLegacy,            // Indicates that the YUV422 surface format is used.
+   keMvVancFormatTypeMatroxAncillary,   // Indicates that the MatroxAncillaryDataFormat surface format is used.
    keMvVancFormatTypeLast               // End of list indicator.
 };
 
@@ -480,7 +507,7 @@ enum EMvVANCFormatType
 
 //
 // Summary:
-//    Describes VANC specific playlist initialization settings for the Flex File Reader.
+//    Describes ancillary data specific playlist initialization settings for the Flex File Reader.
 //
 struct SMvVANCPlaylistOptions
 {
@@ -505,25 +532,25 @@ struct SMvPlaylistConfiguration
    bool           bVideo;              // Specifies whether or not the playlist contains video elements.
    bool           bAudio;              // Specifies whether or not the playlist contains audio elements.
    bool           bVBI;                // Specifies whether or not the playlist contains VBI elements.
-   bool           bKey;                // Specifies whether or not the playlist can contain 4:2:2:4 elements, 
+   bool           bKey;                // Specifies whether or not the playlist can contain 4:2:2:4 elements,
    bool           bTimeCode;           // Specifies whether or not the playlist contains time code elements
    // which increases memory usage.
-   EMvFrameRate   eFrameRate;          // Frame rate associated with the playlist. All elements must respect 
+   EMvFrameRate   eFrameRate;          // Frame rate associated with the playlist. All elements must respect
    // this frame rate.
-   EMvScanMode    eScanMode;           // Scan mode associated with the playlist. All elements must respect 
+   EMvScanMode    eScanMode;           // Scan mode associated with the playlist. All elements must respect
    // this scan mode.
-   EMvSurfaceFormat eConsolidationSurfaceFormat;   // Compressed format to return in IMvFlexReader::GetBuffer, 
+   EMvSurfaceFormat eConsolidationSurfaceFormat;   // Compressed format to return in IMvFlexReader::GetBuffer,
    // if any is used for consolidation.  When the file's
-   // format does not match this value, uncompressed data 
+   // format does not match this value, uncompressed data
    // is returned.  Using keMvSurfaceFormatInvalid will
    // always return uncompressed video data.
    bool           bSpecifyWhichCodecsToInitialize;  // tells the flex reader that the user application wants to select which codecs it will use below.
    const CLSID*   aclsidCodecsToInitialize[kulMvMaxSupportedCodecFormats]; // Array of CLSIDs containing the list of codecs that the user application
    // expects to use. This will optimize the flex reader codec allocation.
    // Hardware codecs should only be included in this list IF the user application
-   // intends to use them. 
+   // intends to use them.
    unsigned long  ulCountOfClsidCodecsToInitialize; // number of elements in aclsidCodecsToInitialize.
-   SMvVANCPlaylistOptions sVANCOptions; // Options related to VANC and Vbi. Unused if the bVbi flag is set to false.   
+   SMvVANCPlaylistOptions sVANCOptions; // Options related to VANC and Vbi. Unused if the bVbi flag is set to false.
 };
 
 //
@@ -547,18 +574,18 @@ enum EMvFlexWriterCaptureType
    keFileTypeMXF_DVCPRO                   = 0x00000800, // Capture contains MXF DVCPro data.
    keFileTypeMXF_AVCIntra                 = 0x00001000, // Capture contains MXF AVCIntra OP1a data.
    keFileTypeMXF_DNxHD                    = 0x00002000, // Capture contains MXF DNxHD OP1a data.
-   keVANCTypeLegacy                       = 0x00004000, // VANC format will be YUV422.
-   keVANCTypeMatroxAncillary              = 0x00008000, // VANC format will be MatroxAncillaryDataFormat.
+   keVANCTypeLegacy                       = 0x00004000, // Ancillary data format will be YUV422.
+   keVANCTypeMatroxAncillary              = 0x00008000, // Ancillary data format will be MatroxAncillaryDataFormat.
    keFileTypeMXF_AS11                     = 0x00010000, // Capture contains AS-11 wrapping.
    keFileTypeMXF_MPEG4SStP                = 0x00020000, // Capture contains MXF MPEG-4 Simple Studio Profile OP1a data.
-   keFileTypeMXF_XAVC                     = 0x00040000, // capture contains XAVC data
-   keFileTypeAVI                          = 0x00080000, // capture AVI container no matter what the extension is
-   keFileTypeGXF                          = 0x00100000, // capture GXF container no matter what the extension is
-   keFileTypeMOV                          = 0x00200000, // capture MOV container no matter what the extension is
-   keFileTypeMP4                          = 0x00400000, // capture MP4 container no matter what the extension is
-   keFileType264                          = 0x00800000, // capture 264 container no matter what the extension is
-   keFileTypeWAV32                        = 0x01000000, // 32-bit WAV container
-   keFileTypeWAV64                        = 0x02000000, // 64-bit WAV container
+   keFileTypeMXF_XAVC                     = 0x00040000, // Capture contains XAVC data.
+   keFileTypeAVI                          = 0x00080000, // Capture AVI container no matter what the extension is.
+   keFileTypeGXF                          = 0x00100000, // Capture GXF container no matter what the extension is.
+   keFileTypeMOV                          = 0x00200000, // Capture MOV container no matter what the extension is.
+   keFileTypeMP4                          = 0x00400000, // Capture MP4 container no matter what the extension is.
+   keFileType264                          = 0x00800000, // Capture 264 container no matter what the extension is.
+   keFileTypeWAV32                        = 0x01000000, // 32-bit WAV container.
+   keFileTypeWAV64                        = 0x02000000, // 64-bit WAV container.
 };
 
 // DOM-IGNORE-BEGIN
@@ -679,42 +706,42 @@ struct SMvMpegStreamMotionData
 struct SMvMpegStreamEncoderSettings
 {
    uint32_t          size;                               // Specifies the size of the structure in bytes.
-   bool              bWriteSequenceHeaderBeforeEveryGop; // If true, a sequence header will be written before every GOP. Otherwise, it will be 
+   bool              bWriteSequenceHeaderBeforeEveryGop; // If true, a sequence header will be written before every GOP. Otherwise, it will be
                                                          // written only at the beginning of the stream.
    EMvSurfaceFormat  eProfileAndLevel;                   // Indicates the IBP-type surface format used to express an MPEG-2 profile and MPEG-2 level.
-   unsigned long     ulNumberOfBFramesBetweenIandP;      // Specifies the number of frames between consecutive I and P frames, including reference 
+   unsigned long     ulNumberOfBFramesBetweenIandP;      // Specifies the number of frames between consecutive I and P frames, including reference
                                                          // frames. If set to 1, then no B frames will be generated. Valid range is [1, 8].
-   unsigned long     ulNumberOfFramesBetweenI;           // Specifies the number of frames inside a GOP. The valid range is [1, 128], and the value  
-                                                         // must be a multiple of the parameter ulNumberOfBFramesBetweenIandP. 
-   unsigned long     ulClosedGopInterval;                // Specifies the distance between closed GOPs (<I>0</I> = every GOP is open, <I>1</I> = every GOP is closed, 
+   unsigned long     ulNumberOfFramesBetweenI;           // Specifies the number of frames inside a GOP. The valid range is [1, 128], and the value
+                                                         // must be a multiple of the parameter ulNumberOfBFramesBetweenIandP.
+   unsigned long     ulClosedGopInterval;                // Specifies the distance between closed GOPs (<I>0</I> = every GOP is open, <I>1</I> = every GOP is closed,
                                                          // <I>n</I> = every <I>n</I>th GOP is closed).
    bool              bConstantBitRate;                   // If true, constant bit rate (CBR) encoding will be used. Otherwise, variable bit rate (VBR) will be used.
-   unsigned long     ulConstantBitRate;                  // If the bit rate is constant, this parameter specifies the target number of bits per 
-                                                         // second to be generated by the encoder. The following limits should be observed for both 
+   unsigned long     ulConstantBitRate;                  // If the bit rate is constant, this parameter specifies the target number of bits per
+                                                         // second to be generated by the encoder. The following limits should be observed for both
                                                          // constant bit rate and variable bit rate encoding:<p>
                                                          // - 4:2:2 Profile, High Level = 300 000 000
                                                          // - 4:2:2 Profile, Main Level = 50 000 000
                                                          // - Main Profile, High Level 4:2:0 = 80 000 000
                                                          // - Main Profile, High Level-1440 4:2:0 = 60 000 000
                                                          // - Main Profile, Main Level 4:2:0, MPEG-1 = 15 000 000
-   unsigned long     ulMaxBitRateVBROnly;                // If the bit rate is variable, specifies the maximum bit rate. For bit rate limits, 
+   unsigned long     ulMaxBitRateVBROnly;                // If the bit rate is variable, specifies the maximum bit rate. For bit rate limits,
                                                          // see ulConstantBitRate.
-   unsigned long     ulAvgBitRateVBROnly;                // If the bit rate is variable, specifies the average bit rate. Set this value to 0 
+   unsigned long     ulAvgBitRateVBROnly;                // If the bit rate is variable, specifies the average bit rate. Set this value to 0
                                                          // for VBR constant quantization.
-   unsigned long     ulMinBitRateVBROnly;                // If the bit rate is variable, specifies the minimum bit rate. Set this value to 0 
+   unsigned long     ulMinBitRateVBROnly;                // If the bit rate is variable, specifies the minimum bit rate. Set this value to 0
                                                          // for VBR constant quantization.
    unsigned long     ulMQuant;                           // Macroblock quantization value used in VBR constant quantization. Valid range is [1, 31].
    unsigned long     ulFirstGopStartTimeCodeInFrames;    // Specifies the time code, expressed in frames, encoded into the first GOP header.
    bool              bOffline;                           // If true, quality is maintained at the expense of speed. Otherwise, speed is maintained at the expense of quality.
-   unsigned long     ulQFactor;                          // Specifies the balance between quality and performance. Valid range is [1, 31]. 0 
+   unsigned long     ulQFactor;                          // Specifies the balance between quality and performance. Valid range is [1, 31]. 0
                                                          // favors performance, 31 favors quality.
-   bool              bZigZagScan;                        // Specifies the entropy scanning pattern defining the order in which quantized DCT (discrete 
-                                                         // cosine transform) coefficients are run-length coded. <p> If true, the scan is zig-zag. Otherwise, the scan is alternate. 
+   bool              bZigZagScan;                        // Specifies the entropy scanning pattern defining the order in which quantized DCT (discrete
+                                                         // cosine transform) coefficients are run-length coded. <p> If true, the scan is zig-zag. Otherwise, the scan is alternate.
                                                          // The default setting is false. Must be true for MPEG-1.
-   unsigned long     ulDCPrecision;                      // Specifies the DC coefficient precision in Intra-coded macroblocks. Valid range is [8, 10]. Default 
+   unsigned long     ulDCPrecision;                      // Specifies the DC coefficient precision in Intra-coded macroblocks. Valid range is [8, 10]. Default
                                                          // value is 9. Value must be 8 for MPEG-1.
    bool              bMotionSearchHalfPel;               // If true, half-pel motion searching is used. Otherwise, false.
-   unsigned long     ulMotionSearchType;                 // Specifies the type of motion searching used. Valid range is [0, 15]. 0 disables motion searching and 
+   unsigned long     ulMotionSearchType;                 // Specifies the type of motion searching used. Valid range is [0, 15]. 0 disables motion searching and
                                                          // favors speed, while 15 favors quality.
    SMvMpegStreamMotionData asMotionData[9];              // Motion estimation parameters.
 
@@ -728,7 +755,7 @@ struct SMvMpegStreamEncoderSettings
    bool              bLimitPicSizeFluctuations;          // If true, reduces the picture size variation between frames. Otherwise, false. Applies to CBR encoding only.
 
    bool              bEnabledHighQualityXDCAM;           // If true, improves the XDCAM HD/HD422 encoding quality by using more CPU processing. In this case, ulQFactor, bZigZagScan,
-                                                         // ulDCPrecision, bMotionSearchHalfPel, ulMotionSearchType, asMotionData, ulVbvBufferSize, and bLimitPicSizeFluctuations will be ignored and internally computed 
+                                                         // ulDCPrecision, bMotionSearchHalfPel, ulMotionSearchType, asMotionData, ulVbvBufferSize, and bLimitPicSizeFluctuations will be ignored and internally computed
                                                          // by the encoder. Otherwise, false.
 
    bool              bTimecodeDropFrameFlag;             // If true, numbers that refer to the frames are dropped to minimize timing error. The default is false.
@@ -741,7 +768,7 @@ struct SMvMpegStreamEncoderSettings
 struct SMvMpegStreamAudioEncoderSettings
 {
    uint32_t             size;             // Structure size in bytes.
-   SMvaWaveFormatInfo   sWavFormat;       // Indicates the basic WAV informaion. 
+   SMvaWaveFormatInfo   sWavFormat;       // Indicates the basic WAV informaion.
    unsigned short       usMpegAudioLayer; // Indicates the MPEG audio layer, as follows:<p> 1 = Layer 1 <p>2 = Layer 2
    unsigned short       usBitRate;        // Layer 1 bit rates (kbit/sec): 96 (mono only), 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, and 488.<p>
                                           // Layer 2 bit rates (kbit/sec): 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, and 384.
@@ -754,7 +781,7 @@ struct SMvMpegStreamAudioEncoderSettings
 struct SMvMpegStreamMultiplexerEncoderSettings
 {
    uint32_t                      size;                // Structure size in bytes.
-   
+
    wchar_t*                      pwchFileName;        // When multiplexing, the encoder generates a file using the specified path.
 
    // generic multiplexer settings
@@ -790,20 +817,20 @@ struct SMvMpegStreamMultiplexerEncoderSettings
 //
 struct SMvMpegStreamInitialize
 {
-   uint32_t                      size;                      // Specifies the size of the structure in bytes, and should be 
+   uint32_t                      size;                      // Specifies the size of the structure in bytes, and should be
    // sizeof(SMvMpegStreamInitialize), which is used to ensure versioning coherency.
-   IMvMpegStreamMemoryProvider*  pIMemoryProvider;          // Pointer that recieves the memory provider interface to be given to the Flex MPEG-2 
-   // IBP Encoder. An IUnknown::AddRef call needs to be made. Used only for elementary 
+   IMvMpegStreamMemoryProvider*  pIMemoryProvider;          // Pointer that recieves the memory provider interface to be given to the Flex MPEG-2
+   // IBP Encoder. An IUnknown::AddRef call needs to be made. Used only for elementary
    // video stream capture.
    SMvResolutionInfo             sResolution;               // Specifies the uncompressed video resolution.
    SMvMpegStreamEncoderSettings  sEncoderSettings;          // Specifies the MPEG-2 encoding parameters.
-   bool                          bOneGopPerBuffer;          // If true, allows the caller to be asked for a new memory buffer for every GOP. Can be useful, 
-   // since it is hard to predict the size of a GOP prior to compression. Used only for 
+   bool                          bOneGopPerBuffer;          // If true, allows the caller to be asked for a new memory buffer for every GOP. Can be useful,
+   // since it is hard to predict the size of a GOP prior to compression. Used only for
    // elementary video stream capture.
-   bool                                    bAudioEncoderEnabled;  // If true, specifies that the stream will contain compressed audio. Not used if 
+   bool                                    bAudioEncoderEnabled;  // If true, specifies that the stream will contain compressed audio. Not used if
    // encoding an elementary video stream.
    SMvMpegStreamAudioEncoderSettings       sAudioEncoderSettings; // Specifies the audio encoder settings. Not used if encoding an elementary video stream.
-   bool                                    bMultiplexerEnabled;   // If true, specifies that video and/or audio streams will be packeted into a program or transport 
+   bool                                    bMultiplexerEnabled;   // If true, specifies that video and/or audio streams will be packeted into a program or transport
    // stream. Not used if encoding an elementary video stream.
    SMvMpegStreamMultiplexerEncoderSettings sMultiplexerSettings;  // Specifies the multiplexer settings. Not used if encoding an elementary video stream.
 };
@@ -839,7 +866,7 @@ struct SMvFlexWriterVideoParameters
    bool                    bConsolidation;            // GetBuffer surfaces will contain compressed data (true) or uncompressed data (false).
    // Default is false.
    bool                    bExternalDataReference;    // This is only valid when capturing the media data outside of the file's body. Set to false if not used.
-   // The Flex Writer will generate an external data file in the same folder as the main file. 
+   // The Flex Writer will generate an external data file in the same folder as the main file.
    SMvTimeCode             sTimeCode;                 // Time code structure.
    GUID                    guidCodec;                 // GUID for the codec used to write to the file.
 };
@@ -864,7 +891,7 @@ struct SMvFlexWriterOpenParameters
    uint32_t                     size;                                // Structure size in bytes.
    wchar_t                      wszFilename[MAX_PATH];               // File to be the capture target.
    wchar_t                      wszReferenceFileName[MAX_PATH];      // Reference file name For TDIR MOV. For other types, the default will be null.
-   EMvFlexWriterCaptureType     eCaptureType;                        // A combination of video/audio/VBI 
+   EMvFlexWriterCaptureType     eCaptureType;                        // A combination of video/audio/VBI
                                                                      // flags specifying what type
                                                                      // of data you're capturing inside
                                                                      // the specified file.
@@ -874,15 +901,15 @@ struct SMvFlexWriterOpenParameters
                                                                      // file, if the file already exists.
    SMvFlexWriterVideoParameters  sVideoParameters;                   // Video-specific capture parameters.
    SMvFlexWriterAudioParameters  sAudioParameters;                   // Audio-specific capture parameters.
-   unsigned long                 ulVBIHeightInLines;                 // Number of lines to be used if 
+   unsigned long                 ulVBIHeightInLines;                 // Number of lines to be used if
                                                                      // a VBI capture type is
                                                                      // specified.
    bool                          bTDIR;                              // Specifies, if this is a TDIR
                                                                      // (time delay instant replay) capture.
-   double                        dTDIRFlushFrequency;                // Specifies the flush frequency 
-                                                                     // in case of a TDIR (time 
+   double                        dTDIRFlushFrequency;                // Specifies the flush frequency
+                                                                     // in case of a TDIR (time
                                                                      // delay instant replay) capture.
-   CLSID                         clsidFlexAVClip;                    // Specifies the desired Flex Clip Writer to be used in the capture process. 
+   CLSID                         clsidFlexAVClip;                    // Specifies the desired Flex Clip Writer to be used in the capture process.
                                                                      // Used in specific scenarios, such as QuickTime proxy captures. Set to CLSID_NULL by default.
 };
 //
@@ -916,7 +943,7 @@ enum EMvSlowMotionType
    // to generate the requested field.  When slow motion is applied
    // on a progressive file, frame blending is performed.
    keMvSlowMotionTypeBlending,      // Indicates that the slow-motion unit will repeat the closest field
-   // at the requested position in the playlist.  This enumerated 
+   // at the requested position in the playlist.  This enumerated
    // value has the same effect as keSlowMotionTypeFrameRepeat when
    // slow motion is applied on a progressive frame file.
    keMvSlowMotionTypeFieldRepeat,   // Indicates that the slow-motion unit will repeat the closest frame
@@ -965,13 +992,13 @@ struct SMvAVInterleavedElementProperties
 {
    uint32_t             size;                   // Structure size in bytes.
    SMvElementProperties sProperties;            // Common element properties.
-   EMvSlowMotionType    eSlowMotionType;        // Specifies what type of slow motion algorithm the 
+   EMvSlowMotionType    eSlowMotionType;        // Specifies what type of slow motion algorithm the
    // File Reader performs.
-   SMvPointF            ptOutputPosition;       // Specifies the image position set on the video 
+   SMvPointF            ptOutputPosition;       // Specifies the image position set on the video
    // surface by the File Reader.
-   bool                 bHasFadeIn;             // Specifies that the first audio sample buffer of 
+   bool                 bHasFadeIn;             // Specifies that the first audio sample buffer of
    // the element has the fade-in attribute set to true.
-   bool                 bHasFadeOut;            // Specifies that the last audio sample buffer of 
+   bool                 bHasFadeOut;            // Specifies that the last audio sample buffer of
    // the element has the fade-out attribute set to true.
    unsigned long        ulVideoStreamIDToRead;  // Zero-based stream ID to read inside the file.
    unsigned long        ulAudioStreamIDToRead;  // Zero-based stream ID to read inside the file.
@@ -994,7 +1021,7 @@ struct SMvFrameExtraInfo
 // Summary:
 //    Defines ways to use the analog video connectors when they can be used for many functions.
 //
-enum EMvAnalogConnectorsVideoFormat 
+enum EMvAnalogConnectorsVideoFormat
 {
    keMvAnalogConnectorsVideoFormatInvalid,           // Invalid value.
    keMvAnalogConnectorsVideoFormat_Component,        // Component.
@@ -1019,7 +1046,7 @@ enum EMvAnalogConnectorsVideoFormat
 // Summary:
 //    Defines the possible IRE levels that can be used in analog NTSC video.
 //
-enum EMvAnalogNTSC_IRELevel 
+enum EMvAnalogNTSC_IRELevel
 {
    keMvAnalogNTSC_IRELevel_Invalid,              // Invalid value.
    keMvAnalogNTSC_IRELevel_0,                    // 0 IRE.
@@ -1040,7 +1067,7 @@ enum EMvAnalogNTSC_IRELevel
 #define MV_MXO_ANALOG_NTSC_IRE_LEVEL_ENUM_TO_STRING MV_ANALOG_NTSC_IRE_LEVEL_ENUM_TO_STRING
 
 //MXO-supported output resolutions.
-enum EMvMXOOutputResolution 
+enum EMvMXOOutputResolution
 {
    keMvMXOOutputResolutionInvalid,                          // Invalid value.
    keMvMXOOutputResolutionCcir601Ntsc720_486Interlace30M,   // CCIR 601 NTSC 720x486i at 29.97 fps.
@@ -1061,9 +1088,9 @@ enum EMvMXOOutputResolution
 //
 // MXO external DVI input resolutions.
 // This enum is defined in mvflexdefinitions.h
-enum EMvDVIResolution 
+enum EMvDVIResolution
 {
-   keMvDVIResolutionInvalid,                        // Invalid value.   
+   keMvDVIResolutionInvalid,                        // Invalid value.
    keMvDVIResolutionHDTV1920_1080Progressive50,     // HDTV 1920x1080p at 50 fps.
    keMvDVIResolutionHDTV1920_1080Progressive60M,    // HDTV 1920x1080p at 59.94 fps.
    keMvDVIResolutionHDTV1920_1080Progressive60,     // HDTV 1920x1080p at 60 fps.
@@ -1082,9 +1109,9 @@ enum EMvImagingMXOIndicator
    KeMvImagingMXOIndicator2,         // Imaging MXO Indicator 2.
    KeMvImagingMXOIndicatorLast       // End of enum.
 };
-// 
+//
 // Specifies MXO public named events for an Imaging product.
-// 
+//
 enum EMvImagingMXOPublicEvents
 {
    keMvImagingMXOPublicEventInterfacePresent,       // Interface present event.
@@ -1189,7 +1216,7 @@ struct SMvDVIPlaybackChannel
 
 //
 // Summary:
-//    Provides the channel description for a DVI output port (for example, the resolution, the name 
+//    Provides the channel description for a DVI output port (for example, the resolution, the name
 //       of the graphics card, the display frequency, etc).
 //
 struct SMvDVIPlaybackChannelDescription
@@ -1217,7 +1244,7 @@ struct SMvDVIPlaybackChannelDescription
 //
 // Summary
 //    Describes the Matrox AVC-Intra encoder compression options.
-struct SMvAVCIntraCompressionOptions 
+struct SMvAVCIntraCompressionOptions
 {
    uint32_t                   size;                      // Structure size in bytes.
    SMvResolutionInfo          sResolutionInput;          // Input resolution of the codec.
@@ -1248,23 +1275,23 @@ struct SMvAVCIntraCompressionOptions
 //
 // Summary
 //             Describes the Apple ProRes compression options.
-struct SMvProResCompressionOptions 
+struct SMvProResCompressionOptions
 {
    uint32_t                   size;                      // Structure size in bytes.
    SMvResolutionInfo          sResolutionInput;          // Indicates the input resolution.
    SMvResolutionInfo          sResolutionOutput;         // Indicates the output resolution.
    EMvProResProfile           eProfile;                  // Indicates the  profie, such as 422 or 422 HQ.
-   EMvEncodingScanMode        eEncodingScanMode;         // Indicates whether the encoding will be done in frames or fields. 
+   EMvEncodingScanMode        eEncodingScanMode;         // Indicates whether the encoding will be done in frames or fields.
    bool                       bForceSynchronousOpen;     // If true, indicates that a synchronous open operation must be forced.
 };
 //
 // Summary
 //             Describes the Apple ProRes decompression options.
-struct SMvProResDecompressionOptions 
+struct SMvProResDecompressionOptions
 {
    uint32_t                   size;                      // Structure size in bytes..
    SMvResolutionInfo          sResolutionInput;          // Indicates the input resolution.
-   SMvResolutionInfo          sResolutionOutput;         // Indicates the output resolution.   
+   SMvResolutionInfo          sResolutionOutput;         // Indicates the output resolution.
    bool                       bForceSynchronousOpen;     // If true, indicates that a synchronous open operation must be forced.
 };
 
@@ -1286,7 +1313,7 @@ struct SMvProResDecompressionOptions
 //
 // Summary
 //    Describes the Avid DNxHD compression options.
-struct SMvDNxHDCompressionOptions 
+struct SMvDNxHDCompressionOptions
 {
    uint32_t                   size;                      // Structure size in bytes.
    SMvResolutionInfo          sResolutionInput;          // Indicates the input resolution.
@@ -1297,11 +1324,11 @@ struct SMvDNxHDCompressionOptions
 //
 // Summary
 //    Describes the Avid DNxHD decompression options.
-struct SMvDNxHDDecompressionOptions 
+struct SMvDNxHDDecompressionOptions
 {
    uint32_t                   size;                      // Structure size in bytes.
    SMvResolutionInfo          sResolutionInput;          // Indicates the input resolution.
-   SMvResolutionInfo          sResolutionOutput;         // Indicates the output resolution.   
+   SMvResolutionInfo          sResolutionOutput;         // Indicates the output resolution.
    EMvDNxHDProfile            eProfile;                   // Indicates if the Avid DNxHD profile is VC-3 or DNxHD.
    bool                       bForceSynchronousOpen;     // If true, indicates that a synchronous open operation must be forced.
 };
@@ -1320,7 +1347,7 @@ struct SMvDNxHDDecompressionOptions
 //
 // Summary
 //    Describes the Matrox MPEG-4 Simple Studio Profile (SStP) compression options.
-struct SMvMPEG4SStPCompressionOptions 
+struct SMvMPEG4SStPCompressionOptions
 {
    uint32_t                   size;                      // Structure size in bytes.
    SMvResolutionInfo          sResolutionInput;          // Indicates the input resolution.
@@ -1333,11 +1360,11 @@ struct SMvMPEG4SStPCompressionOptions
 //
 // Summary
 //    Describes the Matrox MPEG-4 Simple Studio Profile (SStP) decompression options.
-struct SMvMPEG4SStPDecompressionOptions 
+struct SMvMPEG4SStPDecompressionOptions
 {
    uint32_t                   size;                      // Structure size in bytes.
    SMvResolutionInfo          sResolutionInput;          // Indicates the input resolution.
-   SMvResolutionInfo          sResolutionOutput;         // Indicates the output resolution.   
+   SMvResolutionInfo          sResolutionOutput;         // Indicates the output resolution.
    EMvMPEG4SStPProfile        eProfile;                  // Indicates the MPEG-4 SStP profile.
    unsigned long              ulComponentBitCount;       // Indicates the number of bits per component of a pixel. It can be 10- or 12-bit.
    bool                       bForceSynchronousOpen;     // If true, indicates that a synchronous open operation must be forced.
@@ -1417,7 +1444,7 @@ enum EMvAACOutputFormat
 };
 
 // Summary:
-//    Specifies the encoding mode of the AAC channels. 
+//    Specifies the encoding mode of the AAC channels.
 // Remarks:
 //  - If keMvAACChannelEncodingMode8Channels is used for 7.1 encoding, the LFE track will be encoded as an SCE track.
 //
@@ -1491,7 +1518,7 @@ struct SMvAACCompressionOptions
    EMvAACNoiseShapingModel    eAACNoiseShapingModel;        // Noise shaping model.
    EMvAACStereoMode           eAACStereoMode;               // Stereo encoding mode.
    EMvAACOutputFormat         eAACOutputFormat;             // Output format of the stream.
-   EMvAACChannelEncodingMode  eAACChannelEncodingMode;       // Channel encoding mode of the stream.   
+   EMvAACChannelEncodingMode  eAACChannelEncodingMode;       // Channel encoding mode of the stream.
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1506,7 +1533,7 @@ struct SMvAACCompressionOptions
 //
 ///////////////////////////////////////////////////////////////////////////////
 // Dolby E configuration dialog size. These values are the same as those defined in the Minnetonka SDK.
-#define DOLBYE_CONFIGURATION_DIALOG_WINDOWWIDTH  731   // Define for Dolby E configuration dialog width.  
+#define DOLBYE_CONFIGURATION_DIALOG_WINDOWWIDTH  731   // Define for Dolby E configuration dialog width.
 #define DOLBYE_CONFIGURATION_DIALOG_WINDOWHEIGHT 520   // Define for Dolby E configuration dialog height.
 
 
@@ -1524,22 +1551,22 @@ struct SMvAACCompressionOptions
 // KeMvDolbyEConfiguration4_4_2_2X1        4        4                      8                             4 + 2 + 2 x 1       0L, 0C, 1L, 2C, 0R, 0S, 1R, 3C
 // KeMvDolbyEConfiguration5_4_4X1          5        5                      8                             4 + 4 x 1           0L, 0C, 1C, 3C, 0R, 0S, 2C, 4C
 // KeMvDolbyEConfiguration6_4X2            6        4                      8                             4 x 2               0L, 1L, 2L, 3L, 0R, 1R, 2R, 3R
-// KeMvDolbyEConfiguration7_3X2_2X1        7        5                      8                             3 x 2 + 2 x 1       0L, 1L, 2L, 3C, 0R, 1R, 2R, 4C                         
-// KeMvDolbyEConfiguration8_2X2_4x1        8        6                      8                             2 x 2 + 4 x 1       0L, 1L, 2C, 4C, 0R, 1R, 3C, 5C 
-// KeMvDolbyEConfiguration9_2_6X1          9        7                      8                             2 + 6 x 1           0L, 1C, 3C, 5C, 0R, 2C, 4C, 6C                         
+// KeMvDolbyEConfiguration7_3X2_2X1        7        5                      8                             3 x 2 + 2 x 1       0L, 1L, 2L, 3C, 0R, 1R, 2R, 4C
+// KeMvDolbyEConfiguration8_2X2_4x1        8        6                      8                             2 x 2 + 4 x 1       0L, 1L, 2C, 4C, 0R, 1R, 3C, 5C
+// KeMvDolbyEConfiguration9_2_6X1          9        7                      8                             2 + 6 x 1           0L, 1C, 3C, 5C, 0R, 2C, 4C, 6C
 // KeMvDolbyEConfiguration10_8X1           10       8                      8                             8 x 1               0C, 2C, 4C, 6C, 1C, 3C, 5C, 7C
-// KeMvDolbyEConfiguration11_5dot1         11       1                      6                             5.1                 0L, 0C, 0Ls, 0R, 0LFE, 0Rs                         
+// KeMvDolbyEConfiguration11_5dot1         11       1                      6                             5.1                 0L, 0C, 0Ls, 0R, 0LFE, 0Rs
 // KeMvDolbyEConfiguration12_4_2           12       2                      6                             4 + 2               0L, 0C, 1L, 0R, 0S, 1R
-// KeMvDolbyEConfiguration13_4_2X1         13       3                      6                             4 + 2 x 1           0L, 0C, 1C, 0R, 0S, 2C                         
-// KeMvDolbyEConfiguration14_3X2           14       3                      6                             3 x 2               0L, 1L, 2L, 0R, 1R, 2R 
-// KeMvDolbyEConfiguration15_2X2_2X1       15       4                      6                             2 x 2 + 2 x 1       0L, 1L, 2C, 0R, 1R, 3C                         
-// KeMvDolbyEConfiguration16_2_4X1         16       5                      6                             2 + 4 x 1           0L, 1C, 3C, 0R, 2C, 4C                         
+// KeMvDolbyEConfiguration13_4_2X1         13       3                      6                             4 + 2 x 1           0L, 0C, 1C, 0R, 0S, 2C
+// KeMvDolbyEConfiguration14_3X2           14       3                      6                             3 x 2               0L, 1L, 2L, 0R, 1R, 2R
+// KeMvDolbyEConfiguration15_2X2_2X1       15       4                      6                             2 x 2 + 2 x 1       0L, 1L, 2C, 0R, 1R, 3C
+// KeMvDolbyEConfiguration16_2_4X1         16       5                      6                             2 + 4 x 1           0L, 1C, 3C, 0R, 2C, 4C
 // KeMvDolbyEConfiguration17_6X1           17       6                      6                             6 x 1               0C, 2C, 4C, 1C, 3C, 5C
-// KeMvDolbyEConfiguration18_4             18       1                      4                             4                   0L, 0C, 0R, 0S                         
+// KeMvDolbyEConfiguration18_4             18       1                      4                             4                   0L, 0C, 0R, 0S
 // KeMvDolbyEConfiguration19_2_2           19       2                      4                             2 + 2               0L, 1L, 0R, 1R
-// KeMvDolbyEConfiguration20_2_2X1         20       3                      4                             2 + 2 x 1           0L, 1C, 0R, 2C                         
+// KeMvDolbyEConfiguration20_2_2X1         20       3                      4                             2 + 2 x 1           0L, 1C, 0R, 2C
 // KeMvDolbyEConfiguration21_4x1           21       4                      4                             4 x 1               0C, 2C, 1C, 3C
-// KeMvDolbyEConfigurationLast             -        -                      -                             -                   End of list indicator.  
+// KeMvDolbyEConfigurationLast             -        -                      -                             -                   End of list indicator.
 //</table>
 // Remarks:
 //   - L = Left
@@ -1552,29 +1579,29 @@ struct SMvAACCompressionOptions
 //
 enum EMvDolbyEConfiguration
 {
-   KeMvDolbyEConfiguration0_5dot1_2 = 0,  
-   KeMvDolbyEConfiguration1_5dot1_2X1,    
-   KeMvDolbyEConfiguration2_4_4,          
-   KeMvDolbyEConfiguration3_4_2X,                        
-   KeMvDolbyEConfiguration4_4_2_2X1,      
-   KeMvDolbyEConfiguration5_4_4X1,                        
-   KeMvDolbyEConfiguration6_4X2,          
-   KeMvDolbyEConfiguration7_3X2_2X1,                               
-   KeMvDolbyEConfiguration8_2X2_4x1,      
-   KeMvDolbyEConfiguration9_2_6X1,                               
-   KeMvDolbyEConfiguration10_8X1,         
-   KeMvDolbyEConfiguration11_5dot1,                              
-   KeMvDolbyEConfiguration12_4_2,         
-   KeMvDolbyEConfiguration13_4_2X1,                               
-   KeMvDolbyEConfiguration14_3X2,        
-   KeMvDolbyEConfiguration15_2X2_2X1,                           
-   KeMvDolbyEConfiguration16_2_4X1,                              
-   KeMvDolbyEConfiguration17_6X1,        
-   KeMvDolbyEConfiguration18_4,                                  
-   KeMvDolbyEConfiguration19_2_2,        
-   KeMvDolbyEConfiguration20_2_2X1,                            
-   KeMvDolbyEConfiguration21_4x1,         
-   KeMvDolbyEConfigurationLast                              
+   KeMvDolbyEConfiguration0_5dot1_2 = 0,
+   KeMvDolbyEConfiguration1_5dot1_2X1,
+   KeMvDolbyEConfiguration2_4_4,
+   KeMvDolbyEConfiguration3_4_2X,
+   KeMvDolbyEConfiguration4_4_2_2X1,
+   KeMvDolbyEConfiguration5_4_4X1,
+   KeMvDolbyEConfiguration6_4X2,
+   KeMvDolbyEConfiguration7_3X2_2X1,
+   KeMvDolbyEConfiguration8_2X2_4x1,
+   KeMvDolbyEConfiguration9_2_6X1,
+   KeMvDolbyEConfiguration10_8X1,
+   KeMvDolbyEConfiguration11_5dot1,
+   KeMvDolbyEConfiguration12_4_2,
+   KeMvDolbyEConfiguration13_4_2X1,
+   KeMvDolbyEConfiguration14_3X2,
+   KeMvDolbyEConfiguration15_2X2_2X1,
+   KeMvDolbyEConfiguration16_2_4X1,
+   KeMvDolbyEConfiguration17_6X1,
+   KeMvDolbyEConfiguration18_4,
+   KeMvDolbyEConfiguration19_2_2,
+   KeMvDolbyEConfiguration20_2_2X1,
+   KeMvDolbyEConfiguration21_4x1,
+   KeMvDolbyEConfigurationLast
 };
 
 //
@@ -1583,9 +1610,9 @@ enum EMvDolbyEConfiguration
 //
 struct SMvDolbyECompressionOptions
 {
-   uint32_t                size;                      // Structure size in bytes.                     
+   uint32_t                size;                      // Structure size in bytes.
    EMvFrameRate            eInputFrameRate;           // Indicates the video frame rate associated with the Dolby E stream.
-   EMvScanMode             eInputScanMode;            // Indicates the video scan mode associated with the Dolby E stream. 
+   EMvScanMode             eInputScanMode;            // Indicates the video scan mode associated with the Dolby E stream.
    EMvAudioDataType        eInputDataType;            // Indicates the supported output compression format.
    EMvDolbyEConfiguration  eDolbyEConfigurationIndex; // Indicates the Dolby E compression configuration.
    HANDLE                  hOpenDone;                 // Sends a signal when the open has occured. The user must create the handle. Can only be used with a valid Dolby E license.
@@ -1597,50 +1624,50 @@ struct SMvDolbyECompressionOptions
 //
 struct SMvDolbyEDecompressionOptions
 {
-   uint32_t                size;                       // Structure size in bytes.  
+   uint32_t                size;                       // Structure size in bytes.
    EMvAudioDataType        eDataType;                  // Indicates the supported output decompression format.
    bool                    bUseDefaultOutputSequence;  // If true, indicates that the default output sequence is used. Otherwise, false.
    int                     aiOutputSequence[8];        // Array indicating the output sequence. <p> <b> Note:</b> Can only be used if the bUseDefaultOutputSequence is false.
-   unsigned int            uiOutputChannelNumber;      // Indicates the number of output channels. This value is used to extract the output channels from the Dolby E decoder to send to the destination output buffer. 
+   unsigned int            uiOutputChannelNumber;      // Indicates the number of output channels. This value is used to extract the output channels from the Dolby E decoder to send to the destination output buffer.
    HANDLE                  hOpenDone;                  // Sends a signal when the open has occured. The user must create the handle. Can only be used with a valid Dolby E license.
 };
 
 //
 // Summary:
-//    Describes the Dolby Digital settings that will be used to initialize the Dolby E encoder. For details on these settings, see the Minnetonka SurCode for Dolby E OEM Encoder Plug-in Interface Specification. 
+//    Describes the Dolby Digital settings that will be used to initialize the Dolby E encoder. For details on these settings, see the Minnetonka SurCode for Dolby E OEM Encoder Plug-in Interface Specification.
 //
 struct SMvDolbyDigitalEncodeParams
 {
-   uint32_t size;                      // Structure size in bytes. 
+   uint32_t size;                      // Structure size in bytes.
    char acProgramDescription[33];      // Array of characters containing the program description.
-   int  iSamplingRateIndex;            // Index of the sampling rate. 
-   int  iAudioCodingMode;              // Index of the audio coding mode. 
-   int  iDataRateIndex;                // Index of the data rate. 
+   int  iSamplingRateIndex;            // Index of the sampling rate.
+   int  iAudioCodingMode;              // Index of the audio coding mode.
+   int  iDataRateIndex;                // Index of the data rate.
    int  iMaxDataRateIndex;             // Index of the maximum data rate. <b> NOT SUPPORTED IN DOLBY E. </b>
-   int  iCenterDownmix;                // Index of the center downmix level.  
-   int  iSurroundDownmix;              // Index of the surround downmix level.  
-   int  iDynCompress;                  // Index of the compression preset. 
-   int  iRfProfile;                    // Index of the profile preset. 
-   BOOL bRfOvermodProtection;          // If true, indicates the RF overmodulation protection. 
-   int  iDialogNorm;                   // Index of the dialog normalization. 
-   int  iBitstreamMode;                // Index of the bit stream mode. 
-   BOOL bAudioProdEnabled;             // If true, audio production is enabled. 
-   BOOL bCopyrightExists;              // If true, copyright exists. 
-   BOOL bIsOriginal;                   // If true, the original Dolby E settings are used. 
+   int  iCenterDownmix;                // Index of the center downmix level.
+   int  iSurroundDownmix;              // Index of the surround downmix level.
+   int  iDynCompress;                  // Index of the compression preset.
+   int  iRfProfile;                    // Index of the profile preset.
+   BOOL bRfOvermodProtection;          // If true, indicates the RF overmodulation protection.
+   int  iDialogNorm;                   // Index of the dialog normalization.
+   int  iBitstreamMode;                // Index of the bit stream mode.
+   BOOL bAudioProdEnabled;             // If true, audio production is enabled.
+   BOOL bCopyrightExists;              // If true, copyright exists.
+   BOOL bIsOriginal;                   // If true, the original Dolby E settings are used.
    int  iMixingLevel;                  // Index of the mixing level. <p> <b> Note:</b> Not applicable if bAudioProdEnabled is false.
    int  iRoomType;                     // Index of the room type. <p> <b> Note:</b> Not applicable if bAudioProdEnabled is false.
-   
-   BOOL bPhaseShift;                   // If true, a phase shift of 90 degrees is applied. 
-   BOOL bLFEOn;                        // If true, a Low-Frequency Effects (LFE) channel is used. <p> <b> Note:</b> Cannot be enabled if there is no valid LFE channel data present. 
+
+   BOOL bPhaseShift;                   // If true, a phase shift of 90 degrees is applied.
+   BOOL bLFEOn;                        // If true, a Low-Frequency Effects (LFE) channel is used. <p> <b> Note:</b> Cannot be enabled if there is no valid LFE channel data present.
    BOOL bLFEFilter;                    // If true, an LFE low pass filter is used. <p> <b> Note:</b> Applicable only if bLFEOn is true and if there is valid LFE channel data.
    BOOL b3dBAtten;                     // If true, a 3 dB surround attenuation is applied. <p> <b> Note:</b> Not applicable if there are no surround channels.
-   BOOL bBandwidthFilter;              // If true, channel bandwidth low pass filter is applied. 
-   BOOL bDCFilter;                     // If true, a DC filter is applied. 
-   BOOL bRFFilter;                     // If true, an RF pre-emphasis filter is applied.  
-   int  iDolbySurround;                // Index of the Dolby surround mode.  
+   BOOL bBandwidthFilter;              // If true, channel bandwidth low pass filter is applied.
+   BOOL bDCFilter;                     // If true, a DC filter is applied.
+   BOOL bRFFilter;                     // If true, an RF pre-emphasis filter is applied.
+   int  iDolbySurround;                // Index of the Dolby surround mode.
    BOOL bDeemphasis;                   // If true, a de-emphasis filter is applied. <b> NOT SUPPORTED IN DOLBY E. </b>
-   
-   BOOL bExtendedBitstream;            // If true, an extended bitstream is applied. 
+
+   BOOL bExtendedBitstream;            // If true, an extended bitstream is applied.
    int iPreferredStereoDownmixMode;    // Index of the preferred downmix mode. <p> <b> Note:</b> Applicable only if bExtendedBitstream is true.
    int iLtRtCenterMixLevel;            // Index of the Lt/Rt center mix level. <p> <b> Note:</b> Applicable only if bExtendedBitstream is true.
    int iLtRtSurroundMixLevel;          // Index of the Lt/Rt surround mix level. <p> <b> Note:</b> Applicable only if bExtendedBitstream is true.
@@ -1648,7 +1675,7 @@ struct SMvDolbyDigitalEncodeParams
    int iLoRoSurroundMixLevel;          // Index of the Lo/Ro surround mix level. <p> <b> Note:</b> Applicable only if bExtendedBitstream is true.
    int iDolbySurroundEXMode;           // Index of the Dolby surround EX mode. <p> <b> Note:</b> Applicable only if bExtendedBitstream is true.
    int iDolbyHeadphoneMode;            // Index of the Dolby headphone mode. <p> <b> Note:</b> Applicable only if bExtendedBitstream is true.
-   BOOL bHDCD;                         // If true, input material is HDCD encoded. <p> <b> Note:</b> Applicable only if bExtendedBitstream is true. 
+   BOOL bHDCD;                         // If true, input material is HDCD encoded. <p> <b> Note:</b> Applicable only if bExtendedBitstream is true.
 };
 //
 // Summary:
@@ -1656,7 +1683,7 @@ struct SMvDolbyDigitalEncodeParams
 //
 struct SMvDolbyEEncodeParams
 {
-   uint32_t size;                        // Structure size in bytes. 
+   uint32_t size;                        // Structure size in bytes.
    int      iProgramConfigurationIndex;  // Index of the Dolby E program configuration used in EMvDolbyEConfiguration.
    int      iBitDepthIndex;              // Index of the bit depth format.
    int      iFrameRateIndex;             // Index of the video frame rate.
@@ -1665,7 +1692,7 @@ struct SMvDolbyEEncodeParams
    int      iTimecodeMinutes;            // Time code minutes.
    int      iTimecodeSeconds;            // Time code seconds.
    int      iTimecodeFrames;             // Time code frames.
-   int      iFrameCount;                 // Frame count. 
+   int      iFrameCount;                 // Frame count.
    int      iFrameSize;                  // Audio samples in a video frame.
    char     acProgramName[33];           // Arrary of characters containing the program name. For example, 5.1+2, 5.1+2X1, 8X1, etc.
    int      iNnumPrograms;               // Number of programs.
@@ -1681,7 +1708,7 @@ struct SMvDolbyEEncodeParams
 struct SMvDolbyEEncodeOptions
 {
    uint32_t  size;                        // Structure size in bytes.
-   int       iProgramConfigurationIndex;  // Index of the Dolby E program configuration used in EMvDolbyEConfiguration. 
+   int       iProgramConfigurationIndex;  // Index of the Dolby E program configuration used in EMvDolbyEConfiguration.
    int       iChannelSequence[8];         // Array containing the channel sequence.
    int       iBitDepthIndex;              // Index of the bit depth format.
    int       iFrameRateIndex;             // Index of the video frame rate.
@@ -1691,10 +1718,10 @@ struct SMvDolbyEEncodeOptions
    int       iTimecodeSeconds;            // Time code seconds.
    int       iTimecodeFrames;             // Time code frames.
    int       iFrameCount;                 // Frame count.
-   int       iFrameStartSampleOffset;     // Video frame start offset in samples. 
+   int       iFrameStartSampleOffset;     // Video frame start offset in samples.
    int       iFrameSize;                  // Audio samples in a video frame.
    float     fChannelPeakValue[8];        // Array containing meter metadata of the channel's peak value.
-   float     fChannelRMSValue[8];         // Array containing meter metadata of the channel's RMS value. 
+   float     fChannelRMSValue[8];         // Array containing meter metadata of the channel's RMS value.
    char      acProgramName[33];           // Arrary of characters containing the program name. For example, 5.1+2, 5.1+2X1, 8X1, etc.
    int       iNnumPrograms;               // Number of programs.
    int       iNumChannelsPerProgram[8];   // Array containing the number of channels per program. For example, the array for 5.1+2 is {6, 2, 0, 0, 0, 0, 0, 0}.
@@ -1720,7 +1747,7 @@ struct SMvDolbyEEncodeOptions
 //
 struct SMvAudioCodecIOFormats
 {
-   uint32_t                size;                   // Structure size in bytes. 
+   uint32_t                size;                   // Structure size in bytes.
    SMvaWaveFormatInfo      sSupportedFormatInfo;   // Specifies the uncompressed audio sample formats.
 };
 
@@ -1735,7 +1762,7 @@ struct SMvAudioCodecCompressionCapabilities
    EMvAudioDataType        eSupportedOutputAudioDataType;               // Enumerator describing the supported output format of compression.
    bool                    bIsTemporalCompression;                      // If true, indicates that streams with temporal compression are supported.
    uint32_t                ui32NbSupportedInputFormats;                 // Number of valid structures in the array asSupportedInputFormats.
-   SMvAudioCodecIOFormats  
+   SMvAudioCodecIOFormats
       asSupportedInputFormats[kulMvMaxSupportedUncompressedFormats];    // Array of structures that contains the supported uncompressed audio codec input formats.
    bool                    bIsBitRateProgrammable;                      // If true, indicates that the bit rate can be programmed.
    uint32_t                ui32MinBitRateInBitsPerSec;                  // Indicates the minimum bit rate supported by compression.
@@ -1755,7 +1782,7 @@ struct SMvAudioCodecDecompressionCapabilities
    EMvAudioDataType        eSupportedInputAudioDataType;                // Enumerator describing the supported input format for decompression.
    bool                    bIsTemporalCompression;                      // If true, indicates that streams with temporal compression are supported.
    uint32_t                ui32NbSupportedOutputFormats;                // Number of valid structures in the array asSupportedOutputFormats.
-   SMvAudioCodecIOFormats  
+   SMvAudioCodecIOFormats
       asSupportedOutputFormats[kulMvMaxSupportedUncompressedFormats];   // Array of structures that contains the supported uncompressed audio codec output formats.
 };
 
@@ -1777,7 +1804,7 @@ struct SMvAudioCodecInfo
       asCodecCompressionCapabilities[kulMvMaxSupportedCodecFormats];    // Array of structures describing codec compression capabilities.
    bool                    bIsDecompressionSupported;                   // If true, indicates that decompression is supported.
    uint32_t                ui32SupportedDecompressionCapsCount;         // Number of valid structures in the array asCodecDecompressionCapabilities.
-   SMvAudioCodecDecompressionCapabilities                                 
+   SMvAudioCodecDecompressionCapabilities
       asCodecDecompressionCapabilities[kulMvMaxSupportedCodecFormats];  // Array of structures describing codec decompression capabilities.
 };
 
@@ -1798,7 +1825,7 @@ typedef union
 {
    uint64_t all;
 
-   struct 
+   struct
    {
       uint64_t  ucUnitOfFrames    : 4;  // 3:0
       uint64_t  ucTensOfFrames    : 2;  // 5:4
@@ -1897,7 +1924,7 @@ typedef union
       uint64_t  ucUnitOfFrames    : 4;
       uint64_t  ucTensOfFrames    : 2;
       uint64_t  ucDropFrame       : 1;
-      uint64_t  ucColorFrame      : 1; 
+      uint64_t  ucColorFrame      : 1;
 
       uint64_t  ucUnitOfSeconds   : 4;
       uint64_t  ucTensOfSeconds   : 3;
@@ -1938,12 +1965,12 @@ typedef union
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// VANC Data Definitions
+// Ancillary Data Definitions
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 // Specifies the closed caption type (cc_type). For more details on cc_type, refer to the CEA-708 standard.
-enum EMvCCType 
+enum EMvCCType
 {
    keMvCCTypeNTSCLine21Field1CC = 0,      // Indicates that the contents of cc_type is CEA-608-E line 21 field 1.
    keMvCCTypeNTSCLine21Field2CC = 1,      // Indicates that the contents of cc_type is CEA-608-E line 21 field 2.
@@ -1960,7 +1987,7 @@ enum EMvCCType
    ("???"))
 
 
-union UMvTopOrLeftBar 
+union UMvTopOrLeftBar
 {
    //If bTopPresenceFlag is true in SMvBarData, this represents the last line of a horizontal
    //letterbox at the top of the frame.
@@ -1971,7 +1998,7 @@ union UMvTopOrLeftBar
    uint16_t ui16PixelNumberEndOfLeftBar;
 };
 
-union UMvBottomOrRightBar 
+union UMvBottomOrRightBar
 {
    //If bBottomPresenceFlag is true in SMvBarData, this represents the first line of a horizontal
    //letterbox at the bottom of the frame.
@@ -1984,8 +2011,8 @@ union UMvBottomOrRightBar
 
 //
 // Summary:
-//    Specifies the stream's AFD (active format description) information. 
-struct SMvAFD 
+//    Specifies the stream's AFD (Active Format Description) information.
+struct SMvAFD
 {
    //AFD code. Only the four least significant bits (LSBs) are considered.
    uint8_t ui8AFDCode;
@@ -1996,8 +2023,10 @@ struct SMvAFD
 
 //
 // Summary:
-//    Specifies the closed caption type (cc_type) and data (cc_data) if valid. For more details on cc_type and cc_data, refer to the CEA-708 standard.
-struct SMvCCConstruct 
+//    If valid, specifies the closed caption type (cc_type) and data (cc_data). 
+// Note:
+//    For more details on cc_type and cc_data, refer to the CEA-708 standard.
+struct SMvCCConstruct
 {
    //If true, the two closed caption data bytes (cc_data_1 and cc_data_2) are valid.
    bool bCC_Valid;
@@ -2012,7 +2041,7 @@ struct SMvCCConstruct
 //
 // Summary:
 //    Specifies the closed caption service information.
-struct SMvCCSVCConstruct 
+struct SMvCCSVCConstruct
 {
    //Indicates the caption service number. Must be 0 for CEA-608 line 21 data.
    uint8_t ui8CaptionServiceNumber;
@@ -2077,23 +2106,23 @@ struct SMvCaptionDistributionPacket
 // Remarks:
 // - These boolean flags function as pairs (top and bottom, left and right), and cannot be combined in any other way.
 //
-struct SMvBarData 
+struct SMvBarData
 {
    bool bTopPresenceFlag;    // If true, the bar data is located in the last line of a horizontal letterbox at the top of the frame.
-                             // When this bool is set to true, bBottomPresenceFlag must also be set to true. 
+                             // When this bool is set to true, bBottomPresenceFlag must also be set to true.
    bool bBottomPresenceFlag; // If true, the bar data is located in the first line of a horizontal letterbox at the bottom of the frame.
-                             // When this bool is set to true, bTopPresenceFlag must also be set to true. 
+                             // When this bool is set to true, bTopPresenceFlag must also be set to true.
    bool bLeftPresenceFlag;   // If true, the bar data is located in the last pixel of a vertical pillarbox at the left side of the frame.
-                             // When this bool is set to true, bRightPresenceFlag must also be set to true. 
+                             // When this bool is set to true, bRightPresenceFlag must also be set to true.
    bool bRightPresenceFlag;  // If true, the bar data is located in the first pixel of a vertical pillarbox at the right side of the frame.
-                             // When this bool is set to true, bLeftPresenceFlag must also be set to true. 
+                             // When this bool is set to true, bLeftPresenceFlag must also be set to true.
 
-   //Depending on the value of the boolean flags, this either represents the last line 
+   //Depending on the value of the boolean flags, this either represents the last line
    //of a horizontal letterbox at the top of the frame, or the last pixel of a vertical
    //pillarbox at the left side of the frame.
    UMvTopOrLeftBar uTopOrLeftBar;
 
-   //Depending on the value of the boolean flags, this either represents the first line 
+   //Depending on the value of the boolean flags, this either represents the first line
    //of a horizontal letterbox at the bottom of the frame, or the first pixel of a vertical
    //pillarbox on the right side of the frame.
    UMvBottomOrRightBar uBottomOrRightBar;
@@ -2101,8 +2130,8 @@ struct SMvBarData
 
 //
 // Summary:
-//    Specifies the stream's AFD (active format description) and bar data descriptors.
-struct SMvAFDAndBarDataVancPacket 
+//    Specifies the stream's AFD (Active Format Description) and bar data descriptors.
+struct SMvAFDAndBarDataVancPacket
 {
    //AFD descriptor.
    SMvAFD sAFD;
@@ -2114,13 +2143,13 @@ struct SMvAFDAndBarDataVancPacket
 //
 // Summary:
 //    Specifies the stream's ancillary data packet format.
-struct SMvGenericVancPacket 
+struct SMvGenericVancPacket
 {
    //Data ID (excludes parity bits).
    uint8_t ui8DID;
 
-   //Data Block Number (for type 1 ANC packets) 
-   //or Secondary Data ID (for type 2 ANC packets) (excludes parity bits).
+   //Data Block Number (for type 1 ancillary data packets)
+   //or Secondary Data ID (for type 2 ancillary data packets) (excludes parity bits).
    uint8_t ui8SDIDorDBN;
 
    //Data count (excludes parity bits).
@@ -2154,18 +2183,18 @@ enum EMvCCFormat
 
 //
 // Summary:
-//    Specifies the type of the VANC packet used. 
+//    Specifies the type of the ancillary data packet used.
 // Note:
 //    More than one type can be specified by using the bitwise OR operator.
 //
-enum EMvVANCPacketType 
+enum EMvVANCPacketType
 {
    keMvVANCPacketTypeInvalid = 0,               // Invalid value.
    keMvVANCPacketTypeNone = 0,                  // Reserved.
-   keMvVANCPacketTypeUnknown = 1,               // Indicates that an unknown VANC packet is used.
-   keMvVANCPacketTypeAFDAndBarData = 2,         // Indicates that AFD and Bar Data VANC packets are used as per SMPTE 2016-3.
-   keMvVANCPacketTypeCaptionDistribution = 4,   // Indicates that Caption Distribution Packet (CDP) VANC is used as per SMPTE 334-2. A CDP may contain closed caption, time code, and caption service information (SVC).
-   keMvVANCPacketTypeAll = 7,                   // Indicates that aLL VANC packets are used.
+   keMvVANCPacketTypeUnknown = 1,               // Indicates that an unknown ancillary data packet is used.
+   keMvVANCPacketTypeAFDAndBarData = 2,         // Indicates that AFD and Bar Data ancillary packets are used as per SMPTE 2016-3.
+   keMvVANCPacketTypeCaptionDistribution = 4,   // Indicates that Caption Distribution Packet (CDP) ancillary is used as per SMPTE 334-2. A CDP may contain closed caption, time code, and caption service information (SVC).
+   keMvVANCPacketTypeAll = 7,                   // Indicates that all ancillary data packets are used.
    keMvVANCPacketTypeLast = 8                   // End of list indicator.
 };
 
@@ -2181,22 +2210,22 @@ enum EMvVANCPacketType
 
 //
 // Summary:
-//    Specifies the type of the VANC data to be processed for H.264 compression and decompression. 
+//    Specifies the type of the ancillary data to be processed for H.264 compression and decompression.
 // Remarks:
-// - This enumerator is used in the SMvH264SWDecompressionOptions and SMvAVCCompressionOptionsV3 structures. 
+// - This enumerator is used in the SMvH264SWDecompressionOptions and SMvAVCCompressionOptionsV3 structures.
 // - More than one type can be specified by using the bitwise OR operator.
 //
-enum EMvVANCInformationType 
+enum EMvVANCInformationType
 {
    keMvVANCInformationTypeInvalid = 0,             // Invalid value.
-   keMvVANCInformationTypeNone = 0,                // Indicates that no VANC packet types are to be processed.
-   keMvVANCInformationTypeUnknown = 1,             // Indicates that the VANC packet contains an unknown data type.
-   keMvVANCInformationTypeAFD = 2,                 // Indicates that the VANC packet contains AFD data.
-   keMvVANCInformationTypeBarData = 4,             // Indicates that the VANC packet contains bar data.
-   keMvVANCInformationTypeClosedCaption = 8,       // Indicates that the VANC packet contains closed caption data.
-   keMvVANCInformationTypeCaptionService = 16,     // Indicates that the VANC packet contains caption service information (SVC).
-   keMvVANCInformationTypeTimecode = 32,           // Indicates that the VANC packet contains time code data.
-   keMvVANCInformationTypeAll = 63,                // Indicates that the VANC packet contains all data types.
+   keMvVANCInformationTypeNone = 0,                // Indicates that no ancillary data packet types are to be processed.
+   keMvVANCInformationTypeUnknown = 1,             // Indicates that the ancillary data packet contains an unknown data type.
+   keMvVANCInformationTypeAFD = 2,                 // Indicates that the ancillary data packet contains AFD data.
+   keMvVANCInformationTypeBarData = 4,             // Indicates that the ancillary data packet contains bar data.
+   keMvVANCInformationTypeClosedCaption = 8,       // Indicates that the ancillary data packet contains closed caption data.
+   keMvVANCInformationTypeCaptionService = 16,     // Indicates that the ancillary data packet contains caption service information (SVC).
+   keMvVANCInformationTypeTimecode = 32,           // Indicates that the ancillary data packet contains time code data.
+   keMvVANCInformationTypeAll = 63,                // Indicates that the ancillary data packet contains all data types.
    keMvVANCInformationTypeLast = 64                // End of list indicator.
 };
 
@@ -2233,17 +2262,17 @@ struct SMvVideoCodecCompressionCapabilities
    uint32_t                ui32eLevel;                   // Level ID.
    bool                    bIsTemporalCompression;       // If true, indicates that video streams with temporal compression are supported.
    uint32_t                ui32NbSupportedInputFormats;  // Number of valid structures in the array asSupportedInputFormat.
-   SMvCodecIOFormats       
+   SMvCodecIOFormats
       asSupportedInputFormat[kulMvMaxSupportedUncompressedFormats]; // Array of structures that contains the supported uncompressed video codec input formats.
    uint32_t                ui32NbResolutionsSupported;   // Number of valid structures in the array asCodecResolutionSupported.
-   SMvCodecResolutions     
+   SMvCodecResolutions
       asCodecResolutionSupported[kulMvMaxSupportedUncompressedFormats]; // Array of structures that contains the supported uncompressed video resolutions.
    bool                    bIsBitRateProgrammable;                      // If true, indicates that the bit rates can be programmed.
    uint32_t                ui32MinBitRateInBitsPerSec;                  // Indicates the minimum bit rate in bits per second.
    uint32_t                ui32MaxBitRateInBitsPerSec;                  // Indicates the maximum bit rate in bits per second.
    bool                    bIsCBRSupported;                             // If true, indicates that Constant Bit Rate encoding is supported.
    bool                    bIsVBRSupported;                             // If true, indicates that Variable Bit Rate encoding is supported.
-   bool                    bIsClosedCaptionSupported;                   // If true, indicates that closed caption is supported.  
+   bool                    bIsClosedCaptionSupported;                   // If true, indicates that closed caption is supported.
 };
 
 
@@ -2259,10 +2288,10 @@ struct SMvVideoCodecDecompressionCapabilities
    uint32_t                ui32eLevel;                   // Level ID.
    bool                    bIsTemporalCompression;       // If true, indicates that video streams with temporal compression are supported.
    uint32_t                ui32NbSupportedOutputFormats; // Number of valid structures in the array asSupportedOutputFormat.
-   SMvCodecIOFormats       
+   SMvCodecIOFormats
       asSupportedOutputFormat[kulMvMaxSupportedUncompressedFormats]; // Array of structures that contains the supported uncompressed video codec output formats.
    uint32_t                ui32NbResolutionsSupported;   // Number of valid structures in the array asCodecResolutionSupported.
-   SMvCodecResolutions     
+   SMvCodecResolutions
       asCodecResolutionSupported[kulMvMaxSupportedUncompressedFormats]; // Array of structures that contains the supported uncompressed video resolutions.
    bool                    bIsEmbeddedColorCorrectionSupported;         // If true, indicates that embedded color correction is supported.
    bool                    bIsUpscaleToHDSupported;                     // If true, indicates that upscaling to HD is supported.
@@ -2288,7 +2317,7 @@ struct SMvVideoCodecInfo
       asCodecCompressionCapabilities[kulMvMaxSupportedCodecFormats];    // Array of structures describing codec compression capabilities.
    bool                    bIsDecompressionSupported;                   // If true, indicates that decompression is supported.
    uint32_t                ui32SupportedDecompressionCapsCount;         // Number of valid structures in the array asCodecDecompressionCapabilities.
-   SMvVideoCodecDecompressionCapabilities                                 
+   SMvVideoCodecDecompressionCapabilities
       asCodecDecompressionCapabilities[kulMvMaxSupportedCodecFormats];  // Array of structures describing codec decompression capabilities.
 };
 
@@ -2298,43 +2327,43 @@ struct SMvVideoCodecInfo
 struct SMvAVCCompressionOptions
 {
    // Size of the structure in bytes.
-   uint32_t             size;        
+   uint32_t             size;
 
    // Input resolution of the codec (resolution of received uncompressed buffers).
-   SMvResolutionInfo    sResolutionInput;                                  
-   
+   SMvResolutionInfo    sResolutionInput;
+
    // Output resolution of the codec (resolution of "file" compressed buffers).
-   SMvResolutionInfo    sResolutionOutput;                                 
-   
+   SMvResolutionInfo    sResolutionOutput;
+
    // Indicates the H.264/AVC Profile.
-   EMvH264Profile       eProfile;                                          
-   
+   EMvH264Profile       eProfile;
+
    // Indicates the H.264/AVC Level.
-   EMvH264Level         eLevel;                                            
-   
-   // Requested average bit rate.  For SMvAVCCompressionOptionsV4 and prior, this is the 
-   // average data rate.  For SMvAVCCompressionOptionsV5 and later, it is used only for keMvBitRateModelCBR and keMvBitRateModelVBR bit 
+   EMvH264Level         eLevel;
+
+   // Requested average bit rate.  For SMvAVCCompressionOptionsV4 and prior, this is the
+   // average data rate.  For SMvAVCCompressionOptionsV5 and later, it is used only for keMvBitRateModelCBR and keMvBitRateModelVBR bit
    // rate models.
-   uint32_t             ui32AverageBitRateInBitsPerSec;                    
-   
-   // Bit rate mode to use.   For SMvAVCCompressionOptionsV4 and prior, only keMvBitRateModelCBR 
+   uint32_t             ui32AverageBitRateInBitsPerSec;
+
+   // Bit rate mode to use.   For SMvAVCCompressionOptionsV4 and prior, only keMvBitRateModelCBR
    // and keMvBitRateModelVBR model are valid.
-   EMvBitRateModel      eBitRateMode;                                      
-   
+   EMvBitRateModel      eBitRateMode;
+
    // Indicates the GOP structure type to use.
-   EMvGOPStructureType  eGOPStructureType;                                 
+   EMvGOPStructureType  eGOPStructureType;
 
    // Indicates the distance between two IDR frames.  This must be a multiple of the distance between I-frames.  This is also the GOP size.  This is used in simple GOPs only. Otherwise, it is ignored.
-   uint32_t             ui32DistanceBetweenIDRFrames;                      
+   uint32_t             ui32DistanceBetweenIDRFrames;
 
    // Indicates the distance between two I-frames.  (IDR frames are considered I-frames).  This is used in Simple GOPs only. Otherwise, it is ignored.
-   uint32_t             ui32DistanceBetweenIFrames;                        
+   uint32_t             ui32DistanceBetweenIFrames;
 
    // Indicates the distance between 2 reference frames (P, I, or IDR).  That number minus one indicates the number of B-frames.  This is used in simple GOPs only. Otherwise, it is ignored.
-   uint32_t             ui32DistanceBetweenReferences;                     
+   uint32_t             ui32DistanceBetweenReferences;
 
    // If true, indicates that a synchronous open operation must be forced.
-   bool                 bForceSynchronousOpen;                             
+   bool                 bForceSynchronousOpen;
 };
 
 //
@@ -2350,7 +2379,7 @@ struct SMvAVCCompressionOptionsV2 : public SMvAVCCompressionOptions
 
    // If true, indicates that overscan is present. Otherwise, false.
    bool           bOverscan;
-   
+
    // If true, indicates that the compression is performed in an external reference file (.264).
    // The name of this flag is wrong. It is used to indicate if the NAL units generated must be compatible (as best as possible)
    // to the AVC-HD specification.
@@ -2363,24 +2392,24 @@ struct SMvAVCCompressionOptionsV2 : public SMvAVCCompressionOptions
 //    Describes the Matrox H.264/AVC hardware encoder compression options (version 3).
 struct SMvAVCCompressionOptionsV3 : public SMvAVCCompressionOptionsV2
 {
-   // If true, indicates that the VANC information can be retrieved from external VBI/VANC surfaces. If false, it can only be retrieved from Line 21 of NTSC video.
+   // If true, indicates that the ancillary data information can be retrieved from external VBI/VANC surfaces. If false, it can only be retrieved from Line 21 of NTSC video.
    // Currently, compression of closed captioning is only supported if it is extracted from VBI surfaces. Extraction from line 21 (NTSC) is not supported.
    // Therefore, this flag must be set to true if eVancInformationTypeToEncode is set.
-   bool                       bExpectInputVBISurfaces;             
+   bool                       bExpectInputVBISurfaces;
 
-   //Indicates the model of VANC encoding.
-   EMvH264VancModel           eVancModel;                          
-   
+   //Indicates the model of ancillary data encoding.
+   EMvH264VancModel           eVancModel;
+
    //Specifies the information to be encoded.
-   //If the type of VANC information is something other than "none" or "time code", the caller must send VBI buffers. Otherwise the 
+   //If the type of ancillary data information is something other than "none" or "time code", the caller must send VBI buffers. Otherwise the
    //codec will wait for those buffers indefinitely.
-   EMvVANCInformationType     eVancInformationTypeToEncode;        
-   
-   //If true, indicates that the analog closed caption should be encoded (if present) for PAL and NTSC video. Otherwise, false. 
-   //If analog and VANC digital data are both present, only VANC digital data will be processed.
+   EMvVANCInformationType     eVancInformationTypeToEncode;
+
+   //If true, indicates that the analog closed caption should be encoded (if present) for PAL and NTSC video. Otherwise, false.
+   //If analog and ancillary digital data are both present, only ancillary digital data will be processed.
    //This flag is not currently being used. It is intended for future use.
-   bool                       bEncodeAnalogClosedCaptionIfPresent; 
-                                                                   
+   bool                       bEncodeAnalogClosedCaptionIfPresent;
+
 };
 
 //
@@ -2389,7 +2418,7 @@ struct SMvAVCCompressionOptionsV3 : public SMvAVCCompressionOptionsV2
 struct SMvAVCCompressionOptionsV4 : public SMvAVCCompressionOptionsV3
 {
    //Specifies the float frame rate, which can be from 1/1.001 up to 120/1.001.
-   float fFrameRate;                                              
+   float fFrameRate;
 };
 
 //
@@ -2400,37 +2429,37 @@ struct SMvAVCCompressionOptionsV4 : public SMvAVCCompressionOptionsV3
 //    parameters of the H.264 hardware encoder.
 struct SMvAVCCompressionOptionsV5 : SMvAVCCompressionOptionsV4
 {
-   // Specifies the noise filtering strength that is applied before encoding.  The value range is from 0% (no filtering) to 
+   // Specifies the noise filtering strength that is applied before encoding.  The value range is from 0% (no filtering) to
    // 100% (strongest filtering).  Default value is 0%.
    uint32_t          ui32NoiseFilterStrength;
 
    // Specifies how frequently the encoder verifies the current data rate while encoding and compares it
    // to your specified target data rate. If a discrepancy exists between the current and target data rates, the current
-   // data rate is adjusted as specified by the ui32DataRateAdustment option.  Used only for keMvBitRateModelCBR and 
+   // data rate is adjusted as specified by the ui32DataRateAdustment option.  Used only for keMvBitRateModelCBR and
    // keMvBitRateModelVBR bit rate models. Default value is keMvH264SampleRateLow.
    EMvH264SampleRate eSampleRate;
 
-   // Specifies how quickly the current data rate is adjusted to reach the target data rate. 
-   // A gradual adjustment produces smoother transitions than a quick adjustment. The value range is from 0% (slowest speed) 
+   // Specifies how quickly the current data rate is adjusted to reach the target data rate.
+   // A gradual adjustment produces smoother transitions than a quick adjustment. The value range is from 0% (slowest speed)
    // to 100% (highest speed). Used only for keMvBitRateModelCBR and keMvBitRateModelVBR bit rate models.
    // Default value is 50%.
    uint32_t          ui32DataRateAdustment;
 
-   // Specifies the video data complexity.  The value range is from 0 (very complex) to 255 (Not complex at all).  Used 
+   // Specifies the video data complexity.  The value range is from 0 (very complex) to 255 (Not complex at all).  Used
    // only for keMvBitRateModelVBR bit rate model. Default value is 14.
-   // <b>Note:</b> The default value is applicable to a wide range of video complexity, but is unsuitable for low complexity and 
-   // very high complexity video.  The encoder will not be able to obtain the requested data rate resulting in lower 
+   // <b>Note:</b> The default value is applicable to a wide range of video complexity, but is unsuitable for low complexity and
+   // very high complexity video.  The encoder will not be able to obtain the requested data rate resulting in lower
    // or higher values than expected.
    uint32_t          ui32VideoComplexity;
 
-   // Specifies the minimum data rate in percentage of the average data rate.  The value range is from 0% to 100%.  For good 
-   // general results, use 25% of the average data rate.  Used only for keMvBitRateModelVBR bit rate model. 
+   // Specifies the minimum data rate in percentage of the average data rate.  The value range is from 0% to 100%.  For good
+   // general results, use 25% of the average data rate.  Used only for keMvBitRateModelVBR bit rate model.
    uint32_t          ui32VbrMinDataRate;
 
    // Specifies the maximum data rate in percentage of the average data rate.  The value range is from 100% to 800%.  For
-   // good general results, use 300% when the average data rate is over 3 Mb/seconds. Otherwise, compute the percentage so 
-   // that the maximum data rate is 3 Mb/seconds (without going over 800%). Used only for keMvBitRateModelVBR bit rate 
-   // model. 
+   // good general results, use 300% when the average data rate is over 3 Mb/seconds. Otherwise, compute the percentage so
+   // that the maximum data rate is 3 Mb/seconds (without going over 800%). Used only for keMvBitRateModelVBR bit rate
+   // model.
    uint32_t          ui32VbrMaxDataRate;
 
    // Specifies the quality of the encoding.  This will give a video compression with constant quality, but with unpredictable
@@ -2443,23 +2472,23 @@ struct SMvAVCCompressionOptionsV5 : SMvAVCCompressionOptionsV4
 //
 // Summary:
 //    Describes the Matrox H.264/AVC encoding options for software-based encoding, or hardware-accelerated encoding using Intel Quick Sync Video (QSV).
-// 
+//
 struct SMvH264CompressionOptions
 {
    // Size of the structure.
    uint32_t                ui32Size;
 
    // Input resolution of the encoder (resolution of received uncompressed buffers).
-   SMvResolutionInfo       sResolutionInput;                                  
+   SMvResolutionInfo       sResolutionInput;
 
    // Output resolution of the encoder (resolution of "file" compressed buffers).
-   SMvResolutionInfo       sResolutionOutput;                                 
+   SMvResolutionInfo       sResolutionOutput;
 
    // H.264/AVC Profile.
-   EMvH264Profile          eProfile;                                          
+   EMvH264Profile          eProfile;
 
    // H.264/AVC Level.
-   EMvH264Level            eLevel;    
+   EMvH264Level            eLevel;
 
    // Distance between two IDR frames in terms of number of I-frames. For example, <p>
    // if ui16IdrInterval = 0, then every I-frame is an IDR-frame, and <p>
@@ -2467,7 +2496,7 @@ struct SMvH264CompressionOptions
    uint16_t                ui16IdrInterval;
 
    // Indicates the distance between two I-frames (IDR frames are considered I-frames).
-   uint32_t                ui32GopPictureSize;             
+   uint32_t                ui32GopPictureSize;
 
    // Indicates the distance between two reference frames (P, I, or IDR).
    uint32_t                ui32DistanceBetweenReferences;
@@ -2480,7 +2509,7 @@ struct SMvH264CompressionOptions
    uint8_t                 ui8TargetUsage;
 
    // Bit rate mode to use.
-   EMvBitRateModel         eBitRateMode;      
+   EMvBitRateModel         eBitRateMode;
 
    // Indicates the target bit rate in bits per second. For constant bit rate (CBR) and variable bit rate (VBR) modes.
    uint32_t                ui32TargetBitRateInBitsPerSec;
@@ -2500,14 +2529,14 @@ struct SMvH264CompressionOptions
    // Quantization Parameter for P-frames. Values are between 0 and 51.
    uint16_t                ui16QPP;
 
-   // If true, indicates that VANC data should be processed and that the codec expects VANC surfaces.
+   // If true, indicates that ancillary data should be processed and that the codec expects ancillary data surfaces.
    bool                    bProcessVANCData;
 
-   // Indicates the model of VANC encoding.
-   EMvH264VancModel        eVancModel;                          
+   // Indicates the model of ancillary data encoding.
+   EMvH264VancModel        eVancModel;
 
-   // Specifies the type of VANC data to be encoded. <p>
-   // If the type of VANC data is something other than "none" or "time code", the caller must send VBI buffers. 
+   // Specifies the type of ancillary data to be encoded. <p>
+   // If the type of ancillary data is something other than "none" or "time code", the caller must send VBI buffers.
    // Otherwise, the encoder will wait for those buffers indefinitely.
    EMvVANCInformationType  eVancInformationTypeToEncode;
 
@@ -2570,15 +2599,15 @@ enum EMvXAVCProfile
 //    Describes a header for the H.264/AVC software codec compression options.
 // Note:
 //    This structure is the base class of the H.264/AVC software codec compression options structures.
-//    That is, SMvH264SWAVCUltraCompressionOptions, SMvH264SWXAVCCompressionOptions, or SMvH264SWGenericCompressionOptions will be derived from it.  
+//    That is, SMvH264SWAVCUltraCompressionOptions, SMvH264SWXAVCCompressionOptions, or SMvH264SWGenericCompressionOptions will be derived from it.
 //    This means that the ui32size parameter must be set to the size of the derived structure, not to the size of this structure.
-struct SMvH264SWCompressionOptionsHeader 
-{   
-   uint32_t             ui32size;            // Structure size in bytes of the structure from which this structure is derived (see note).   
+struct SMvH264SWCompressionOptionsHeader
+{
+   uint32_t             ui32size;            // Structure size in bytes of the structure from which this structure is derived (see note).
    EMvH264SWCodecPreset ePreset;             // Indicates the H.264/AVC software encoder preset.
    SMvResolutionInfo    sResolutionInput;    // Input resolution of the encoder. That is, the resolution of uncompressed buffers that are received.
    SMvResolutionInfo    sResolutionOutput;   // Output resolution of the encoder. That is, the resolution of the compressed buffers.
- 
+
    // Indicates the values to use for the members of this structure.
    SMvH264SWCompressionOptionsHeader()
    {
@@ -2616,31 +2645,31 @@ struct SMvH264SWCompressionOptionsHeader
 // Summary:
 //    Describes the H.264/AVC software generic codec compression options.
 // Note:
-//    This structure derives from the SMvH264SWCompressionOptionsHeader. The preset used should be 
+//    This structure derives from the SMvH264SWCompressionOptionsHeader. The preset used should be
 //    SMvH264SWCompressionOptionsHeader::ePreset=keMvH264SWCodecPresetGeneric.
 struct SMvH264SWGenericCompressionOptions : public SMvH264SWCompressionOptionsHeader
 {
    // Indicates the H.264/AVC profile.
-   EMvH264Profile          eProfile;                                          
+   EMvH264Profile          eProfile;
 
    // Indicates the H.264/AVC level.
-   EMvH264Level            eLevel;    
+   EMvH264Level            eLevel;
 
    // If this value is 0, only the first frame is IDR. If it is 1, every I-frame is IDR, etc.
    uint32_t                ui32IdrFrequency;
 
    // Indicates the distance between two I-frames (IDR frames are considered I-frames).
-   uint32_t                ui32GopPictureSize;             
+   uint32_t                ui32GopPictureSize;
 
    // Indicates the distance between two reference frames (P, I, or IDR).
    uint32_t                ui32DistanceBetweenReferences;
 
    // Indicates the bit rate mode to use.
-   EMvBitRateModel         eBitRateMode;      
+   EMvBitRateModel         eBitRateMode;
 
    // Indicates the target bit rate in bits per second. For constant bit rate (CBR) and variable bit rate (VBR) modes.
    uint32_t                ui32TargetBitRateInBitsPerSec;
-   
+
    // Indicates the maximum bit rate in bits per second. For VBR mode only.
    uint32_t                ui32VbrMaxBitRateInBitsPerSec;
 
@@ -2712,17 +2741,17 @@ struct SMvH264SWGenericCompressionOptions : public SMvH264SWCompressionOptionsHe
 // Summary:
 //    Describes the H.264/AVC software Panasonic AVC Ultra codec compression options.
 // Description:
-//    This structure derives from the SMvH264SWCompressionOptionsHeader. The preset used should be 
+//    This structure derives from the SMvH264SWCompressionOptionsHeader. The preset used should be
 //    SMvH264SWCompressionOptionsHeader::ePreset=keMvH264SWCodecPresetAVCUltra.
 struct SMvH264SWAVCUltraCompressionOptions : public SMvH264SWCompressionOptionsHeader
 {
-   
+
    // Specifies the Panasonic AVC Ultra preset to use.
-   EMvAVCUltraProfile eAVCUltraProfile; 
+   EMvAVCUltraProfile eAVCUltraProfile;
 
    // Specifies the behavior of the encoder in terms of quality and speed. It exposes a
    // trade-off between these two characteristics. That is, if the speed is increased, the quality is reduced.
-   EMvH264SWCodecTargetUsage  eTargetUsage; 
+   EMvH264SWCodecTargetUsage  eTargetUsage;
 
    // Indicates the values to use for the members of this structure.
    SMvH264SWAVCUltraCompressionOptions()
@@ -2739,7 +2768,7 @@ struct SMvH264SWAVCUltraCompressionOptions : public SMvH264SWCompressionOptionsH
 // Summary:
 //    Describes the H.264/AVC software Sony XAVC codec compression options.
 // Note:
-//    This structure derives from the SMvH264SWCompressionOptionsHeader. The preset used should be 
+//    This structure derives from the SMvH264SWCompressionOptionsHeader. The preset used should be
 //    SMvH264SWCompressionOptionsHeader::ePreset=keMvH264SWCodecPresetXAVC.
 struct SMvH264SWXAVCCompressionOptions : public SMvH264SWCompressionOptionsHeader
 {
@@ -2779,7 +2808,7 @@ struct SMvH264SWXAVCCompressionOptions : public SMvH264SWCompressionOptionsHeade
 
 //
 // Summary:
-//    Configures the Matrox M264 hardware encoder preset. 
+//    Configures the Matrox M264 hardware encoder preset.
 // Note:
 //    Used in SMvM264CompressionOptionsHeader.
 enum EMvM264CompressionPreset
@@ -2795,7 +2824,7 @@ enum EMvM264CompressionPreset
 //    Describes a header for the Matrox M264 hardware encoder compression options.
 // Note:
 //    This structure is the base class of the Matrox M264 hardware encoder compression options structures.
-//    That is, SMvM264GenericCompressionOptions and SMvM264XAVCCompressionOptions will derive from it. This means that 
+//    That is, SMvM264GenericCompressionOptions and SMvM264XAVCCompressionOptions will derive from it. This means that
 //    the ui32size parameter must be set to the size of the derived structure, not to the size of this structure.
 struct SMvM264CompressionOptionsHeader
 {
@@ -2848,7 +2877,7 @@ struct SMvM264GenericCompressionOptions : public SMvM264CompressionOptionsHeader
 
    // Indicates the target bit rate in bits per second. For constant bit rate (CBR) and variable bit rate (VBR) modes.
    uint32_t                ui32TargetBitRateInBitsPerSec;
-   
+
    // Indicates the maximum bit rate in bits per second. For VBR mode only.
    uint32_t                ui32VbrMaxBitRateInBitsPerSec;
 
@@ -2988,18 +3017,18 @@ struct SMvAVCDecompressionOptions
 //
 // Summary
 //    Describes the H.264/AVC software decoder decompression options.
-struct SMvH264SWDecompressionOptions 
+struct SMvH264SWDecompressionOptions
 {
-   uint32_t                   size;                      //Structure size in bytes.   
+   uint32_t                   size;                      //Structure size in bytes.
    SMvResolutionInfo          sResolutionInput;          //Structure containing the input resolution.
-   SMvResolutionInfo          sResolutionOutput;         //Structure containing the output resolution. 
+   SMvResolutionInfo          sResolutionOutput;         //Structure containing the output resolution.
 
-   // Indicates the type of VANC data to decode (such as closed caption, AFD, bar data, or time code).
-   EMvVANCInformationType     eVANCInformationType;      
-                                                         
+   // Indicates the type of ancillary data to decode (such as closed caption, AFD, bar data, or time code).
+   EMvVANCInformationType     eVANCInformationType;
+
    bool                       bIgnorePutMediaPositions;  //If true, indicates that the put media positions are not valid and should be ignored.
    bool                       bForceSynchronousOpen;     //If true, indicates that a synchronous open operation should be forced.
-   bool                       bUseVANCSurfaces;          //If true, indicates that VANC surfaces should be generated.
+   bool                       bUseVANCSurfaces;          //If true, indicates that ancillary data surfaces should be generated.
 };
 
 //
@@ -3042,11 +3071,44 @@ struct SMvTSEncoderMuxerOptionSettings
    uint32_t                   size;                         // Structure size in bytes.
    uint16_t                   ui16ProgramPID;               // Specifies the packet ID of the program.
    uint16_t                   ui16VideoPID;                 // Specifies the packet ID of the video.
-   uint16_t                   ui16AudioPID;                 // Specifies the packet ID of the audio.       
+   uint16_t                   ui16AudioPID;                 // Specifies the packet ID of the audio.
    uint16_t                   ui16PCRPID;                   // Specifies the packet ID of the Program Clock Reference (PCR).
-   EMvMPEG2MuxerBitRateOption eMPEG2MuxerBitRateOption;     // Specifies the bit rate encoding option for the MPEG-2 transport stream. 
+   EMvMPEG2MuxerBitRateOption eMPEG2MuxerBitRateOption;     // Specifies the bit rate encoding option for the MPEG-2 transport stream.
    bool                       bProcessSCTE35;               // If true, the muxer inserts SCTE 35 splice information.
    uint16_t                   ui16SpliceInfoSectionPID;     // Specifies the packet ID of the splice information section.
+};
+
+//
+// Summary
+//    Describes the Matrox H.264/AVC software decoder decompression options.
+struct SMvH264DecompressionOptionsHeader
+{
+   uint32_t                   ui32size;                  // Structure size in bytes.
+   SMvResolutionInfo          sResolutionInput;          // Input resolution of the compressed stream.
+   SMvResolutionInfo          sResolutionOutput;         // Output resolution of the uncompressed frames.
+   bool                       bAccessUnitAlignedInput;   // If true, the user application provides the decoder with data that is aligned on an access unit.
+
+   // Indicates the values to use for the members of this structure.
+   SMvH264DecompressionOptionsHeader()
+   {
+      ui32size = sizeof(SMvH264DecompressionOptionsHeader);
+      ZeroMemory(&sResolutionInput, sizeof(sResolutionInput));
+      ZeroMemory(&sResolutionOutput, sizeof(sResolutionOutput));
+      bAccessUnitAlignedInput = false;
+   }
+};
+
+//
+// Summary
+//    Describes the Matrox H.264/AVC software decoder 3 decompression options.
+struct SMvH264SW3DecompressionOptions : SMvH264DecompressionOptionsHeader
+{
+   // Indicates the values to use for the members of this structure.
+   SMvH264SW3DecompressionOptions()
+   {
+      ui32size = sizeof(SMvH264SW3DecompressionOptions);
+      bAccessUnitAlignedInput = true;                    // The Matrox H.264/AVC software decoder 3 supports access unit aligned input only.
+   }
 };
 
 //
@@ -3054,20 +3116,15 @@ struct SMvTSEncoderMuxerOptionSettings
 //    Describes the options for the Matrox M264 hardware decoder.
 // Note:
 //    The value selected for eHardwareProfileType must correspond to a hardware that supports the Matrox M264 hardware encoder.
-struct SMvM264DecompressionOptions
-{   
-   uint32_t                    ui32size;                 // Structure size in bytes.   
-   SMvResolutionInfo           sResolutionInput;         // Input resolution of the compressed stream.
-   SMvResolutionInfo           sResolutionOutput;        // Output resolution of the uncompressed frames.
+struct SMvM264DecompressionOptions : SMvH264DecompressionOptionsHeader
+{
    EMvHardwareProfile          eHardwareProfileType;     // Indicates the hardware profile to use.
    uint32_t                    ulHardwareProfileIndex;   // Indicates the index of the hardware profile to use.
-   bool                        bAccessUnitAlignedInput;  // If true, the user application provides the decoder with data that is aligned on an access unit. 
 
+   // Indicates the values to use for the members of this structure.
    SMvM264DecompressionOptions()
    {
       ui32size = sizeof(SMvM264DecompressionOptions);
-      ZeroMemory(&sResolutionInput, sizeof(sResolutionInput));
-      ZeroMemory(&sResolutionOutput, sizeof(sResolutionOutput));
       eHardwareProfileType = keMvHardwareProfileInvalid;
       ulHardwareProfileIndex = 0;
       bAccessUnitAlignedInput = false;
@@ -3123,9 +3180,9 @@ struct SMvMPEG2TSMuxerSettings
    EMvChannelType                eAudioChannelType;         //Audio channel type (mono, stero, etc.).
    EMvVideoCodecType             eVideoCodecType;           //Video codec type (H.264/AVC).
    EMvAudioCodecType             eAudioCodecType;           //Audio codec type (AAC).
-   uint32_t                      ui32VideoBitRate;          //Average video bit rate.          
+   uint32_t                      ui32VideoBitRate;          //Average video bit rate.
    uint32_t                      ui32VideoMaxBitRate;       //Maximum video bit rate.
-   uint32_t                      ui32AudioBitRate;          //Audio bit rate.         
+   uint32_t                      ui32AudioBitRate;          //Audio bit rate.
    uint32_t                      ui32AudioMaxBitRate;       //Audio maximum bit rate.
    uint16_t                      ui16ProgramPID;            //Program PID (13-bit).
    uint16_t                      ui16VideoPID;              //Video packet ID (13-bit).
@@ -3196,7 +3253,7 @@ struct SMvIPOutputSession
    struct in_addr    sDestinationAddress;                // Destination address, use our_inet_addr(MULTICAST_ADDR_SOCKET) for instance.
    bool              bMulticast;                         // A boolean value to indicate if the session is unicast (false) or multicast (true).
    wchar_t           wszSessionName[256];                // The name of the session. This is required for the client to connect to the server.
-   unsigned short    usRTSPPort;                         // The port number used by the RTSP server. If the value is 0, the default value used will be 554. 
+   unsigned short    usRTSPPort;                         // The port number used by the RTSP server. If the value is 0, the default value used will be 554.
    // The reason why we let the application specify the port number is because a user may want to choose a different port for a specific reason.
    unsigned short    usRTPVideoPort;                     // The port number of the video RTP stream.
    unsigned short    usRTPAudioPort;                     // The port number of the audio RTP stream. The audio port number should be >= usRTPVideoPort + 2.
@@ -3221,7 +3278,7 @@ struct SMvIPInputSession
    wchar_t           wszComputerName[256];               // The name of the computer. This is required for the client to connect to the server.
    bool              bMulticast;                         // A boolean value to indicate if the session is unicast (false) or multicast (true).
    wchar_t           wszSessionName[256];                // The name of the session. This is required for the client to connect to the server.
-   unsigned short    usRTSPPort;                         // The port number used by the RTSP server. If the value is 0, the default value used will be 554. 
+   unsigned short    usRTSPPort;                         // The port number used by the RTSP server. If the value is 0, the default value used will be 554.
    uint64_t          ui64Reserved[8];                    // Ignored.
 };
 #endif
@@ -3242,7 +3299,7 @@ struct SMvFlexReaderStatus
 };
 
 //Specifies the type of aspect ratio conversion to perform when downscaling from HD to SD (16:9 to 4:3).
-enum EMvAspectRatioConversionForHDToSD 
+enum EMvAspectRatioConversionForHDToSD
 {
    keMvAspectRatioConversionForHDToSDInvalid,      // Invalid value.
    keMvAspectRatioConversionForHDToSD_LetterBox,   // Letterbox.
@@ -3318,7 +3375,7 @@ enum EMvAudioType
    keMvAudioTypeAesEbu,          // The audio data is embedded in an AES/EBU connector.
    keMvAudioTypeEmbedded,        // The audio data is embedded in an SDI connector.
    keMvAudioTypeSdiEmbedded = keMvAudioTypeEmbedded,
-   keMvAudioTypeSdiIpEmbedded,   // The audio data is embedded in a SMPTE 2022-6 stream over an SFP+ transceiver.
+   keMvAudioTypeSdiIpEmbedded,   // The audio data is embedded in an IP stream conforming to SMPTE 2022-6 and SMPTE 2022-7 over an SFP+ port.
 };
 
 //
@@ -3334,10 +3391,10 @@ enum EMvNodeContent
    keMvNodeContentVideo = 1,           // The node contains video data only.
    keMvNodeContentAudio = 2,           // Binary value used to test if the node contains audio data.
    keMvNodeContentVideoAudio = 3,      // The node contains audio and video data.
-   keMvNodeContentVanc = 4,            // Binary value used to test if the node contains VANC data.
-   keMvNodeContentVideoVanc = 5,       // Binary value used to test if the node contains video and VANC data.
-   keMvNodeContentAudioVanc = 6,       // Binary value used to test if the node contains audio and VANC data.
-   keMvNodeContentVideoAudioVanc = 7,  // The node contains audio, video, and VANC data.
+   keMvNodeContentVanc = 4,            // Binary value used to test if the node contains ancillary data.
+   keMvNodeContentVideoVanc = 5,       // Binary value used to test if the node contains video and ancillary data.
+   keMvNodeContentAudioVanc = 6,       // Binary value used to test if the node contains audio and ancillary data.
+   keMvNodeContentVideoAudioVanc = 7,  // The node contains audio, video, and ancillary data.
    keMvNodeContentMPEG2_TS = 8,        // Binary value used to test if the node contains MPEG-2 program transport stream (SPTS) data.
    keMvNodeContentLast                 // End of list indicator.
 };
@@ -3389,7 +3446,7 @@ enum EMvStreamType
 struct SMvAesEbuAudioOutputPairConnectorSettings
 {
    uint32_t ui32Size;               // Structure size in bytes.
-   bool bMuteOutputAesEbuPair;      // If true, the AES/EBU audio output pair is muted. 
+   bool bMuteOutputAesEbuPair;      // If true, the AES/EBU audio output pair is muted.
    IMvOutputStream *pOutputStream;  // Pointer to the output stream that provides the audio data to output.
    EMvAudioPair eSourceAudioPair;   // Indicates an audio pair selected from the output stream.
 };
@@ -3404,15 +3461,15 @@ struct SMvAudioOutputStreamSettings
 {
    bool bEnableAudioMixer;                   // If true, the in-line audio mixer is enabled.
    bool bAuxPhaseInvert;                     // If true, the in-line audio mixer's auxiliary input phase is inverted before being mixed.
-   double adAuxVolume[16];                   // Indicates the volume that the in-line audio mixer applies to specific auxiliary audio input channels.  
+   double adAuxVolume[16];                   // Indicates the volume that the in-line audio mixer applies to specific auxiliary audio input channels.
                                              // The volume is changed using a multiplication factor that ranges from 0 to 2 and is applied at the next zero-crossing.
-   double adLineVolume[16];                  // Indicates the volume that the in-line audio mixer applies to specific line audio input channels.  
+   double adLineVolume[16];                  // Indicates the volume that the in-line audio mixer applies to specific line audio input channels.
                                              // The volume is changed using a multiplication factor that ranges from 0 to 2 and is applied at the next zero-crossing.
    double dAuxMasterVolume;                  // Indicates the volume that the in-line audio mixer applies to all the auxiliary audio input channels.
-                                             // The master volume is changed gradually on all the audio channels at the same time. 
+                                             // The master volume is changed gradually on all the audio channels at the same time.
                                              // The volume is changed using a multiplication factor that ranges from 0 to 2.
-   double dLineMasterVolume;                 // Indicates the volume that the in-line audio mixer applies to all the line audio input channels.  
-                                             // The master volume is changed gradually on all the audio channels at the same time.  
+   double dLineMasterVolume;                 // Indicates the volume that the in-line audio mixer applies to all the line audio input channels.
+                                             // The master volume is changed gradually on all the audio channels at the same time.
                                              // The volume is changed using a multiplication factor that ranges from 0 to 2.
    EMvAudioMixerSourceSelection eAuxSourceSelection; // Indicates the audio to use for the auxiliary input of the in-line audio mixer.
                                              // The audio selected for the auxiliary input is mixed with the audio line input of the in-line audio mixer.  For X.mio2 Plus only.
@@ -3452,9 +3509,9 @@ struct SMvVideoInputStreamSettings
                                               // If the video's input stream is connected to a node containing YUV 4:2:2, bUpscaleKeyLuma is ignored.
    bool bInvertKeyLuma;                       // If true, inverts the luminance part of the key signal and inverts the key value.
                                               // If the video's input stream is connected to a node containing YUV 4:2:2, bInvertKeyLuma is ignored.
-   bool bApplyKeyLumaOffset;                  // If true, applies an offset to the luminance values so that the inverted 
-                                                 // result falls within the 0-255 range. The offset can only be applied if 
-                                                 // the luminance part of the key signal is inverted (bInvertKeyLuma = true), and the luminance range of the 
+   bool bApplyKeyLumaOffset;                  // If true, applies an offset to the luminance values so that the inverted
+                                                 // result falls within the 0-255 range. The offset can only be applied if
+                                                 // the luminance part of the key signal is inverted (bInvertKeyLuma = true), and the luminance range of the
                                                  // key signal is upscaled (bUpscaleKeyLuma = true).
                                               // If the video's input stream is connected to a node containing YUV 4:2:2, bApplyKeyLumaOffset is ignored.
    bool bForceOpaqueKey;                      // If true, the RGBA conversion will generate an opaque key. If false, it will generate a transparent key.
@@ -3475,26 +3532,32 @@ struct SMvVideoOutputStreamSettings
                                             // If the video's output stream is connected to a node containing YUV 4:2:2, bDownscaleKeyLuma is ignored.
    bool bInvertKeyLuma;                  // If true, inverts the luminance part of the output key signal and inverts the key value.
                                             // If the video's output stream is connected to a node containing YUV 4:2:2, bInvertKeyLuma is ignored.
-   bool bApplyKeyLumaOffset;             // If true, applies an offset to the luminance values so that the inverted result 
+   bool bApplyKeyLumaOffset;             // If true, applies an offset to the luminance values so that the inverted result
                                             // falls within the 16-235 range. The offset can only be applied if the
-                                            // luminance part of the key signal is inverted (bInvertKeyLuma = true), and the luminance range of the 
+                                            // luminance part of the key signal is inverted (bInvertKeyLuma = true), and the luminance range of the
                                             // key signal is downscaled (bDownscaleKeyLuma = true).
                                             // If the video's output stream is connected to a node containing YUV 4:2:2, bApplyKeyLumaOffset is ignored.
    bool bEnableEdgeSharpeningFilter;     // If true, enables an edge sharpening filter to the digital output video. The filter reduces
                                          // ringing artifacts that appear as a result of high amplitude transitions in the digital signal.
    bool bEnableVideoMixer;               // If true, enables the in-line video mixer.
-   bool bIsVideoShaped;                  // If true and the video mixer is enabled, the video signal to the in-line video mixer from the auxiliary input (video from the output stream's node) 
+   bool bIsVideoShaped;                  // If true and the video mixer is enabled, the video signal to the in-line video mixer from the auxiliary input (video from the output stream's node)
                                             // is already multiplied by its alpha plane.
    uint64_t ui64AdvancedDelayInNanoTime; // Indicates the delay (in nanotime) that will be applied to an output stream's input. The value must be frame aligned.
                                             // The advanced delay must be less than the node depth minus the node's write-to-read delay minus three frames. That is, <p>
                                             // <i> Advance delay < node depth - node's write-to-read delay - 3 frames </i>
    EMvVideoMixerVancSource           eVideoMixerVancSource;         // Indicates the source for the vertical ancillary data. Only valid if the video mixer is enabled (bEnableVideoMixer = true)
    EMvVideoMixerAudioAndHancSource   eVideoMixerAudioAndHancSource; // Indicates the source for the audio and horizontal ancillary data. Only valid if the video mixer is enabled (bEnableVideoMixer = true)
-   bool bEnableMechanicalBypass;         // If true, the mechanical bypass is activated. For more information on the mechanical bypass input to output connections depending on the card, see the <i>Matrox DSX Topology API User Guide</i>.
-   double dVideoMixerNodeTransparency;   // Indicates the transparency that will be applied to the images coming from the node if the inline mixer is enabled.
+   bool bEnableMechanicalBypass;          // If true, the mechanical or hardware bypass is activated. <p>
+                                          // Mechanical bypass is activated on X.mio3 FH, X.mio3 LP, and DSX LE4 models with video relay bypass, as well as, X.mio2 Plus and DSX LE3. <p>
+                                          // Hardware bypass is activated on X.mio3 12G.<p>
+                                          // <b>Note:</b> Hardware bypass can be forced on X.mio3 FH, X.mio3 LP, and DSX LE4 if dVideoMixerNodeTransparency is set to zero, 
+                                          // eVideoMixerVancSource is set to keVideoMixerVancSourceInput, eVideoMixerAudioAndHancSource is set to keVideoMixerAudioAndHancSourceInput, and 
+                                          // bEnableVideoMixer is set to true. <p>
+                                          // For more information on the mechanical or hardware bypass, see the <i>Matrox DSX Topology API User Guide</i>.
+   double dVideoMixerNodeTransparency;   // If the in-line video mixer is enabled, indicates the transparency that will be applied to the images output from the node.
                                             // The range is from zero (completely transparent) to one (completely opaque).
-   bool bEnableARGBChromaFiltering;      // If true, apply filtering on the generated chroma when converting from ARGB to YUYV color space.
-                                            // Applies only to ARGB nodes.
+   bool bEnableARGBChromaFiltering;      // If true, filters the generated chroma when converting from ARGB to YUYV color space.
+                                            // Can only be applied when the node contains ARGB data.
 };
 
 //
@@ -3511,27 +3574,27 @@ struct SMvAudioPairStatus
 
 //
 // Summary:
-//    Identifies each SFP+ transceiver on the card.
+//    Identifies each SFP+ port on the card.
 //
 enum EMvSfpLabel
 {
    keMvSfpLabelInvalid = 0,   // Invalid value.
-   keMvSfpLabelA,             // Indicates SFP transceiver A.
-   keMvSfpLabelB,             // Indicates SFP transceiver B.
-   keMvSfpLabelC,             // Indicates SFP transceiver C.
-   keMvSfpLabelD,             // Indicates SFP transceiver D.
-   keMvSfpLabelE,             // Indicates SFP transceiver E.
-   keMvSfpLabelF,             // Indicates SFP transceiver F.
-   keMvSfpLabelG,             // Indicates SFP transceiver G.
-   keMvSfpLabelH,             // Indicates SFP transceiver H.
-   keMvSfpLabelI,             // Indicates SFP transceiver I.
-   keMvSfpLabelJ,             // Indicates SFP transceiver J.
-   keMvSfpLabelK,             // Indicates SFP transceiver K.
-   keMvSfpLabelL,             // Indicates SFP transceiver L.
-   keMvSfpLabelM,             // Indicates SFP transceiver M.
-   keMvSfpLabelN,             // Indicates SFP transceiver N.
-   keMvSfpLabelO,             // Indicates SFP transceiver O.
-   keMvSfpLabelP,             // Indicates SFP transceiver P.
+   keMvSfpLabelA,             // Indicates SFP+ port A.
+   keMvSfpLabelB,             // Indicates SFP+ port B.
+   keMvSfpLabelC,             // Indicates SFP+ port C.
+   keMvSfpLabelD,             // Indicates SFP+ port D.
+   keMvSfpLabelE,             // Indicates SFP+ port E.
+   keMvSfpLabelF,             // Indicates SFP+ port F.
+   keMvSfpLabelG,             // Indicates SFP+ port G.
+   keMvSfpLabelH,             // Indicates SFP+ port H.
+   keMvSfpLabelI,             // Indicates SFP+ port I.
+   keMvSfpLabelJ,             // Indicates SFP+ port J.
+   keMvSfpLabelK,             // Indicates SFP+ port K.
+   keMvSfpLabelL,             // Indicates SFP+ port L.
+   keMvSfpLabelM,             // Indicates SFP+ port M.
+   keMvSfpLabelN,             // Indicates SFP+ port N.
+   keMvSfpLabelO,             // Indicates SFP+ port O.
+   keMvSfpLabelP,             // Indicates SFP+ port P.
    keMvSfpLabelLast           // End of list indicator.
 };
 
@@ -3558,20 +3621,34 @@ enum EMvSfpLabel
 
 //
 // Summary:
-//    Describes the SDI IP input connector settings.
+//    Describes the input connector settings for an IP stream conforming to SMPTE 2022-6.
+// Remarks:
+//    - For each SFP+ port, the SFP+ connectors cannot have the same values for both ui32DstIPv4Address and ui16DstUDPPort.
+//      For example, if ui32DstIPv4Address is 25.25.40.225 and ui16DstUDPPort is 16 for SFP+ connector A of SFP+ port A,
+//      then SFP+ connector B of SFP+ port A cannot have both values for ui32DstIPv4Address and ui16DstUDPPort.
 //
 struct SMvSdiIpInputConnectorSettings
 {
-   uint32_t ui32Size;                           // Structure size in bytes.
-   uint32_t ui32MulticastFilterIPv4Address;     // Indicates the reception multicast IPv4 address.
-   uint16_t ui16LocalUDPPort;                   // Indicates the reception User Datagram Protocol (UDP) port.
-   uint32_t ui32DistantIPv4Address;             // Distant IPv4 address. For future use.
-   uint16_t ui16DistantUDPport;                 // Distant UDP port. For future use.
+   uint32_t ui32Size;                              // Structure size in bytes.
+   uint32_t ui32DstIPv4Address;                    // Indicates the reception multicast IPv4 address.
+   uint16_t ui16DstUDPPort;                        // Indicates the reception User Datagram Protocol (UDP) port.
+   uint32_t ui32SrcIPv4Address;                    // Indicates the remote IPv4 address. For future use.
+   uint16_t ui16SrcUDPport;                        // Indicates the remote UDP port. For future use.
+   EMvMulticastMembershipType eJoinType;           // Indicates the type of membership request made when ui32DstIPv4Address is a multicast address.
+   bool     bRedundancyEnable;                     // If true, enables the redundant stream for seamless reconstruction conforming to SMPTE ST 2022-7.
+   uint32_t ui32RedundancySrcIPv4Address;          // Indicates the redundant stream remote IPv4 address. For future use.
+   uint16_t ui16RedundancySrcUDPPort;              // Indicates the redundant stream remote UDP port. For future use.
+   uint32_t ui32RedundancyDstIPv4Address;          // Indicates the redundant stream reception multicast IPv4 address.
+   uint16_t ui16RedundancyDstUDPPort;              // Indicates the redundant stream reception UDP port.
+
+   uint32_t ui32PacketCacheUsageThreshold;         // Indicates the threshold for generating an IP packets cache utilization alarm.
+   uint32_t ui32PacketIntervalThreshold;           // Indicates the threshold for generating a clock cycle between the IP packets alarm on the main IP stream.
+   uint32_t ui32RedundancyPacketIntervalThreshold; // Indicates the threshold for generating a clock cycle between the IP packets alarm on the redundant stream.
 };
 
 //
 // Summary:
-//    Describes the SDI IP output connector settings.
+//    Describes the output connector settings for an IP stream conforming to SMPTE 2022-6.
 // Description:
 //<table>
 // Resolution                          Vtotal (in pixels)    Htotal (in pixels)    Approximate duration of a pixel (in seconds)
@@ -3603,15 +3680,15 @@ struct SMvSdiIpOutputConnectorSettings
 {
    uint32_t ui32Size;                  // Structure size in bytes.
    double dLineBufferHorizonalDelay;   // Sets the SDI line buffer delay in pixels. For digital video only. The range is -256 to 256.
-   double dHorizontalFrameDelay;       // Controls the horizontal frame delay on the SDI output circuit in seconds. 
-                                       // The output delay is a combination of dHorizontalFrameDelay, ui32VerticalFrameDelay, 
+   double dHorizontalFrameDelay;       // Controls the horizontal frame delay on the SDI output circuit in seconds.
+                                       // The output delay is a combination of dHorizontalFrameDelay, ui32VerticalFrameDelay,
                                        // and dLineBufferHorizonalDelay, if dLineBufferHorizonalDelay is supported on your hardware.<p>
                                        // For SD, the granularity is 0.5 pixel (approximately 37.037 nanoseconds), and the range is from zero to (Htotal - 0.5) * 74.074 x 10<sup>-9</sup>. Where Htotal is the total horizontal width in pixels. <p>
-                                       // For 720p at 24, 25, 30, 50, or 60 fps and 1080p at 24, 25, or 30 fps, the granularity is 1 pixel (approximately 13.468 nanoseconds), and the range is from zero to (Htotal - 1) * 13.468 x 10<sup>-9</sup>.<p> 
-                                       // For 720p at 23.98, 29.97, or 59.94 fps and 1080p at 23.98 or 29.97 fps, the granularity is 1 pixel (approximately 13.481 nanoseconds), and the range is from zero to (Htotal - 1) * 13.481 x 10<sup>-9</sup>.<p> 
-                                       // For 1080p at 50 or 60 fps, the granularity is 1 pixel (approximately 6.734 nanoseconds), and the range is from zero to (Htotal - 1) * 6.734 x 10<sup>-9</sup>.<p> 
-                                       // For 1080p at 59.94 fps, the granularity is 1 pixel (approximately 6.740 nanoseconds), and the range is from zero to (Htotal - 1) * 6.740 x 10<sup>-9</sup>.<p> 
-                                       // Refer to the following table for Htotal values and approximate duration of a pixel at different resolutions.<p> 
+                                       // For 720p at 24, 25, 30, 50, or 60 fps and 1080p at 24, 25, or 30 fps, the granularity is 1 pixel (approximately 13.468 nanoseconds), and the range is from zero to (Htotal - 1) * 13.468 x 10<sup>-9</sup>.<p>
+                                       // For 720p at 23.98, 29.97, or 59.94 fps and 1080p at 23.98 or 29.97 fps, the granularity is 1 pixel (approximately 13.481 nanoseconds), and the range is from zero to (Htotal - 1) * 13.481 x 10<sup>-9</sup>.<p>
+                                       // For 1080p at 50 or 60 fps, the granularity is 1 pixel (approximately 6.734 nanoseconds), and the range is from zero to (Htotal - 1) * 6.734 x 10<sup>-9</sup>.<p>
+                                       // For 1080p at 59.94 fps, the granularity is 1 pixel (approximately 6.740 nanoseconds), and the range is from zero to (Htotal - 1) * 6.740 x 10<sup>-9</sup>.<p>
+                                       // Refer to the following table for Htotal values and approximate duration of a pixel at different resolutions.<p>
                                        // <b>Note:</b> The exact duration of a pixel (in seconds) can be calculated as follows: 1 / (frame rate * Htotal * Vtotal), where Vtotal is the total vertical height in pixels.
    uint32_t ui32VerticalFrameDelay;    // Controls the vertical delay on the SDI output circuit in lines.
                                        // The output delay is a combination of dHorizontalFrameDelay, ui32VerticalFrameDelay,
@@ -3619,28 +3696,66 @@ struct SMvSdiIpOutputConnectorSettings
                                        // The range is from zero to Vtotal minus 1. Refer to the following table for Vtotal values at different resolutions.<p>
                                        // <b>Note:</b> The exact duration of a line (in seconds) can be calculated as follows: 1 / (frame rate * Vtotal)
    bool bEnableSMPTE352;               // If true, enables SMPTE 352 packets.
-   bool bEnableEmbeddedAudio;                      // If true, enables the embedded audio.
+   bool bEnableEmbeddedAudio;          // If true, enables the embedded audio.
    EMvAudioBitsPerSample aePairBitsPerSample[8];   // Number of bits per audio sample, one value per audio pair.
    bool abPairIsPCMAudio[8];                       // If true, the pair is marked as Pulse-code modulation (PCM) audio in the channel status. One per audio pair.
-   bool bActivateDBN;                              // If true, generates the embedded audio Data Block Number (DBN) in Standard 
-                                                   // Definition (SD). This control has no effect in 
+   bool bActivateDBN;                              // If true, generates the embedded audio Data Block Number (DBN) in Standard
+                                                   // Definition (SD). This control has no effect in
                                                    // High Definition (HD) because HD always contains embedded audio DBN.
                                                    // Equipment with HD/SD support will not decode audio properly unless DBN in audio packets is activated.
                                                    // Older equipment will not work properly if DBN in audio data packets is activated
-                                                   // to the extent that the video may be corrupted.  
-                                                   // If the video is corrupted, do not use embedded audio DBN. 
+                                                   // to the extent that the video may be corrupted.
+                                                   // If the video is corrupted, do not use embedded audio DBN.
    uint32_t ui32RTPSyncSourceIdentifier;  // Indicates the RTP (Real-time Transfer Protocol) Synchronization Source Identifier (SSRC).
    uint32_t ui32TypeOfServiceDSCP;        // Indicates that the Type of Service (ToS) is Differentiated Service Code Point (DSCP). Range is [0..63] (6 bits).
    uint32_t ui32TypeOfServiceECN;         // Indicates that the Type of Service (ToS) is Explicit Congestion Notification (ECN). Range is [0..3] (2 bits).
    uint32_t ui32TimeToLiveInSeconds;      // Indicates the time in which packets can be used in seconds. That is, it indicates the packets' Time to live (TTL).
-   uint16_t ui16LocalUDPPort;             // Indicates the User Datagram Protocol (UDP) port of the sender (that is, transmitter). 
-   uint32_t ui32DistantIPv4Address;       // Indicates the IPv4 address of the destination (that is, receiver). Only used in multicast.
-   uint16_t ui16DistantUDPport;           // Indicates the UDP port of the destination (that is, receiver).
+   uint16_t ui16SrcUDPPort;               // Indicates the User Datagram Protocol (UDP) port of the sender (that is, transmitter).
+   uint32_t ui32DstIPv4Address;           // Indicates the IPv4 address of the destination (that is, receiver). Only used in multicast.
+   uint16_t ui16DstUDPport;               // Indicates the UDP port of the destination (that is, receiver).
+   bool     bRedundancyEnable;            // If true, enables the redundant stream for seamless reconstruction (SMPTE ST 2022-7)
+   uint16_t ui16RedundancySrcUDPPort;     // Indicates the redundant stream UDP port of the sender (that is, transmitter).
+   uint32_t ui32RedundancyDstIPv4Address; // Indicates the redundant stream IPv4 address of the destination (that is, receiver). Only used in multicast.
+   uint16_t ui16RedundancyDstUDPPort;     // Indicates the redundant stream UDP port of the destination (that is, receiver).
 };
 
 //
 // Summary:
-//    Describes the generic ASPEN connector settings.
+//    Describes the telemetry information of the connector for an IP stream.
+//
+struct SMvIpConnectorTelemetry
+{
+   uint32_t ui32Size;                                 // Structure size in bytes.
+   uint32_t ui32RTPSyncSourceIdentifier;              // Indicates the RTP (Real-time Transport Protocol) Synchronization Source Identifier (SSRC).
+   uint32_t ui32PacketCacheUsageSize;                 // Indicates the IP packets cache utilization size.
+   uint32_t ui32PacketCacheMaxSize;                   // Indicates the IP packets cache size.
+
+   bool     bIsMacAddressMatch;                       // If true, the Mac address of the incoming packets on the main IP stream matches the Mac address of the input connector.
+   bool     bIsIPv4AddressMatch;                      // If true, the IPv4 address of the incoming packets on the main IP stream matches the IPv4 address of the input connector settings.
+   bool     bIsUDPPortMatch;                          // If true, the User Datagram Protocol (UDP) port of the incoming packets on the main IP stream matches the UDP port of the input connector settings.
+   uint32_t ui32VlanID;                               // Indicates the VLAN identifier (VID) on the main IP stream.
+   uint32_t ui32PacketInterval;                       // Indicates the number of clock cycles between the IP packets on the main IP stream.
+   uint32_t ui32MissingPackets;                       // Indicates the number of missing IP packets on the main IP stream.
+
+   bool     bIsRedundancyMacAddressMatch;             // If true, the Mac address of the incoming packets on the redundant IP stream matches the Mac address of the input connector.
+   bool     bIsRedundancyIPv4AddressMatch;            // If true, the IPv4 address of the incoming packets on the redundant IP stream matches the IPv4 address of the input connector settings.
+   bool     bIsRedundancyUDPPortMatch;                // If true, the UDP port of the incoming packets on the redundant IP stream matches the UDP port of the input connector settings.
+   uint32_t ui32RedundancyVlanID;                     // Indicates the VID on the redundant IP stream.
+   uint32_t ui32RedundancyPacketInterval;             // Indicates the number of clock cycles between the IP packets on the redundant IP stream.
+   uint32_t ui32RedundancyMissingPackets;             // Indicates the number of missing IP packets on the redundant IP stream.
+
+   bool     bIsRecoveredRTPPayloadIdMatch;            // If true, flow match the RTP payload ID on the IP stream that is recovered.      
+   uint32_t ui32RecoveredMissingPackets;              // Indicates the number of missing IP packets on the IP stream that is recovered.
+   uint32_t ui32RecoveredPacketCountFromRedundancy;   // Indicates the number of missing IP packets in the main IP stream that has been recovered from the redundant IP stream.
+
+   EMvFlowStandard eDetectedStandard;                 // Indicates the standard to which the IP stream conforms.
+
+   uint32_t ui32LatePackets;                          // Indicates the number of IP packets that were received late.
+};
+
+//
+// Summary:
+//    Describes the generic connector settings for an IP stream conforming to the ASPEN protocol.
 // Description:
 //
 struct SMvAspenConnectorSettings
@@ -3650,15 +3765,15 @@ struct SMvAspenConnectorSettings
    uint32_t ui32TypeOfServiceDSCP;        // Indicates that the Type of Service (ToS) is Differentiated Service Code Point (DSCP). Range is [0..63] (6 bits).
    uint32_t ui32TypeOfServiceECN;         // Indicates that the Type of Service (ToS) is Explicit Congestion Notification (ECN). Range is [0..3] (2 bits).
    uint32_t ui32TimeToLiveInSeconds;      // Indicates the time in which packets can be used in seconds. That is, it indicates the packets' Time to live (TTL).
-   uint16_t ui16LocalUDPPort;             // Indicates the User Datagram Protocol (UDP) port of the sender (that is, transmitter). 
-   uint32_t ui32DistantIPv4Address;       // Indicates the IPv4 address of the destination (that is, receiver). Only used in multicast.
-   uint16_t ui16DistantUDPport;           // Indicates the UDP port of the destination (that is, receiver).
+   uint16_t ui16SrcUDPPort;               // Indicates the User Datagram Protocol (UDP) port of the sender (that is, transmitter).
+   uint32_t ui32DstIPv4Address;           // Indicates the IPv4 address of the destination (that is, receiver). Only used in multicast.
+   uint16_t ui16DstUDPport;               // Indicates the UDP port of the destination (that is, receiver).
    uint16_t ui16PID;                      // Indicates the Program Identifier (PID) of the connector. Range is [0..8191] (13 bits).
 };
 
 //
 // Summary:
-//    Describes the ASPEN video output connector settings.
+//    Describes the video output connector settings for an IP stream conforming to the ASPEN protocol.
 // Description:
 //
 typedef SMvAspenConnectorSettings SMvAspenVideoOutputConnectorSettings;
@@ -3666,19 +3781,156 @@ typedef SMvAspenConnectorSettings SMvAspenVideoOutputConnectorSettings;
 
 //
 // Summary:
-//    Describes the ASPEN audio output connector settings.
+//    Describes the audio output connector settings for an IP stream conforming to the ASPEN protocol.
 //
 typedef SMvAspenConnectorSettings SMvAspenAudioOutputConnectorSettings;
 
 //
 // Summary:
-//    Describes the ASPEN VANC output connector settings.
+//    Describes the ancillary data output connector settings for an IP stream conforming to the ASPEN protocol.
 //
 typedef SMvAspenConnectorSettings SMvAspenVancOutputConnectorSettings;
 
 //
 // Summary:
-//    Describes the SFP+ transceiver settings.
+//    Describes the generic output connector settings for an IP stream conforming to the SMPTE ST 2110 draft version.
+// Note:
+//    Draft version implies that SMPTE ST 2110 is not an official document. It is still under review and development, which means that it is subject to change.
+//
+struct SMvIpOutputConnectorSettings
+{
+   uint32_t ui32Size;                     // Structure size in bytes.
+   bool     bEnableFlow;                  // If true, indicates that the video, audio, or ancillary data portion of the output stream will be output.
+   uint32_t ui32RTPSyncSourceIdentifier;  // Indicates the RTP (Real-time Transfer Protocol) Synchronization Source Identifier (SSRC).
+   uint32_t ui32TypeOfServiceDSCP;        // Indicates that the Type of Service (ToS) is Differentiated Service Code Point (DSCP). Range is [0..63] (6 bits).
+   uint32_t ui32TypeOfServiceECN;         // Indicates that the Type of Service (ToS) is Explicit Congestion Notification (ECN). Range is [0..3] (2 bits).
+   uint32_t ui32TimeToLiveInSeconds;      // Indicates the time in which packets can be used in seconds. That is, it indicates the packets' Time to live (TTL).
+   uint16_t ui16SrcUDPPort;               // Indicates the User Datagram Protocol (UDP) port of the sender (that is, transmitter). 
+   uint32_t ui32DstIPv4Address;           // Indicates the IPv4 address of the destination (that is, receiver). Only used in multicast.
+   uint16_t ui16DstUDPport;               // Indicates the UDP port of the destination (that is, receiver).
+   uint8_t  ui8RTPPayloadID;              // Indicated the RTP (Real-time Transfer Protocol) payload ID.
+   bool     bRedundancyEnable;            // If true, enables the redundant stream for seamless reconstruction conforming to SMPTE ST 2022-7.
+   uint16_t ui16RedundancySrcUDPPort;     // Indicates the redundant stream UDP port of the sender (that is, transmitter).
+   uint32_t ui32RedundancyDstIPv4Address; // Indicates the redundant stream IPv4 address of the destination (that is, receiver). Only used in multicast.
+   uint16_t ui16RedundancyDstUDPPort;     // Indicates the redundant stream UDP port of the destination (that is, receiver).
+};
+
+//
+// Summary:
+//    Describes the video output connector settings for an IP stream conforming to the SMPTE ST 2110-20 draft version.
+// Note:
+//    Draft version implies that SMPTE ST 2110-20 is not an official document. It is still under review and development, which means that it is subject to change.
+//
+typedef SMvIpOutputConnectorSettings SMvIpVideoOutputConnectorSettings;
+
+//
+// Summary:
+//    Describes the audio output connector settings for an IP stream conforming to the SMPTE ST 2110-30 draft version.
+// Note:
+//    Draft version implies that SMPTE ST 2110-30 is not an official document. It is still under review and development, which means that it is subject to change.
+//
+typedef SMvIpOutputConnectorSettings SMvIpAudioOutputConnectorSettings;
+
+//
+// Summary:
+//    Describes the ancillary data output connector settings for an IP stream conforming to the SMPTE ST 2110-40 draft version.
+// Note:
+//    Draft version implies that SMPTE ST 2110-40 is not an official document. It is still under review and development, which means that it is subject to change.
+//
+typedef SMvIpOutputConnectorSettings SMvIpAncOutputConnectorSettings;
+
+//
+// Summary:
+//    Describes the generic ST2110 (IP) input connector settings.
+// Description:
+//
+struct SMvIpInputConnectorSettings
+{
+   uint32_t ui32Size;                           // Structure size in bytes.
+   bool     bEnableFlow;                        // Indicates that the flow will be used when an output stream is using the connector.
+   uint32_t ui32DstIPv4Address;                 // Indicates the reception multicast IPv4 address.
+   uint16_t ui16DstUDPPort;                     // Indicates the reception User Datagram Protocol (UDP) port.
+   uint32_t ui32SrcIPv4Address;                 // Remote IPv4 address. For future uses.
+   uint16_t ui16SrcUDPport;                     // Remote UDP port. For future uses.
+   bool     bEnableRTPPayloadIdFiltering;       // If true, indicate to use the value ui8RtpPayloadId to filter the incoming network packets.
+   uint8_t  ui8RTPPayloadID;                    // Indicated the RTP (Real-time Transfer Protocol) Payload ID to capture. Used when bEnableRtpPayloadIdFiltering is set to true.
+   EMvMulticastMembershipType eJoinType;        // Indicates the type of membership request done when field 
+                                                // ui32DstIPv4Address is a multicast address.
+   bool     bRedundancyEnable;                  // If true, enables the redundant stream for seamless reconstruction (SMPTE ST 2022-7)
+   uint32_t ui32RedundancySrcIPv4Address;       // Redundant stream remote IPv4 address. For future uses.
+   uint16_t ui16RedundancySrcUDPPort;           // Redundant stream remote UDP port. For future uses.
+   uint32_t ui32RedundancyDstIPv4Address;       // Indicates the redundant stream reception multicast IPv4 address
+   uint16_t ui16RedundancyDstUDPPort;           // Indicates the redundant stream reception UDP port.
+
+   uint32_t ui32PacketCacheUsageThreshold;         // Indicates the threshold to generate the IP packets cache utilization alarm.
+   uint32_t ui32PacketIntervalThreshold;           // Indicates the threshold to generate the clock cycle between IP packets alarm on main stream.
+   uint32_t ui32RedundancyPacketIntervalThreshold; // Indicates the threshold to generate the clock cycle between IP packets alarm on redundancy stream.
+};
+
+//
+// Summary:
+//    Describes the IP video input connector settings.
+//
+typedef SMvIpInputConnectorSettings SMvIpVideoInputConnectorSettings;
+
+//
+// Summary:
+//    Describes the IP audio input connector settings.
+//
+typedef SMvIpInputConnectorSettings SMvIpAudioInputConnectorSettings;
+
+//
+// Summary:
+//    Describes the IP ancillary data input connector settings.
+//
+typedef SMvIpInputConnectorSettings SMvIpAncInputConnectorSettings;
+
+//
+// Summary:
+//    Describes the common IP input status.
+//
+struct SMvIpConnectorStatus
+{
+   uint32_t          ui32Size;                           // Structure size in bytes.
+   bool              bIsFlowMatch;                       // If true, main stream match IP settings on SDI IP input 
+                                                         // connector settings.
+   bool              bIsRedundancyFlowMatch;             // If true, redundancy stream match IP settings on SDI IP
+                                                         // input connector settings.
+   bool              bPacketCacheOverflow;               // Indicates a IP packets cache utilization alarm.
+   bool              bPacketIntervalOverflow;            // Indicates a clock cycle between IP packets alarm on main
+                                                         // stream.
+   bool              bRedundancyPacketIntervalOverflow;  // Indicates a clock cycle between IP packets alarm on 
+                                                         // redundancy stream.
+   bool              bIsRecoveredFlowValid;              // If true, flow is valid on recovered stream.      
+};
+
+//
+// Summary:
+//    Describes the IP video input status.
+//
+struct SMvIpVideoConnectorStatus : public SMvIpConnectorStatus
+{
+};
+
+//
+// Summary:
+//    Describes the IP audio input status.
+//
+struct SMvIpAudioConnectorStatus : public SMvIpConnectorStatus
+{
+};
+
+//
+// Summary:
+//    Describes the IP ancillary data input status.
+//
+struct SMvIpAncConnectorStatus : public SMvIpConnectorStatus
+{
+};
+
+//
+// Summary:
+//    Describes the SFP+ port settings.
 //
 struct SMvSfpIpSettings
 {
@@ -3688,83 +3940,103 @@ struct SMvSfpIpSettings
    uint32_t ui32VirtualLANTagPCP;         // Indicates the Priority Code Point (PCP). This is a 3-bit field with a range of 0 to 7.
    bool     bEnableVirtualLANTagDEI;      // If true, enables the Drop Eligible Indicator (DEI) within the VLAN.
    uint32_t ui32VirtualLANTagVID;         // Indicates the VLAN identifier (VID). This is a 12-bit field with a range of 0 to 4095.
+   uint32_t ui32IPv4Gateway;              // Indicates the IPv4 Gateway.
+   uint32_t ui32IPv4Netmask;              // Indicates the IPv4 Netmask.
 };
 
 //
 // Summary:
-//    Describes the SFP+ transceiver input status.
+//    Describes the SFP+ port input status.
 //
 struct SMvSfpIpStatus
 {
    uint32_t ui32Size;                     // Structure size in bytes.
-   bool     bModulePresent;               // If true, indicates that an SFP+ transceiver is inserted in an SFP port.
-   bool     bSignalPresent;               // If true, indicates that an IP signal is detected by the SFP+ transceiver.
+   bool     bModulePresent;               // If true, indicates that an SFP+ transceiver is inserted in an SFP+ port.
+   bool     bSignalPresent;               // If true, indicates that an IP signal is detected by the SFP+ port.
    bool     bTransmitError;               // If true, indicates that an IP transmission error occurred.
 };
 
 //
 // Summary:
-//    Describes the SFP+ transceiver input status.
+//    Describes the telemetry information of the SFP+ transceiver and SFP+ port.
+//
+struct SMvSfpIpTelemetry
+{
+   uint32_t         ui32Size;                     // Structure size in bytes.
+   bool             bIsLinkActive;                // If true, IP packets are present in the signal.
+   SMvSfpSerialId   sSerialId;                    // Indicates the SFP+ transceiver serial ID EEPROM data. 
+   SMvSfpDiagnostic sDiagnostic;                  // Indicates the SFP+ transceiver diagnostic EEPROM data. 
+   uint64_t         ui64TxRate;                   // Indicates the number of bytes of IP packets transmitted.
+   uint64_t         ui64RxRate;                   // Indicates the number of bytes of IP packets received.
+   uint64_t         ui64TxPackets;                // Indicates the number of error-free IP packets transmitted.
+   uint64_t         ui64RxPackets;                // Indicates the number of error-free IP packets received.
+   uint64_t         ui64TxDroppedPackets;         // Indicates the number of IP packets dropped during transmission.
+   uint64_t         ui64RxPacketsInError;         // Indicates the number of IP packets received in error.
+};
+
+//
+// Summary:
+//    Describes the SFP+ port input status.
 //
 struct SMvSfpSdiStatus
 {
    uint32_t       ui32Size;                  // Structure size in bytes.
-   bool           bModulePresent;            // If true, indicates that an SFP+ transceiver is inserted in an SFP port.
+   bool           bModulePresent;            // If true, indicates that an SFP+ transceiver is inserted in an SFP+ port.
    bool           bSupportedModule;          // If false, the brand and make of the SFP+ transceiver is not supported.
-   bool           bCorrectModuleDirection;   // If false, the SFP+ transceiver direction does not match the direction 
-                                             // of the SFP port. For example, an output SFP+ transceiver is inserted
-                                             // in an output SFP port.
+   bool           bCorrectModuleDirection;   // If false, the SFP+ transceiver direction does not match the direction
+                                             // of the SFP+ port. For example, an output SFP+ transceiver is inserted
+                                             // in an output SFP+ port.
    SMvSfpSerialId sSerialId;                 // Indicates the SFP+ transceiver EEPROM data. Valid only when bModulePresent is true.
 };
 
 //
 // Summary:
-//    Describes the SFP+ transceiver capabilities.
+//    Describes the SFP+ port capabilities.
 //
 struct SMvSfpIpCapabilities
 {
    uint32_t ui32Size;                        // Structure size in bytes.
-   uint32_t ui32OutputStreamSdiIPmaxCount;   // Indicates the number of SDI IP outputs available on the SFP+ transceiver.
-   uint32_t ui32InputStreamSdiIPmaxCount;    // Indicates the number of SDI IP inputs available on the SFP+ transceiver.
+   uint32_t ui32OutputStreamSdiIPmaxCount;   // Indicates the number of SDI IP outputs available on the SFP+ port.
+   uint32_t ui32InputStreamSdiIPmaxCount;    // Indicates the number of SDI IP inputs available on the SFP+ port.
 };
 
 //
 // Summary:
-//    Describes the SDI IP input status.
+//    Describes the status of the input connector for an IP stream conforming to SMPTE 2022-6.
 //
 struct SMvSdiIpConnectorStatus
 {
-   uint32_t          ui32Size;                     // Structure size in bytes.
-   SMvResolutionInfo sDetectedResolution;          // Describes the resolution detected in the input signal.
-   bool              bIsSdiSignalPresent;          // If true, video data is present in the input signal.
-   bool              bIsInputFlyWheelLocked;       // If true, the input flywheel is locked.
-   bool              bIsSMPTE352PayloadIdValid;    // If true, the SMPTE 352 payload ID is valid.
-   USMPTE352Id       uSMPTE352PayloadId;           // Returns the SMPTE 352 payload ID.
-   bool              bIsIPPacketPresent;           // If true, IP packets are present in the signal.
-   bool              bIsMacAddressMatch;           // If true, Mac addresses on IP packets match Mac addresses on SDI IP input connector.
-   bool              bIsIPv4AddressMatch;          // If true, IPv4 addresses on IP packets match IPv4 addresses on SDI IP input connector settings.
-   bool              bIsUDPPortMatch;              // If true, User Datagram Protocol (UDP) ports on IP packets match UDP ports on SDI IP input connector settings.
-   uint32_t          ui32RTPSyncSourceIdentifier;  // Indicates the RTP (Real-time Transport Protocol) Synchronization Source Identifier (SSRC).
-   bool              bIsHwInputOverflow;           // Indicates an overflow error on the hardware IP packets processing module.
+   uint32_t          ui32Size;                           // Structure size in bytes.
+   SMvResolutionInfo sDetectedResolution;                // Describes the resolution detected in the input signal.
+   bool              bIsSdiSignalPresent;                // If true, video data is present in the input signal.
+   bool              bIsInputFlyWheelLocked;             // If true, the input flywheel is locked.
+   bool              bIsSMPTE352PayloadIdValid;          // If true, the SMPTE 352 payload ID is valid.
+   USMPTE352Id       uSMPTE352PayloadId;                 // Indicates the SMPTE 352 payload ID.
+                                                        
+   bool              bIsFlowMatch;                       // If true, the incoming main IP stream matches the input connector settings.
+   bool              bIsRedundancyFlowMatch;             // If true, the incoming redundant IP stream matches the input connector settings.
+   bool              bPacketCacheOverflow;               // If true, indicates an IP packets cache utilization alarm.
+   bool              bPacketIntervalOverflow;            // If true, indicates a clock cycle between the IP packets alarm on the main IP stream.
+   bool              bRedundancyPacketIntervalOverflow;  // If true, indicates a clock cycle between the IP packets alarm on the redundant IP stream.
 };
 
 //
 // Summary:
-//    Describes identification of the SMPTE 2059 network clock.
+//    Describes the master clock identification of the genlock over IP.
 //
 typedef union UMvMasterClockIdentity
 {
-   uint8_t  aui8Bytes[8];  // Specifies the PTP IEEE1588 clock identification as an array of bytes.
-   uint64_t ui64All;       // Specifies the PTP IEEE1588 clock identification as a 64 bits value.
+   uint8_t  aui8Bytes[8];  // Specifies the Precision Time Protocol (PTP) IEEE-1588 clock identification (ID) as an array of bytes.
+   uint64_t ui64All;       // Specifies the PTP IEEE-1588 clock ID as a 64-bit value.
 } TMvMasterClockIdentity;
 
 //
 // Summary:
-//    Specifies the type network delay mechanism used for communication with the SMPTE 2059 master clock.
+//    Specifies the type of network delay mechanism to use for the time server connection.
 //
 enum EMvSmpte2059DelayMechanism
 {
-   keMvSmpte2059DelayMechanismInvalid,       // Invalid value
+   keMvSmpte2059DelayMechanismInvalid,       // Invalid value.
    keMvSmpte2059DelayMechanismEndToEnd,      // Indicates that the end-to-end delay mechanism is used.
    keMvSmpte2059DelayMechanismPeerToPeer,    // Indicates that the pear-to-pear delay mechanism is used.
    keMvSmpte2059DelayMechanismLast           // End of list indicator.
@@ -3779,14 +4051,14 @@ enum EMvSmpte2059DelayMechanism
 
 //
 // Summary:
-//    Specifies the type of internet protocol connection to use for the SMPTE 2059 master clock.
+//    Specifies the type of internet protocol mode to use for the time server connection.
 //
 enum EMvSmpte2059IpMode
 {
-   keMvSmpte2059IpModeInvalid,      // Invalid value
-   keMvSmpte2059IpModeMulticast,    // Indicates the connection is done using multicast.
-   keMvSmpte2059IpModeUnicast,      // Indicates the connection is done using unicast.
-   keMvSmpte2059IpModeHybrid,       // Indicates the connection is done using hybrid mode.
+   keMvSmpte2059IpModeInvalid,      // Invalid value.
+   keMvSmpte2059IpModeMulticast,    // Indicates the connection is multicast.
+   keMvSmpte2059IpModeUnicast,      // Indicates the connection is unicast.
+   keMvSmpte2059IpModeHybrid,       // Indicates the connection is a hybrid mode.
    keMvSmpte2059IpModeLast          // End of list indicator.
 };
 
@@ -3800,24 +4072,24 @@ enum EMvSmpte2059IpMode
 
 //
 // Summary:
-//    Specifies the state of the card SMPTE 2059 signal.
+//    Specifies the state of the genlock over IP signal of the card.
 // Note:
-//    For more information about the genlock states, see the <i>Matrox DSX.sdk User Guide</i>.
+//    For more information about the genlock states, see the <i>Matrox DSX Topology API User Guide</i>.
 //
 enum EMvSmpte2059State
 {
-   keMvSmpte2059StateInvalid,          // Invalid value
-   keMvSmpte2059StateInitializing,     // Indicates an initializing connection with the time server.
+   keMvSmpte2059StateInvalid,          // Invalid value.
+   keMvSmpte2059StateInitializing,     // Indicates that the connection with the time server is being initialized.
    keMvSmpte2059StateFaulty,           // Indicates a faulty connection with the time server.
-   keMvSmpte2059StateDisabled,         // Indicates ???
-   keMvSmpte2059StateListening,        // Indicates ???
-   keMvSmpte2059StatePreMaster,        // Indicates ???
-   keMvSmpte2059StateMaster,           // Indicates ???
-   keMvSmpte2059StatePassive,          // Indicates ???
-   keMvSmpte2059StateUncalibrated,     // Indicates ???
-   keMvSmpte2059StateSlaveUnlocked,    // Indicates that a time server is being followed but the card is not locked 
+   keMvSmpte2059StateDisabled,         // Indicates that the connection with the time server is disabled.
+   keMvSmpte2059StateListening,        // Indicates that a time server is being observed.
+   keMvSmpte2059StatePreMaster,        // Indicates a pre-master time server state.
+   keMvSmpte2059StateMaster,           // Indicates a master time server state.
+   keMvSmpte2059StatePassive,          // Indicates a passive time server state.
+   keMvSmpte2059StateUncalibrated,     // Indicates an uncalibrated time server state.
+   keMvSmpte2059StateSlaveUnlocked,    // Indicates that a time server is being followed, but the card is not locked
                                        // to it.
-   keMvSmpte2059StateSlaveLocked,      // Indicates that a time server is being followed and the card is locked 
+   keMvSmpte2059StateSlaveLocked,      // Indicates that a time server is being followed and the card is locked
                                        // to the signal.
    keMvSmpte2059StateLast              // End of list indicator.
 };
@@ -3836,19 +4108,20 @@ enum EMvSmpte2059State
    (eSmpte2059State == keMvSmpte2059StateSlaveUnlocked) ? ("SlaveUnlocked") : \
    (eSmpte2059State == keMvSmpte2059StateSlaveLocked)   ? ("SlaveLocked") : \
    ("???"))
- 
+
 //
 // Summary:
-//    Specifies the algorithm to select the best master clock to control the card SMPTE 2059 signal.
+//    Specifies the best master clock algorithm (BMCA) used to select the genlock over IP signal.
 // Note:
-//    For more information about the best master clock selection algorithm, see the <i>Matrox DSX.sdk User Guide</i>.
+//    - For more information about selecting the BMCA, see the <i>Matrox DSX Topology API User Guide</i>.
+//    - For more information about the BMCA, see <i>IEEE Std 1588-2008</i>.
 //
 enum EMvSmpte2059BestMasterSelection
 {
-   keMvSmpte2059BestMasterSelectionInvalid,     // Invalid value
-   keMvSmpte2059BestMasterSelectionAutomatic,   // The best master clock is automatically selected.
-   keMvSmpte2059BestMasterSelectionSfpLabelA,   // Always choose the master clock from SFP cage A.
-   keMvSmpte2059BestMasterSelectionSfpLabelB,   // Always choose the master clock from SFP cage B.
+   keMvSmpte2059BestMasterSelectionInvalid,     // Invalid value.
+   keMvSmpte2059BestMasterSelectionAutomatic,   // Indicates that the BMCA is selected automatically.
+   keMvSmpte2059BestMasterSelectionSfpLabelA,   // Indicates that the BMCA selected is from SFP+ port A.
+   keMvSmpte2059BestMasterSelectionSfpLabelB,   // Indicates that the BMCA selected is from SFP+ port B.
    keMvSmpte2059BestMasterSelectionLast         // End of list indicator.
 };
 
@@ -3862,67 +4135,66 @@ enum EMvSmpte2059BestMasterSelection
 
 //
 // Summary:
-//    Specifies the PTP IEEE 1588 time of day from epoch time (Midnight, 1 January 1970).
+//    Specifies the Precision Time Protocol (PTP) IEEE-1588 time of day from Epoch time (Midnight, 1 January 1970).
 // Description:
-//    The value is 64 bits from epoch time in seconds and fraction of seconds. It will loop around in January 2038.
-//    The value can also be sued as a positive or negative relative value.
+//    This is a 64-bit value from Epoch time in seconds and fractions of a second. It will loop around in January 2038.
+//    The value can also be used as a positive or negative relative value.
 //
 struct SMvTimeOfDay
 {
-   int32_t  i32Seconds;       // Indicates the number of seconds since epoch time.
-   int32_t  i32NanoSeconds;   // Indicates the fraction of seconds in nanoseconds.
+   int32_t  i32Seconds;       // Indicates the number of seconds since Epoch time.
+   int32_t  i32NanoSeconds;   // Indicates the fractions of a second (in nanoseconds).
 };
 
 //
 // Summary:
-//    Specifies settings of the card SMPTE 2059 source.
+//    Specifies genlock over IP settings that will be used to control the card.
 //
 struct SMvSmpte2059Settings
 {
    uint32_t ui32Size;                                                // Structure size in bytes.
-   EMvSmpte2059BestMasterSelection eBestMasterSelectionAlgorithm;    // Indicates the master clock selection algorithm 
-                                                                     // between the SFP cages on the card.
+   EMvSmpte2059BestMasterSelection eBestMasterSelectionAlgorithm;    // Indicates the best master clock algorithm (BMCA) that will be used to select
+                                                                     // the genlock over IP signal.
 };
 
 //
 // Summary:
-//    Specifies the status of the card SMPTE 2059 source.
+//    Specifies the genlock over IP signal status of the card.
 //
 struct SMvSmpte2059Status
 {
    uint32_t ui32Size;                           // Structure size in bytes.
-   EMvSmpte2059State eState;                    // Indicates the state of the SMPTE 2059 source.
-   EMvSfpLabel eBestMasterClockSfpLabel;        // Indicates the SFP cage that is used as a master clock.
-   TMvMasterClockIdentity oBestMasterClockId;   // Indicates the identity of the master clock.
+   EMvSmpte2059State eState;                    // Indicates the state of the genlock over IP signal.
+   EMvSfpLabel eBestMasterClockSfpLabel;        // Indicates the SFP+ port that will be used as the master clock.
+   TMvMasterClockIdentity oBestMasterClockId;   // Indicates the master clock identity (see UMvMasterClockIdentity).
 };
 
 //
 // Summary:
-//    Specifies the settings the SMPTE 2059 SFP.
+//    Specifies the settings used to configure the genlock over IP settings for the SFP+ port.
 //
 struct SMvSmpte2059SfpSettings
 {
    uint32_t ui32Size;                           // Structure size in bytes.
    uint32_t ui32TypeOfServiceDSCP;              // Indicates that the Type of Service (ToS) is Differentiated Service Code Point (DSCP). Range is [0..63] (6 bits).
-   EMvSmpte2059DelayMechanism eDelayMechanism;  // Indicates the type of delay mechanism to use with the time server 
+   EMvSmpte2059DelayMechanism eDelayMechanism;  // Indicates the type of delay mechanism to use for the time server
                                                 // connection.
-   EMvSmpte2059IpMode eIpMode;                  // Indicates the type of internet protocol mode to use with the time 
+   EMvSmpte2059IpMode eIpMode;                  // Indicates the type of internet protocol mode to use for the time
                                                 // server connection.
-   uint8_t ui8MasterClockDomainNumber;          // Indicates the time server clock domain to listen to.
+   uint8_t ui8MasterClockDomainNumber;          // Indicates the time server clock domain number to use.
 };
 
 //
 // Summary:
-//    Specifies the diagnostic informations of the SMPTE 2059 SFP.
+//    Specifies the diagnostic information for the genlock over IP of the SFP+ port.
 //
 struct SMvSmpte2059SfpTelemetry
 {
    uint32_t ui32Size;                           // Structure size in bytes.
-   TMvMasterClockIdentity oBestMasterClockId;   // Indicates the clock identity of the best master clock for the SFP
-   int32_t i32OffsetFromMaster;                 // Indicates the computed offset of the best master clock for the SFP 
-                                                // and the master clock.
-   SMvTimeOfDay sLastCorrection;                // Indicates the time of day of the last correction done on the SFP 
-   EMvSmpte2059State eState;                    // Indicates the state of the SMPTE 2059 source for the SFP.
+   TMvMasterClockIdentity oBestMasterClockId;   // Indicates the master clock identity of the best master clock algorithm (BMCA) for the SFP+ port.
+   int32_t i32OffsetFromMaster;                 // Indicates the computed offset between the BMCA for the SFP+ port and the card's master clock.
+   SMvTimeOfDay sLastCorrection;                // Indicates the time of day of the last correction applied to the SFP+ port.
+   EMvSmpte2059State eState;                    // Indicates the state of the genlock over IP signal of the SFP+ port.
 };
 
 //
@@ -3965,11 +4237,11 @@ struct SMvGenlockSettings
    uint32_t ui32Size;                  // Structure size in bytes.
    double dHorizontalDelay;            // Controls the horizontal delay on the genlock circuit in seconds. The genlock delay is a combination of dHorizontalDelay and ui32VerticalDelayInLines. <p>
                                        // For SD, the granularity is 0.5 pixel (approximately 37.037 nanoseconds), and the range is from zero to (Htotal - 0.5) * 74.074 x 10<sup>-9</sup>. Where Htotal is the total horizontal width in pixels. <p>
-                                       // For 720p at 24, 25, 30, 50, or 60 fps and 1080p at 24, 25, or 30 fps, the granularity is 1 pixel (approximately 13.468 nanoseconds), and the range is from zero to (Htotal - 1) * 13.468 x 10<sup>-9</sup>.<p> 
-                                       // For 720p at 23.98, 29.97, or 59.94 fps and 1080p at 23.98 or 29.97 fps, the granularity is 1 pixel (approximately 13.481 nanoseconds), and the range is from zero to (Htotal - 1) * 13.481 x 10<sup>-9</sup>.<p> 
-                                       // For 1080p at 50 or 60 fps, the granularity is 1 pixel (approximately 6.734 nanoseconds), and the range is from zero to (Htotal - 1) * 6.734 x 10<sup>-9</sup>.<p> 
-                                       // For 1080p at 59.94 fps, the granularity is 1 pixel (approximately 6.740 nanoseconds), and the range is from zero to (Htotal - 1) * 6.740 x 10<sup>-9</sup>.<p> 
-                                       // Refer to the following table for Htotal values and approximate duration of a pixel at different resolutions.<p> 
+                                       // For 720p at 24, 25, 30, 50, or 60 fps and 1080p at 24, 25, or 30 fps, the granularity is 1 pixel (approximately 13.468 nanoseconds), and the range is from zero to (Htotal - 1) * 13.468 x 10<sup>-9</sup>.<p>
+                                       // For 720p at 23.98, 29.97, or 59.94 fps and 1080p at 23.98 or 29.97 fps, the granularity is 1 pixel (approximately 13.481 nanoseconds), and the range is from zero to (Htotal - 1) * 13.481 x 10<sup>-9</sup>.<p>
+                                       // For 1080p at 50 or 60 fps, the granularity is 1 pixel (approximately 6.734 nanoseconds), and the range is from zero to (Htotal - 1) * 6.734 x 10<sup>-9</sup>.<p>
+                                       // For 1080p at 59.94 fps, the granularity is 1 pixel (approximately 6.740 nanoseconds), and the range is from zero to (Htotal - 1) * 6.740 x 10<sup>-9</sup>.<p>
+                                       // Refer to the following table for Htotal values and approximate duration of a pixel at different resolutions.<p>
                                        // <b>Note:</b> The exact duration of a pixel (in seconds) can be calculated as follows: 1 / (frame rate * Htotal * Vtotal), where Vtotal is the total vertical height in pixels.
    uint32_t ui32VerticalDelayInLines;  // Controls the vertical delay on the genlock circuit in lines.
                                        // The output delay is a combination of dHorizontalDelay and ui32VerticalDelayInLines.
@@ -3986,9 +4258,9 @@ struct SMvGenlockSettings
    bool bEnableTermination;            // If true, activates the electrical termination of the genlock input (REF IN).
    bool bEnableGenlockClockOffset;     // If true, activates the manual control of the genlock clock speed.
    double dGenlockClockOffsetPPM;      // If bEnableGenlockClockOffset is set to true, this parameter controls the genlock clock speed, which is defined in parts
-                                          // per million (PPM). A positive value will increase the speed of the clock, while a negative value will decrease the speed. 
+                                          // per million (PPM). A positive value will increase the speed of the clock, while a negative value will decrease the speed.
                                           // The granularity is approximately 0.003 PPM and the valid range is -160.0 PPM to +160.0 PPM. <p>
-                                          // <b>Note:</b> When the clock speed is modified, it is strongly recommended that your DSX card be monitored and 
+                                          // <b>Note:</b> When the clock speed is modified, it is strongly recommended that your DSX card be monitored and
                                           // controlled constantly to make sure it follows the external clock.
 };
 
@@ -4026,7 +4298,7 @@ struct SMvInputStreamSettings
    EMvInputStreamMode eInputStreamMode;                     // Indicates the time base correction applied to the input stream.
    SMvAudioInputStreamSettings sAudioInputStreamSettings;   // Indicates the audio input stream settings.
    EMvQuadrant                 aeVideoConnectorPosition[kui32MaxConnectorQuadrants];  // Indicates the quadrant of a UHD image
-                                                            // to which an SDI input connector corresponds. Only valid on hardware 
+                                                            // to which an SDI input connector corresponds. Only valid on hardware
                                                             // that supports UHD resolutions.
 };
 
@@ -4037,18 +4309,18 @@ struct SMvInputStreamSettings
 struct SMvMixerStreamNodeSettings
 {
    uint32_t ui32Size;         // Structure size in bytes.
-   double dNodeTransparency;  // Indicates the transparency that will be applied on the node's image.  
+   double dNodeTransparency;  // Indicates the transparency that will be applied on the node's image.
                                  // The range is from zero (completely transparent) to one (completely opaque).
    SMvPointF ptNodePosition;  // Indicates the coordinates where the node's image will be placed.
                                  // The range is from -4096 to 4096 for both the X and Y axis.
    bool bUseAlpha;            // If true, uses the node's image alpha.
    bool bIsVideoShaped;       // If true, the node's video is already multiplied by its alpha.
-   uint64_t ui64AdvancedDelayInNanoTime; // Indicates the delay (in nanotime) that will be applied to a mixer stream's layer. The value must be frame aligned. 
+   uint64_t ui64AdvancedDelayInNanoTime; // Indicates the delay (in nanotime) that will be applied to a mixer stream's layer. The value must be frame aligned.
                                              // The advanced delay must be less than the node depth
-                                             // minus the node's write-to-read delay minus three frames. That is, <p> 
+                                             // minus the node's write-to-read delay minus three frames. That is, <p>
                                              // <i> Advance delay < node depth - node's write-to-read delay - 3 frames </i>
-   bool bChromaFilterARGB;     // If true, applies a chroma filter when converting an ARGB layer to YUV color space. 
-                               // Applies only to ARGB layers. 
+   bool bChromaFilterARGB;     // If true, applies a chroma filter when converting an ARGB layer to YUV color space.
+                               // Applies only to ARGB layers.
 };
 
 //
@@ -4058,9 +4330,9 @@ struct SMvMixerStreamNodeSettings
 enum EMvCompositingMode
 {
    keMvCompositingModeInvalid,      // Invalid value.
-   keMvCompositingModeUpStream,     // Indicates that the mixer stream will compose layers without a background.  
+   keMvCompositingModeUpStream,     // Indicates that the mixer stream will compose layers without a background.
                                        // The resulting image will be composed on a background later.
-   keMvCompositingModeDownStream,   // Indicates that the mixer stream will compose layers over a background.  The 
+   keMvCompositingModeDownStream,   // Indicates that the mixer stream will compose layers over a background.  The
                                        // resulting image is the final result that will be viewed on a monitor.
    keMvCompositingModeLast          // End of list indicator.
 };
@@ -4079,16 +4351,16 @@ enum EMvCompositingMode
 struct SMvMixerStreamSettings
 {
    uint32_t              ui32Size;              // Structure size in bytes.
-   EMvNodeContent        eNodeContentToProcess; // Indicates the type of data in the stream to process. For example, video data only, VANC data only, or 
+   EMvNodeContent        eNodeContentToProcess; // Indicates the type of data in the stream to process. For example, video data only, ancillary data only, or
                                                 // any other data combination.
    bool                  bProcessAudio;         // If true, the mixer stream selects an audio from one of its input layers.
    uint32_t              ui32AudioSelect;       // Indicates the audio layer to apply to the mixer stream's output. The value ranges from
                                                 // zero (background) to the number of layers. Can only be applied if bProcessAudio is set to true.
                                                 // If eCompositingMode is set to keMvCompositingModeUpStream, zero cannot be used as an audio layer.
-   bool                  bProcessVanc;          // If true, the mixer stream selects a VANC from one of its input layers.
-   uint32_t              ui32VancSelect;        // Indicates the VANC layer to apply to the mixer stream's output. The value ranges from
+   bool                  bProcessVanc;          // If true, the mixer stream selects ancillary data from one of its input layers.
+   uint32_t              ui32VancSelect;        // Indicates the ancillary data layer to apply to the mixer stream's output. The value ranges from
                                                 // zero (background) to the number of layers. Can only be applied if bProcessAudio is set to true.
-                                                // If eCompositingMode is set to keMvCompositingModeUpStream, zero cannot be used as a VANC layer.
+                                                // If eCompositingMode is set to keMvCompositingModeUpStream, zero cannot be used as an ancillary data layer.
    EMvCompositingMode    eCompositingMode;      // Indicates the type of composition that the mixer stream performs on the video.
    EMvColor              eBackgroundColor;      // Indicates the color of the background. Can only be applied if eCompositingMode is set to keMvCompositingModeDownStream
                                                 // and eBackgroundHandling is set to keMvBackgroundHandlingColor.
@@ -4097,11 +4369,11 @@ struct SMvMixerStreamSettings
                                                 // Can only be applied if eCompositingMode is set to keMvCompositingModeDownStream.
    bool                  bIsOutputVideoShaped;  // If true, the mixer stream generates a video that is already multiplied by its alpha.
                                                 // Can only be applied if eCompositingMode is set to keMvCompositingModeUpStream.
-   bool                  bBackgroundChromaFilterARGB;  // If true, applies a chroma filtering when converting an ARGB background to YUV color space. 
+   bool                  bBackgroundChromaFilterARGB;  // If true, applies a chroma filtering when converting an ARGB background to YUV color space.
                                                        // Applies only if eBackgroundHandling is keMvBackgroundHandlingWaitAndCopy and the node was created with a video surface format
-                                                       // (SMvNodeSettingsVideo::eSurfaceFormat) of keMvSurfaceFormatARGBGraphic. 
+                                                       // (SMvNodeSettingsVideo::eSurfaceFormat) of keMvSurfaceFormatARGBGraphic.
    uint64_t              ui64BackgroundNodeAdvancedDelayInNanoTime;  // Indicates the delay (in nanotime) that will be applied to a mixer stream's background. The value must be frame aligned.
-                                                                     // The advanced delay must be less than the node depth minus the node's write-to-read delay minus three frames. That is, <p> 
+                                                                     // The advanced delay must be less than the node depth minus the node's write-to-read delay minus three frames. That is, <p>
                                                                      // <i> Advance delay < node depth - node's write-to-read delay - 3 frames </i>
 
 };
@@ -4117,22 +4389,22 @@ struct SMvNodeSettingsAudio
    EMvAudioDataType eDataType;      // Type of audio data samples (for example, PCM, float, etc.).
    uint32_t ui32BitsPerSample;      // Bits per sample for the format type. This value represents the container size.
                                     // This field must be greater than or equal to ui32ValidBitsPerSample.
-   uint32_t ui32ValidBitsPerSample; // Valid bits per sample for the format type. This value represents the data size within the container. 
+   uint32_t ui32ValidBitsPerSample; // Valid bits per sample for the format type. This value represents the data size within the container.
                                     // This field must be less than or equal to ui32BitsPerSample.
 };
 
 //
 // Summary:
-//    Describes the node's VANC settings.
+//    Describes the node's ancillary data settings.
 //
 struct SMvNodeSettingsVanc
 {
    uint32_t ui32Size;               // Structure size in bytes.
-   uint32_t ui32ComponentBitCount;  // The bits per component of the VANC surface that is kept.  The value must be 10 bits 
+   uint32_t ui32ComponentBitCount;  // The bits per component of the ancillary data surface that is kept.  The value must be 10 bits
                                        // when eVancFormat is set to keMvSurfaceFormatYUYV422 and 16 bits
                                        // when eVancFormat is set to keMvSurfaceFormatMatroxAncillaryData.
-   EMvSurfaceFormat eVancFormat;    // Indicates the VANC data format of the node.  Only keMvSurfaceFormatYUYV422
-                                       // and keMvSurfaceFormatMatroxAncillaryData are valid for indicating the VANC data format.
+   EMvSurfaceFormat eVancFormat;    // Indicates the ancillary data format of the node.  Only keMvSurfaceFormatYUYV422
+                                       // and keMvSurfaceFormatMatroxAncillaryData are valid for indicating the ancillary data format.
 };
 
 
@@ -4141,23 +4413,23 @@ struct SMvNodeSettingsVanc
 //    Describes the node's settings.
 // Description:
 //<table>
-//   Type of stream to which node is connected       <i> xmin </i>       <i> x </i>  
+//   Type of stream to which node is connected       <i> xmin </i>       <i> x </i>
 // -----------------------------------------     -----------------   --------------
-// Input stream                                  2 <sup>a</sup>      4           
-// Output stream                                 1 <sup>b</sup>      3           
-// Transform stream (input)                      1 <sup>c</sup>      3 <sup>d</sup>        
-// Transform stream (output)                     1 <sup>e f</sup>    3           
-// Mixer stream (output)                         1                   3           
-// De-interlacer stream (input)                  1                   3           
-// De-interlacer stream (output)                 1 <sup>f</sup>      3           
-// Transfer stream (input) <sup>g</sup>          1                   3           
-// Transfer stream (output) <sup>g</sup>         1                   3     
-// Reader stream                                 1                   7           
-// Writer stream                                 1                   7           
+// Input stream                                  2 <sup>a</sup>      4
+// Output stream                                 1 <sup>b</sup>      3
+// Transform stream (input)                      1 <sup>c</sup>      3 <sup>d</sup>
+// Transform stream (output)                     1 <sup>e f</sup>    3
+// Mixer stream (output)                         1                   3
+// De-interlacer stream (input)                  1                   3
+// De-interlacer stream (output)                 1 <sup>f</sup>      3
+// Transfer stream (input) <sup>g</sup>          1                   3
+// Transfer stream (output) <sup>g</sup>         1                   3
+// Reader stream                                 1                   7
+// Writer stream                                 1                   7
 // </table>
 // Remarks:
-// - <sup>a</sup> For Matrox X.mio3 (12G, IP, FH, LP) and DSX LE4, xmin is 1 when the system clock is derived from an input, or a genlock source that is genlocked to an SDI input or a black burst source.  
-//   If a black burst source is used, all the SDI inputs must be aligned to the black burst with a tolerance of 650 µs.
+// - <sup>a</sup> For Matrox X.mio3 (12G, IP, FH, LP) and DSX LE4, xmin is 1 when the system clock is derived from an input, or a genlock source that is genlocked to an SDI input or a black burst source.
+//   If a black burst source is used, all the SDI inputs must be aligned to the black burst with a tolerance of 650 Âµs.
 // - <sup>b</sup> For Matrox X.mio3 (12G, IP, FH, LP) and DSX LE4, xmin can be zero when a low latency output stream is required. In this case, the node content must be ready at
 //   least 8 ms before it is sent to the output stream.
 // - <sup>c</sup> xmin is 4 in the case of a 3:2 pulldown or frame rate change from 50, 59.94, or 60 fps to 25, 29.97, or 30 fps.
@@ -4171,18 +4443,18 @@ struct SMvNodeSettings
    uint32_t ui32Size;                        // Structure size in bytes.
    char szName[32];                          // Indicates the name that will be given to the node.
    EMvNodeContent eNodeContent;              // Indicates the type of content in the node.
-   uint64_t ui64WriteToReadDelayInNanoTime;  // Indicates the delay (in nanotime) between a stream putting data into 
-                                                // the node and another stream retrieving data from the node.  
+   uint64_t ui64WriteToReadDelayInNanoTime;  // Indicates the delay (in nanotime) between a stream putting data into
+                                                // the node and another stream retrieving data from the node.
                                                 // The write-to-read delay must be at least <i> xmin </i> frames, and less than or equal to the node depth
                                                 // (ui32Depth) minus <i> x </i> frames. That is, <p>
                                                 // <i> xmin frames <= ui64WriteToReadDelayInNanoTime <= ui32Depth - x frames </i> <p>
-                                                // The values of <i> xmin </i> and <i> x </i> depend on the type of stream to which the node is connected. 
+                                                // The values of <i> xmin </i> and <i> x </i> depend on the type of stream to which the node is connected.
                                                 // The following table contains the values for <i> xmin </i> and <i> x </i>.
-   uint32_t ui32Depth;                       // Indicates the maximum number of frames that will be kept in the node at any time. 
-                                                // The node depth must be greater than or equal to 
+   uint32_t ui32Depth;                       // Indicates the maximum number of frames that will be kept in the node at any time.
+                                                // The node depth must be greater than or equal to
                                                 // the write-to-read delay (ui64WriteToReadDelayInNanoTime) plus <i> x </i> frames. That is, <p>
                                                 // <i> ui32Depth >= ui64WriteToReadDelayInNanoTime + x frames </i> <p>
-                                                // The value of <i> x </i> depends on the type of stream to which the node is connected. 
+                                                // The value of <i> x </i> depends on the type of stream to which the node is connected.
                                                 // The following table contains the values for <i> x </i>.
                                                 //
 };
@@ -4194,20 +4466,20 @@ struct SMvNodeSettings
 enum EMvNodeType
 {
    keMvNodeTypeInvalid,             // Invalid value.
-   keMvNodeTypeCard,                // Indicates that the node contains uncompressed data in the card's onboard memory. 
+   keMvNodeTypeCard,                // Indicates that the node contains uncompressed data in the card's onboard memory.
                                     // The IMvNode interface is used to interact with this type of node.
-   keMvNodeTypeHost,                // Indicates that the node contains uncompressed data in host memory.  
+   keMvNodeTypeHost,                // Indicates that the node contains uncompressed data in host memory.
                                     // The IMvHostNode interface is used to interact with this type of node.
-   keMvNodeTypeCompressedHost,      // Indicates that the node contains compressed data in host memory.  
+   keMvNodeTypeCompressedHost,      // Indicates that the node contains compressed data in host memory.
                                     // The IMvCompressedHostNode interface is used to interact with this type of node.
-   keMvNodeTypeSharedHost,          // Indicates that the node contains uncompressed data in shared host memory.  
+   keMvNodeTypeSharedHost,          // Indicates that the node contains uncompressed data in shared host memory.
                                     // The IMvHostNode interface is used to interact with this type of node.
-   keMvNodeTypeAliasCard,           // Indicates that the node contains uncompressed read-only data in the card's shared onboard memory. 
+   keMvNodeTypeAliasCard,           // Indicates that the node contains uncompressed read-only data in the card's shared onboard memory.
                                     // The IMvNode interface is used to interact with this type of node.
-   keMvNodeTypeTextureGpu,          // Indicates that the node contains host data that can be used as a texture in 
+   keMvNodeTypeTextureGpu,          // Indicates that the node contains host data that can be used as a texture in
                                     // the GPU. The IMvTextureNode interface is used to interact with this type of node.
    keMvNodeTypeRenderingTargetGpu,  // Indicates that the node contains host data that can be used as a rendering
-                                    // target in the GPU. The IMvRenderingTargetNode interface is used to interact 
+                                    // target in the GPU. The IMvRenderingTargetNode interface is used to interact
                                     // with this type of node.
    keMvNodeTypeLast                 // End of list indicator.
 };
@@ -4244,7 +4516,7 @@ struct SMvOutputStreamSettings
    SMvAudioOutputStreamSettings sAudioOutputStreamSettings; // Indicates the audio settings of the output stream.
    SMvVideoOutputStreamSettings sVideoOutputStreamSettings; // Indicates the video settings of the output stream.
    EMvQuadrant                  aeVideoConnectorPosition[kui32MaxConnectorQuadrants];  // Indicates the quadrant of a UHD image
-                                                            // to which an SDI output connector corresponds. Only valid on hardware 
+                                                            // to which an SDI output connector corresponds. Only valid on hardware
                                                             // that supports UHD resolutions.
 };
 
@@ -4257,25 +4529,25 @@ struct SMvOutputStreamSettings
 struct SMvVideoTransformSettings
 {
    EMvVideoTransformType eVideoTransformType;   // Indicates the type of video scaling done by the transform stream.
-   SMvRect sInputRect;                          // Indicates which part of the image obtained from the input node of 
+   SMvRect sInputRect;                          // Indicates which part of the image obtained from the input node of
                                                    // the transform stream to scale.
-   SMvRect sOutputRect;                         // If eVideoTransformType is set to keMvVideoTransformTypeRegion, a rectangular area from the 
+   SMvRect sOutputRect;                         // If eVideoTransformType is set to keMvVideoTransformTypeRegion, a rectangular area from the
                                                    // transform stream's input node is scaled to the size of a rectangular area in the transform stream's output node.
                                                    // The size of the output node video content is the same as the output node's resolution. The rest of the image is black. <p>
                                                    // If eVideoTransformType is set to keMvVideoTransformTypeResize, a rectangular area from the
                                                    // transform stream's input node is scaled to the size of an output rectangle in the transform stream's output node.
-                                                   // Each frame sent to the output node is resized independently of other frames and independently of the node's resolution. 
+                                                   // Each frame sent to the output node is resized independently of other frames and independently of the node's resolution.
                                                    // The resized frames must be in a lower resolution than the output node's resolution.
    uint64_t ui64InputNodeAdvancedDelayInNanoTime; // Indicates the delay (in nanotime) that will be applied to a transform stream's input.
                                                   // The value must be frame aligned both at the input and the output.
-                                                  // The advanced delay must be less than the node depth minus the node's write-to-read delay minus three frames. That is, <p> 
+                                                  // The advanced delay must be less than the node depth minus the node's write-to-read delay minus three frames. That is, <p>
                                                   // <i> Advance delay < node depth - node's write-to-read delay - 3 frames </i>
    EMvTransformProcessing eProcessFields;      // Indicates how the transform stream processes data.
    bool bVerticalFilterManualControl;          // If true, the vertical filter sharpness control is done manually instead of automatically.
-                                                   // It is recommended to manually control the vertical filter when downscaling, to reduce aliasing without blurring the image.  
+                                                   // It is recommended to manually control the vertical filter when downscaling, to reduce aliasing without blurring the image.
    uint32_t ui32VerticalFilterManualValue;     // When vertical filter control is manual, indicates the selected sharpness control value.
                                                    // Range is 0 to 9. Typical value is "3". A value of "0" disables filtering. Lower values will generate sharper images,
-                                                   // higher values will generate softer images. 
+                                                   // higher values will generate softer images.
    EMvTransformFilterCoefficients eTransformFilterCoefficients; // Indicates the filter coefficient used by the transform stream. Default value is keMvTransformFilterCoeffStandard.
 };
 
@@ -4287,7 +4559,7 @@ struct SMvSdiVideoInputConnectorSettings
 {
    bool bEnable3GLevelB;      // Selects which 3G level to use when the input is 1080p @ 50 fps, 59.94 fps, or 60 fps. <p>
                               // If true, enables SMPTE 425M (3G) Level B mapping. <p>
-                              // If false, enables SMPTE 425M (3G) Level A mapping. <p> 
+                              // If false, enables SMPTE 425M (3G) Level A mapping. <p>
                               // Uses a parameter of type EMvOnOff.
 };
 
@@ -4341,29 +4613,29 @@ struct SMvSdiInputConnectorSettings
 struct SMvSdiVideoOutputConnectorSettings
 {
    double dLineBufferHorizonalDelay;   // Sets the SDI line buffer delay in pixels. For digital video only. The range is -256 to 256.
-   double dHorizontalFrameDelay;       // Controls the horizontal frame delay on the SDI output circuit in seconds. 
-                                       // The output delay is a combination of dHorizontalFrameDelay, ui32VerticalFrameDelay, 
+   double dHorizontalFrameDelay;       // Controls the horizontal frame delay on the SDI output circuit in seconds.
+                                       // The output delay is a combination of dHorizontalFrameDelay, ui32VerticalFrameDelay,
                                        // and dLineBufferHorizonalDelay, if dLineBufferHorizonalDelay is supported on your hardware.<p>
                                        // For SD, the granularity is 0.5 pixel (approximately 37.037 nanoseconds), and the range is from zero to (Htotal - 0.5) * 74.074 x 10<sup>-9</sup>. Where Htotal is the total horizontal width in pixels. <p>
-                                       // For 720p at 24, 25, 30, 50, or 60 fps and 1080p at 24, 25, or 30 fps, the granularity is 1 pixel (approximately 13.468 nanoseconds), and the range is from zero to (Htotal - 1) * 13.468 x 10<sup>-9</sup>.<p> 
-                                       // For 720p at 23.98, 29.97, or 59.94 fps and 1080p at 23.98 or 29.97 fps, the granularity is 1 pixel (approximately 13.481 nanoseconds), and the range is from zero to (Htotal - 1) * 13.481 x 10<sup>-9</sup>.<p> 
-                                       // For 1080p at 50 or 60 fps, the granularity is 1 pixel (approximately 6.734 nanoseconds), and the range is from zero to (Htotal - 1) * 6.734 x 10<sup>-9</sup>.<p> 
-                                       // For 1080p at 59.94 fps, the granularity is 1 pixel (approximately 6.740 nanoseconds), and the range is from zero to (Htotal - 1) * 6.740 x 10<sup>-9</sup>.<p> 
-                                       // Refer to the following table for Htotal values and approximate duration of a pixel at different resolutions.<p> 
+                                       // For 720p at 24, 25, 30, 50, or 60 fps and 1080p at 24, 25, or 30 fps, the granularity is 1 pixel (approximately 13.468 nanoseconds), and the range is from zero to (Htotal - 1) * 13.468 x 10<sup>-9</sup>.<p>
+                                       // For 720p at 23.98, 29.97, or 59.94 fps and 1080p at 23.98 or 29.97 fps, the granularity is 1 pixel (approximately 13.481 nanoseconds), and the range is from zero to (Htotal - 1) * 13.481 x 10<sup>-9</sup>.<p>
+                                       // For 1080p at 50 or 60 fps, the granularity is 1 pixel (approximately 6.734 nanoseconds), and the range is from zero to (Htotal - 1) * 6.734 x 10<sup>-9</sup>.<p>
+                                       // For 1080p at 59.94 fps, the granularity is 1 pixel (approximately 6.740 nanoseconds), and the range is from zero to (Htotal - 1) * 6.740 x 10<sup>-9</sup>.<p>
+                                       // Refer to the following table for Htotal values and approximate duration of a pixel at different resolutions.<p>
                                        // <b>Note:</b> The exact duration of a pixel (in seconds) can be calculated as follows: 1 / (frame rate * Htotal * Vtotal), where Vtotal is the total vertical height in pixels.
    uint32_t ui32VerticalFrameDelay;    // Controls the vertical delay on the SDI output circuit in lines.
                                        // The output delay is a combination of dHorizontalFrameDelay, ui32VerticalFrameDelay,
                                        // and dLineBufferHorizonalDelay, if dLineBufferHorizonalDelay is supported on your hardware.
                                        // The range is from zero to Vtotal minus 1. Refer to the following table for Vtotal values at different resolutions.<p>
                                        // <b>Note:</b> The exact duration of a line (in seconds) can be calculated as follows: 1 / (frame rate * Vtotal)
-   bool bEnable3GLevelB;               // Selects which 3G level to use when the output is 1080p at 50 fps, 59.94 fps, or 60 fps. 
-                                       // If true, enables SMPTE 425M (3G) Level B mapping. Otherwise, enables SMPTE 425M (3G) Level A mapping. 
+   bool bEnable3GLevelB;               // Selects which 3G level to use when the output is 1080p at 50 fps, 59.94 fps, or 60 fps.
+                                       // If true, enables SMPTE 425M (3G) Level B mapping. Otherwise, enables SMPTE 425M (3G) Level A mapping.
    bool bEnableSMPTE352;               // If true, enables SMPTE 352 packets.
    double dAlphaLineBufferHorizonalDelay;   // Sets the SDI Alpha line buffer delay in pixels.  The range is -256 to 256.
                                        // This control applies only to the alpha channel on an output with video and alpha.
-                                       // The alpha channel output delay is a combination of dHorizontalFrameDelay, ui32VerticalFrameDelay, 
+                                       // The alpha channel output delay is a combination of dHorizontalFrameDelay, ui32VerticalFrameDelay,
                                        // and dAlphaLineBufferHorizonalDelay, if dAlphaLineBufferHorizonalDelay is supported on your hardware.
-   bool bInterleavePixels;             // If true, enables outputting UHD resolutions by setting the proper SMPTE ST 352 IDs to images that have been divided using the 2-sample 
+   bool bInterleavePixels;             // If true, enables outputting UHD resolutions by setting the proper SMPTE ST 352 IDs to images that have been divided using the 2-sample
                                        // interleave division method (as per SMPTE ST 425-5).
 
 };
@@ -4379,13 +4651,13 @@ struct SMvSdiEmbeddedAudioOutputConnectorSettings
    bool bEnableEmbeddedAudio;                      // If true, enables the embedded audio.
    EMvAudioBitsPerSample aePairBitsPerSample[8];   // Number of bits per audio sample, one value per audio pair.
    bool abPairIsPCMAudio[8];                       // If true, the pair is marked as Pulse-code modulation (PCM) audio in the channel status. One per audio pair.
-   bool bActivateDBN;                              // If true, generates the embedded audio Data Block Number (DBN) in Standard 
-                                                   // Definition (SD). This control has no effect in 
+   bool bActivateDBN;                              // If true, generates the embedded audio Data Block Number (DBN) in Standard
+                                                   // Definition (SD). This control has no effect in
                                                    // High Definition (HD) because HD always contains embedded audio DBN.
                                                    // Equipment with HD/SD support will not decode audio properly unless DBN in audio packets is activated.
                                                    // Older equipment will not work properly if DBN in audio data packets is activated
-                                                   // to the extent that the video may be corrupted.  
-                                                   // If the video is corrupted, do not use embedded audio DBN. 
+                                                   // to the extent that the video may be corrupted.
+                                                   // If the video is corrupted, do not use embedded audio DBN.
 };
 
 //
@@ -4404,12 +4676,14 @@ struct SMvSdiOutputConnectorSettings
 //    Describes the default SDI output settings.
 //
 struct SMvSdiOutputDefaultSettings
-{  
+{
    uint32_t                            ui32Size;                     // Structure size in bytes.
    SMvSdiVideoOutputConnectorSettings  sConnectorSettings;           // Default SDI video output connector settings.
    SMvResolutionInfo                   sResInfo;                     // Default SDI output resolution.
-   bool                                bEnableMechanicalBypass;      // If true, enables mechanical bypass for the SDI output.
-                                                                     // For more information on the mechanical bypass input to output connections depending on the card, see the <i>Matrox DSX Topology API User Guide</i>.
+   bool                                bEnableMechanicalBypass;      // If true, enables mechanical or hardware bypass bypass for the SDI output. <p>
+                                                                     // Mechanical bypass is enabled on X.mio3 FH, X.mio3 LP, and DSX LE4 models with video relay bypass. <p>
+                                                                     // Hardware bypass is enabled on X.mio3 12G.<p>
+                                                                     // For more information on the mechanical or hardware bypass, see the <i>Matrox DSX Topology API User Guide</i>.
 };
 
 //
@@ -4420,31 +4694,31 @@ struct SMvSdiOutputDefaultSettings
 // Members                                             Aspect ratio and AFD code     Image                    Description
 // --------------------------------------------------  -------------------------     -------------------      -----------------------------------------------------------
 // keMvAFDCode_4_3_Undefined                           0 0000                                                 Indicates an undefined value.
-// keMvAFDCode_4_3_Letter16_9ImageAtTop                0 0010                        <image AFD_0_0010>       Indicates an image with a 16:9 aspect ratio as letterbox at the top of a 4:3 coded frame. 
-// keMvAFDCode_4_3_Letter14_9ImageAtTop                0 0011                        <image AFD_0_0011>       Indicates an image with a 14:9 aspect ratio as letterbox at the top of a 4:3 coded frame. 
+// keMvAFDCode_4_3_Letter16_9ImageAtTop                0 0010                        <image AFD_0_0010>       Indicates an image with a 16:9 aspect ratio as letterbox at the top of a 4:3 coded frame.
+// keMvAFDCode_4_3_Letter14_9ImageAtTop                0 0011                        <image AFD_0_0011>       Indicates an image with a 14:9 aspect ratio as letterbox at the top of a 4:3 coded frame.
 // keMvAFDCode_4_3_LetterImageGreater16_9              0 0100                        <image AFD_0_0100>       Indicates an image with an aspect ratio greater than 16:9 as a vertically centered letterbox in a 4:3 coded frame.
-// keMvAFDCode_4_3_FullFrame4_3Preferred               0 1000                        <image AFD_0_1000>       Indicates a full frame image with an aspect ratio that is the same as the 4:3 coded frame. This is the preferred coding for a full frame 4:3 image. 
+// keMvAFDCode_4_3_FullFrame4_3Preferred               0 1000                        <image AFD_0_1000>       Indicates a full frame image with an aspect ratio that is the same as the 4:3 coded frame. This is the preferred coding for a full frame 4:3 image.
 // keMvAFDCode_4_3_FullFrame4_3                        0 1001                        <image AFD_0_1000>       Indicates a full frame image with an aspect ratio that is the same as the 4:3 coded frame.
 // keMvAFDCode_4_3_Letterbox16_9ImageCentered          0 1010                        <image AFD_0_1010>       Indicates an image with a 16:9 aspect ratio as a vertically centered letterbox in a 4:3 coded frame with all image areas protected. <p> This code is used with images that may not fill the frame vertically, but where all areas of the image should be displayed (for example, an image where cropping is not permitted) and can only be adequately displayed in letterbox format.
-// keMvAFDCode_4_3_Letterbox14_9ImageCentered          0 1011                        <image AFD_0_1011>       Indicates an image with a 14:9 aspect ratio as a vertically centered letterbox in a 4:3 coded frame. 
+// keMvAFDCode_4_3_Letterbox14_9ImageCentered          0 1011                        <image AFD_0_1011>       Indicates an image with a 14:9 aspect ratio as a vertically centered letterbox in a 4:3 coded frame.
 // keMvAFDCode_4_3_FullFrame4_3Image14_9Center         0 1101                        <image AFD_0_1101>       Indicates an image with a 4:3 aspect ratio and with an alternative 14:9 center in a 4:3 coded frame.
 // keMvAFDCode_4_3_Letterbox16_9Image14_9Center        0 1110                        <image AFD_0_1110>       Indicates an image with a 16:9 aspect ratio and with an alternative 14:9 center as a vertically centered letterbox in a 4:3 coded frame.
 // keMvAFDCode_4_3_Letterbox16_9Image4_3Center         0 1111                        <image AFD_0_1111>       Indicates an image with a 16:9 aspect ratio and with an alternative 4:3 center as a vertically centered letterbox in a 4:3 coded frame.
 // keMvAFDCode_16_9_Undefined                          1 0000                                                 Indicates an undefined value.
-// keMvAFDCode_16_9_Full16_9Image                      1 0010                        <image AFD_1_1000>       Indicates a full frame image with an aspect ratio that is the same as the 16:9 coded frame. This code is not used in North America. 
-// keMvAFDCode_16_9_Pillar14_9ImageCentered            1 0011                        <image AFD_1_1011>       Indicates an image with a 14:9 aspect ratio as a horizontally centered pillarbox image in a 16:9 coded frame. This code is not used in North America. 
+// keMvAFDCode_16_9_Full16_9Image                      1 0010                        <image AFD_1_1000>       Indicates a full frame image with an aspect ratio that is the same as the 16:9 coded frame. This code is not used in North America.
+// keMvAFDCode_16_9_Pillar14_9ImageCentered            1 0011                        <image AFD_1_1011>       Indicates an image with a 14:9 aspect ratio as a horizontally centered pillarbox image in a 16:9 coded frame. This code is not used in North America.
 // keMvAFDCode_16_9_LetterImageGreater16_9             1 0100                        <image AFD_1_0100>       Indicates an image with an aspect ratio greater than 16:9 as a vertically centered letterbox in a 16:9 coded frame.
 // keMvAFDCode_16_9_Full16_9ImagePreferred             1 1000                        <image AFD_1_1000>       Indicates a full frame image with an aspect ratio that is the same as the 16:9 coded frame. This is the preferred coding for a full frame 16:9 image.
-// keMvAFDCode_16_9_Pillar4_3ImageCentered             1 1001                        <image AFD_1_1001>       Indicates an image with a 4:3 aspect ratio as a horizontally centered pillarbox image in a 16:9 coded frame. 
+// keMvAFDCode_16_9_Pillar4_3ImageCentered             1 1001                        <image AFD_1_1001>       Indicates an image with a 4:3 aspect ratio as a horizontally centered pillarbox image in a 16:9 coded frame.
 // keMvAFDCode_16_9_Full16_9ImageAreasProtected        1 1010                        <image AFD_1_1010>       Indicates a full frame image with a 16:9 aspect ratio and with all image areas protected. <p> This code is used with images that may not fill the frame vertically, but where all areas of the image should be displayed (for example, an image where cropping is not permitted) and can only be adequately displayed in letterbox format.
 // keMvAFDCode_16_9_Pillar14_9ImageCenteredPreferred   1 1011                        <image AFD_1_1011>       Indicates an image with a 14:9 aspect ratio as a horizontally centered pillarbox image in a 16:9 coded frame. This is the preferred coding for a horizontally centered 14:9 pillarbox image.
 // keMvAFDCode_16_9_Pillar4_3Image14_9Center           1 1101                        <image AFD_1_1101>       Indicates an image with a 4:3 aspect ratio and with an alternative 14:9 center as a horizontally centered pillarbox image in a 16:9 coded frame.
-// keMvAFDCode_16_9_Full16_9Image14_9Center            1 1110                        <image AFD_1_1110>       Indicates an image with a 16:9 aspect ratio and with an alternative 14:9 center in a 16:9 coded frame. 
+// keMvAFDCode_16_9_Full16_9Image14_9Center            1 1110                        <image AFD_1_1110>       Indicates an image with a 16:9 aspect ratio and with an alternative 14:9 center in a 16:9 coded frame.
 // keMvAFDCode_16_9_Full16_9Image4_3Center             1 1111                        <image AFD_1_1111>       Indicates an image with a 16:9 aspect ratio and with an alternative 4:3 center in a 16:9 coded frame.
 // </table>
 // Remarks:
 //   - The first bit in the aspect ratio and AFD code column indicates the aspect ratio (0 indicates an aspect ratio of 4:3 while 1 indicates an aspect ratio of 16:9), and the remaining bits indicate the AFD code.
-//   - The alternative center refers to an area of essential picture information. The areas outside this center may be cropped without significant loss to the viewer. 
+//   - The alternative center refers to an area of essential picture information. The areas outside this center may be cropped without significant loss to the viewer.
 
 enum EMvAFDCode
 {
@@ -4452,25 +4726,25 @@ enum EMvAFDCode
    keMvAFDCode_4_3_Letter16_9ImageAtTop               = 0x2,
    keMvAFDCode_4_3_Letter14_9ImageAtTop               = 0x3,
    keMvAFDCode_4_3_LetterImageGreater16_9             = 0x4,
-   keMvAFDCode_4_3_FullFrame4_3Preferred              = 0x8,  
-   keMvAFDCode_4_3_FullFrame4_3                       = 0x9, 
+   keMvAFDCode_4_3_FullFrame4_3Preferred              = 0x8,
+   keMvAFDCode_4_3_FullFrame4_3                       = 0x9,
    keMvAFDCode_4_3_Letterbox16_9ImageCentered         = 0xA,
-   keMvAFDCode_4_3_Letterbox14_9ImageCentered         = 0xB,     
-   keMvAFDCode_4_3_FullFrame4_3Image14_9Center        = 0xD, 
+   keMvAFDCode_4_3_Letterbox14_9ImageCentered         = 0xB,
+   keMvAFDCode_4_3_FullFrame4_3Image14_9Center        = 0xD,
    keMvAFDCode_4_3_Letterbox16_9Image14_9Center       = 0xE,
-   keMvAFDCode_4_3_Letterbox16_9Image4_3Center        = 0xF, 
+   keMvAFDCode_4_3_Letterbox16_9Image4_3Center        = 0xF,
 
    keMvAFDCode_16_9_Undefined                         = 0x10,
    keMvAFDCode_16_9_Full16_9Image                     = 0x12,
-   keMvAFDCode_16_9_Pillar14_9ImageCentered           = 0x13,     
-   keMvAFDCode_16_9_LetterImageGreater16_9            = 0x14, 
-   keMvAFDCode_16_9_Full16_9ImagePreferred            = 0x18, 
-   keMvAFDCode_16_9_Pillar4_3ImageCentered            = 0x19,      
+   keMvAFDCode_16_9_Pillar14_9ImageCentered           = 0x13,
+   keMvAFDCode_16_9_LetterImageGreater16_9            = 0x14,
+   keMvAFDCode_16_9_Full16_9ImagePreferred            = 0x18,
+   keMvAFDCode_16_9_Pillar4_3ImageCentered            = 0x19,
    keMvAFDCode_16_9_Full16_9ImageAreasProtected       = 0x1A,
-   keMvAFDCode_16_9_Pillar14_9ImageCenteredPreferred  = 0x1B, 
-   keMvAFDCode_16_9_Pillar4_3Image14_9Center          = 0x1D,    
+   keMvAFDCode_16_9_Pillar14_9ImageCenteredPreferred  = 0x1B,
+   keMvAFDCode_16_9_Pillar4_3Image14_9Center          = 0x1D,
    keMvAFDCode_16_9_Full16_9Image14_9Center           = 0x1E,
-   keMvAFDCode_16_9_Full16_9Image4_3Center            = 0x1F, 
+   keMvAFDCode_16_9_Full16_9Image4_3Center            = 0x1F,
 };
 
 #define MV_AFD_CODE_ENUM_TO_STRING(eValue) \
@@ -4500,17 +4774,17 @@ enum EMvAFDCode
 
 //
 // Summary:
-//   Describes the VANC settings of the transform stream.
+//   Describes the ancillary data settings of the transform stream.
 // Remarks:
 // - This structure is part of the SMvTransformStreamSettings structure.
-// - The members of this structure are applied only if the VANC data format (EMvSurfaceFormat) of the transform stream's 
+// - The members of this structure are applied only if the ancillary data format (EMvSurfaceFormat) of the transform stream's
 //   input and output nodes use keMvSurfaceFormatMatroxAncillaryData.
 //
 struct SMvVancConvertingTransformSettings
 {
-   bool bClipAllVancPackets;              // If true, removes all VANC packets.
-   bool bConvertDigitalCEA608ToAnalog;    // If true, converts Matrox Ancillary Data VANC format to line 21.
-   bool bConvertAnalogCEA608ToDigital;    // If true, converts Line 21 to Matrox Ancillary Data VANC format.
+   bool bClipAllVancPackets;              // If true, removes all ancillary data packets.
+   bool bConvertDigitalCEA608ToAnalog;    // If true, converts the Matrox Ancillary Data format to line 21.
+   bool bConvertAnalogCEA608ToDigital;    // If true, converts Line 21 to the Matrox Ancillary Data format.
    bool bInsertBarDataUsingDestRect;      // If true, uses SMvTransformStreamSettings::sVideoTransformSettings::sOutputRect to set the output node's bar data.
    bool bInsertAFDCode;                   // If true, uses eAFDCodeAndAspectRatio to set the output node's AFD code.
    EMvAFDCode eAFDCodeAndAspectRatio;     // If bInsertAFDCode is true, indicates the AFD code value to use.
@@ -4524,9 +4798,9 @@ struct SMvTransformStreamSettings
 {
    uint32_t ui32Size;                                                   // Structure size in bytes.
    SMvVideoTransformSettings sVideoTransformSettings;                   // Indicates the transform stream's video settings.
-   SMvVancConvertingTransformSettings sVancConvertingTransformSettings; // Indicates the transform stream's VANC settings.
+   SMvVancConvertingTransformSettings sVancConvertingTransformSettings; // Indicates the transform stream's ancillary data settings.
    bool bProcessAudio;                                                  // If true, the transform stream processes the input node's audio.
-   EMvNodeContent eNodeContentToProcess;                                // Indicates the type of data in the stream to process. For example, video data only, VANC data only, or 
+   EMvNodeContent eNodeContentToProcess;                                // Indicates the type of data in the stream to process. For example, video data only, ancillary data only, or
                                                                         // any other data combination.
 };
 
@@ -4537,21 +4811,21 @@ struct SMvTransformStreamSettings
 struct SMvDeInterlacerStreamSettings
 {
    uint32_t ui32Size;                             // Structure size in bytes.
-   bool     bShowMotionVectors;                   // If true, the output of the de-interlacer stream will show the motion 
+   bool     bShowMotionVectors;                   // If true, the output of the de-interlacer stream will show the motion
                                                   // vector of the de-interlacing process.
    uint32_t ui32IncreaseMotionSensitivity;        // Increases motion sensitivity. Defaut value is 0, range is 0 to 7.
-   uint32_t ui32DecreaseAntiAliasingEdgeSensitivity;  // Changes the anti-aliasing filter (AAF) control along edges. A value of 0 allows for more filtering, 
+   uint32_t ui32DecreaseAntiAliasingEdgeSensitivity;  // Changes the anti-aliasing filter (AAF) control along edges. A value of 0 allows for more filtering,
                                                   // while a higher value results in less filtering. Default value is 0, range is 0 to 9.
    bool     bShowAntiAliasingEdgeMap;             // If true, the output of the de-interlacer stream will show the anti-aliasing edge map. Default value is false.
    bool     bProcessVanc;                         // If true, the de-interlacer stream processes the input node's ancillary data.
-   bool     bConvertAnalogCEA608ToDigital;        // If true, converts Line 21 to Matrox Ancillary Data VANC format.
+   bool     bConvertAnalogCEA608ToDigital;        // If true, converts Line 21 to the Matrox Ancillary Data format.
    bool     bProcessAudio;                        // If true, the de-interlacer stream processes the input node's audio.
    uint64_t ui64InputNodeAdvancedDelayInNanoTime; // Indicates the delay (in nanotime) that will be applied to a de-interlacer stream's input.
                                                   // The value must be frame aligned both at the input and the output.
                                                   // The advanced delay must be less than the node depth minus the node's
-                                                  // write-to-read delay minus three frames. That is, <p> 
+                                                  // write-to-read delay minus three frames. That is, <p>
                                                   // <i> Advance delay < node depth - node's write-to-read delay - 3 frames </i>
-   EMvNodeContent eNodeContentToProcess;          // Indicates the type of data in the stream to process. For example, video data only, VANC data only, or 
+   EMvNodeContent eNodeContentToProcess;          // Indicates the type of data in the stream to process. For example, video data only, ancillary data only, or
                                                   // any other data combination.
 };
 
@@ -4619,14 +4893,14 @@ enum EMvTriggerType
 struct SMvWatchdogSettings
 {
    uint32_t ui32size;                                    // Structure size in bytes.
-   bool     bForceTopology;                              // If true, the watchdog is triggered immediately. 
+   bool     bForceTopology;                              // If true, the watchdog is triggered immediately.
                                                          // If false, allows bEnableTimeout and/or eGeneralPurposeInputPin to trigger a watchdog.
    bool     bEnableTimeout;                              // If true, dWatchDogTimeOutInSeconds is activated.
    double   dWatchDogTimeOutInSeconds;                   // Indicates the amount of time in seconds that needs to elapse before the watchdog is triggered.
-   EMvGeneralPurposePin eGeneralPurposeInputPin;         // Indicates which GPI input pin triggers a watchdog. If you do not want to use a GPI input pin, set eGeneralPurposeInputPin 
+   EMvGeneralPurposePin eGeneralPurposeInputPin;         // Indicates which GPI input pin triggers a watchdog. If you do not want to use a GPI input pin, set eGeneralPurposeInputPin
                                                          // to keMvGeneralPurposePinInvalid. This will also cause eGeneralPurposeInputPinTriggerType to be ignored.
    EMvTriggerType eGeneralPurposeInputPinTriggerType;    // Indicates the type of GPI signal that will activate eGeneralPurposeInputPin.
-   EMvGeneralPurposePin eGeneralPurposeOutputPin;        // Indicates which GPI output pin to activate when a watchdog is triggered. If you do not want to use a GPI output pin, set eGeneralPurposeOutputPin 
+   EMvGeneralPurposePin eGeneralPurposeOutputPin;        // Indicates which GPI output pin to activate when a watchdog is triggered. If you do not want to use a GPI output pin, set eGeneralPurposeOutputPin
                                                          // to keMvGeneralPurposePinInvalid. This will also cause eGeneralPurposeOutputPinTriggerType to be ignored.
    EMvTriggerType eGeneralPurposeOutputPinTriggerType;   // Indicates the type of GPI signal that eGeneralPurposeOutputPin will generate.
    uint64_t ui64GeneralPurposeOutputPinPulseInNanoTime;  // If eGeneralPurposeOutputPinTriggerType is set to keMvTriggerTypeFallingEdge or keMvTriggerTypeRisingEdge, indicates the duration of the pulse (in nanotime) on the GPI output pin. Otherwise, not used.
@@ -4650,10 +4924,10 @@ struct SMvNodeContent
 //
 enum EMvSystemClockType
 {
-   keMvSystemClockTypeInvalid,      // Invalid value. 
+   keMvSystemClockTypeInvalid,      // Invalid value.
    keMvSystemClockTypeGenlock,      // Specifies that the DSX system clock is ticking at the speed of the genlock of the card.
    keMvSystemClockTypeInput,        // Specifies that the DSX system clock is ticking at the speed of an input connector.
-   keMvSystemClockTypeRendering,    // Specifies that the DSX system clock is ticking at a speed that is a multiple of the genlock clock. 
+   keMvSystemClockTypeRendering,    // Specifies that the DSX system clock is ticking at a speed that is a multiple of the genlock clock.
                                     // The possible values are one, two, four, or eight times the speed of the genlock clock.
    keMvSystemClockTypeUniversal,    // Specifies that the DSX system clock is ticking at a speed that is independant of hardware.
                                     // The speed is determined from the resolution that is passed when it is created.
@@ -4700,7 +4974,7 @@ struct SMvEventReportInfo
    IUnknown *           pIObject;       // If eSource is keMvEventReportSourceNodeContentWritten, the pointer is to the IMvNode interface.
                                         // The IUnknown::AddRef() method of the pIObject parameter is called when the asynchronous event is generated
                                         // to prevent the object implementing the IMvNode interface from being destroyed. <p>
-                                        // If eSource is keMvEventReportSourceWatchdogTriggered, the pointer is to the IMvWatchdog interface. 
+                                        // If eSource is keMvEventReportSourceWatchdogTriggered, the pointer is to the IMvWatchdog interface.
                                         // The IUnknown::AddRef() method of the pIObject parameter is called when the asynchronous event is generated
                                         // to prevent the object implementing the IMvWatchdog interface from being destroyed. <p>
                                         // Otherwise this field is set to NULL.
@@ -4722,6 +4996,10 @@ struct SMvConnectorsGeneralDescription
    uint32_t ui32AnalogAudioOutputConnectorsCount;  // Indicates the number of analog audio output connectors on the card.
    uint32_t ui32AnalogVideoInputConnectorsCount;   // Indicates the number of analog video input connectors on the card.
    uint32_t ui32AnalogVideoOutputConnectorsCount;  // Indicates the number of analog video output connectors on the card.
+   uint32_t ui32SdiIpInputConnectorsCount;         // Indicates the number of connectors input connectors conforming to SMPTE 2022-6 and SMPTE 2022-7.
+   uint32_t ui32SdiIpOutputConnectorsCount;        // Indicates the number of connectors output connectors conforming to SMPTE 2022-6 and SMPTE 2022-7.
+   uint32_t ui32IpInputConnectorsCount;            // Indicates the number of connectors input connectors conforming to the SMPTE 2110 draft version.
+   uint32_t ui32IpOutputConnectorsCount;           // Indicates the number of connectors output connectors conforming to the SMPTE 2110 draft version.
 };
 
 //
@@ -4730,7 +5008,7 @@ struct SMvConnectorsGeneralDescription
 //
 enum EMvPciStandard
 {
-   keMvPciStandardInvalid,    // Invalid value   
+   keMvPciStandardInvalid,    // Invalid value
    keMvPciStandardPci,        // Indicates that the card has a PCI communication bus.
    keMvPciStandardPciX,       // Indicates that the card has a PCI-X communication bus.
    keMvPciStandardPciExpress, // Indicates that the card has a PCI Express communication bus.
@@ -4818,13 +5096,13 @@ struct SMvPciBusInfo
 // Summary:
 //    Describes the general hardware information for a card.
 //
-struct SMvGeneralHardwareInformation 
+struct SMvGeneralHardwareInformation
 {
    uint32_t                        size;                      // Structure size in bytes.
    EMvHardwareSerie                eHardwareSerieDetected;    // Indicates the hardware series.
    uint32_t                        ui32BoardVariation;        // Indicates the card variation.
    uint32_t                        ui32FpgasVersion[4];       // Indicates the FPGA's version.
-   uint32_t                        ui32FirmwareVersion;       // Indicates the firmware version. 
+   uint32_t                        ui32FirmwareVersion;       // Indicates the firmware version.
    char                            szSerialNumber[32];        // Indicates the serial number.
    char                            szVariationName[32];       // Indicates the serial number.
    uint32_t                        ui32OemID;                 // Indicates the OEM ID.
@@ -4836,7 +5114,7 @@ struct SMvGeneralHardwareInformation
    uint32_t                        ui32MemorySizeInMegaBytes; // Indicates the on board memory size in MB.
    SMvConnectorsGeneralDescription sConnectorsDescription;    // Structure containing information about the different connectors on the card.
    EMvHardwareProfile              eHardwareProfileType;      // Indicates the hardware profile.
-   uint32_t                        ulHardwareProfileIndex;    // Indicates the hardware index. 
+   uint32_t                        ulHardwareProfileIndex;    // Indicates the hardware index.
 };
 
 //
@@ -4858,7 +5136,7 @@ struct SMvMemoryManagerConfiguration
 enum EMvMemoryManagerAction
 {
    kEMvMemoryManagerInvalid,        // Invalid value.
-   kEMvMemoryManagerWait,           // Wait for memory to be freed. 
+   kEMvMemoryManagerWait,           // Wait for memory to be freed.
    kEMvMemoryManagerFail,           // Do not wait, fail instead.
    kEMvMemoryManagerAllocate,       // Try to allocate memory beyond the maximum value as specified by ui64SizeRequiredInBytes in SMvMemoryManagerNotification.
    kEMvMemoryManagerLast            // End of list indicator.
@@ -4918,27 +5196,27 @@ struct SMvALTCSettings
 // Description:
 //
 // <P ALIGN=Center> <b> Time code values </b>
-// <table>                                     
-// Bits     Description 
+// <table>
+// Bits     Description
 // -----    ---------------------------------------
-// 3:0      Units of frames. 
+// 3:0      Units of frames.
 // 5:4      Tens of frames.
-// 9:6      Units of seconds. 
+// 9:6      Units of seconds.
 // 12:10    Tens of seconds.
-// 16:13    Units of minutes. 
+// 16:13    Units of minutes.
 // 19:17    Tens of minutes.
 // 23:20    Units of hours.
 // 25:24    Tens of hours.
 // 26       Drop frame flag.
-// 27       Color frame flag. 
+// 27       Color frame flag.
 // 28       Polarity correction flag. LTC (linear time code) only. <p> Field identification flag. VITC (vertical interval time code) only.
 // 29       Binary group 0 flag.
 // 30       Binary group 1 flag.
 // 31       Binary group 2 flag.
 // 35:32    First binary group value.
-// 39:36    Second binary group value. 
+// 39:36    Second binary group value.
 // 43:40    Third binary group value.
-// 47:44    Fourth binary group value. 
+// 47:44    Fourth binary group value.
 // 51:48    Fifth binary group value.
 // 55:52    Sixth binary group value.
 // 59:56    Seventh binary group value.
@@ -4970,7 +5248,7 @@ struct SMvTimeCodeInformation
    uint64_t ui64Timestamp;    // Time stamp of the requested time code in nanotime.
    uint64_t ui64TimeCode;     // Time code associated with the time stamp.
    unsigned long ulStatus;    // Status of the time code.
-   
+
 };
 
 // Describes the time code information from the input stream. <p>
@@ -4978,11 +5256,11 @@ struct SMvTimeCodeInformation
 struct SMvInputTimeCodeInformation
 {
    uint32_t size;                        // Structure size in bytes.
-   uint64_t ui64RP188_LTCValue;          // Indicates the SMPTE 12M-2 LTC (linear time code) value. 
+   uint64_t ui64RP188_LTCValue;          // Indicates the SMPTE 12M-2 LTC (linear time code) value.
    bool     bRP188_LTCPresent;           // If true, indicates that the SMPTE 12M-2 LTC is present in the input video stream.
-   uint64_t ui64RP188_VITCValue;         // Indicates the SMPTE 12M-2 VITC (vertical interval time code) value. 
+   uint64_t ui64RP188_VITCValue;         // Indicates the SMPTE 12M-2 VITC (vertical interval time code) value.
    bool     bRP188_VITCPresent;          // If true, indicates that the SMPTE 12M-2 VITC is present in the input video stream.
-   uint64_t ui64Analog_LTCValue;         // Indicates the SMPTE 12M-1 analog LTC (linear time code) value. 
+   uint64_t ui64Analog_LTCValue;         // Indicates the SMPTE 12M-1 analog LTC (linear time code) value.
    bool     bAnalog_LTCPresent;          // If true, indicates that the SMPTE 12M-1 analog LTC is present.
 };
 
@@ -5004,15 +5282,15 @@ struct SMvFlexTunnelToDirectShowDescription
 
 
 // Summary:
-//  Specifies the location of VANC data in a file.
+//  Specifies the location of ancillary data in a file.
 //
 
-enum EMvVANCLocation 
+enum EMvVANCLocation
 {
-   keMvVANCLocationDefault,      // Indicates that the VANC data is placed in the default location for capture, or to indicates to read VANC data from default location for playbacks.
-   keMvVANCLocationEssence =1,   // Indicates that the VANC data is placed in the video essence for capture, or to indicates to read VANC data from essence for playbacks.
-   keMvVANCLocationWrapper =2,   // Indicates that the VANC data is placed in the file wrapper for capture, or to indicates to read VANC data from wrapper for playbacks.
-   keMvVANCLocationBoth    =3,   // Indicates that the VANC data is placed in both the video essence and the file wrapper for capture. Does not apply for playbacks.
+   keMvVANCLocationDefault,      // Indicates that the ancillary data is placed in the default location for capture, or to indicates to read ancillary data from default location for playbacks.
+   keMvVANCLocationEssence =1,   // Indicates that the ancillary data is placed in the video essence for capture, or to indicates to read ancillary data from essence for playbacks.
+   keMvVANCLocationWrapper =2,   // Indicates that the ancillary data is placed in the file wrapper for capture, or to indicates to read ancillary data from wrapper for playbacks.
+   keMvVANCLocationBoth    =3,   // Indicates that the ancillary data is placed in both the video essence and the file wrapper for capture. Does not apply for playbacks.
    keMvVANCLocationLast          // End of list indicator.
 };
 
@@ -5064,7 +5342,7 @@ struct SMvTSEncoderOptions
    MVCHANDLE         mvchVideoOptionSettings;   // Indicates the video option settings.
    EMvCodecOption    eAudioCodecOption;         // Indicates the audio codec option.
    MVCHANDLE         mvchAudioOptionSettings;   // Indicates the audio option settings.
-   bool              bProcessVanc;              // If true, VANC data is processed.
+   bool              bProcessVanc;              // If true, ancillary data is processed.
 };
 
 ////
@@ -5088,7 +5366,7 @@ struct SMvBufferOption
 enum EMvTimecodeLocation
 {
    keMvTimecodeLocationDefault = 0, // Indicates that the time code is in the default location. For AS-11, the default location is keMvTimecodeLocationMXFHeader. Otherwise, the default location is keMvTimecodeLocationMXFTrack.
-   keMvTimecodeLocationEssence = 1, // Indicates that the time code is located in the video essence. 
+   keMvTimecodeLocationEssence = 1, // Indicates that the time code is located in the video essence.
    keMvTimecodeLocationMXFTrack = 2, // Indicates that the time code is located in the frame-wrapped system element.
    keMvTimecodeLocationMXFHeader = 3, // Indicates that the time code is located in the metadata.
    keMvTimecodeLocationLast // End of list indicator.
@@ -5110,7 +5388,7 @@ enum EMvTimecodeLocation
 enum EMvFlexV210SupportOption
 {
    keMvFlexSupportDefault          = 0,   // Indicates that the reader and writer will supply YUV 4:2:2 8- or 10-bit buffers as usual, regarless of whether or not native v210 is supported.
-   keMvFlexSupportV210IfPossible   = 1,   // Indicates that if the codec supports the native v210 input format, the reader and writer will supply v210 buffers. 
+   keMvFlexSupportV210IfPossible   = 1,   // Indicates that if the codec supports the native v210 input format, the reader and writer will supply v210 buffers.
    keMvFlexSupportLast                    // End of list indicator.
 };
 
@@ -5137,9 +5415,11 @@ enum EMvSEIPayloadType
 //
 enum EMvDSXCORENotificationType
 {
-   keMvDSXCORENotificationDisconnected,         // Indicates that the connection to the DSX Core server is lost.
-   keMvDSXCORENotificationReconnected,          // Indicates that the connection to the DSX Core server is reestablished.
-   keMvDSXCORENotificationExpiringSoon          // Indicates that the DSX Core license is within the grace period and will expire soon if the connection is not reestablished.
+   keMvDSXCORENotificationDisconnected,               // Indicates that the connection to the DSX Core server is lost.
+   keMvDSXCORENotificationReconnected,                // Indicates that the connection to the DSX Core server is reestablished.
+   keMvDSXCORENotificationExpiringSoon,               // Indicates that the DSX Core license is within the grace period and will expire soon if the connection is not reestablished.
+   keMvDSXCORENotificationDongleFailure,              // Indicates that the we found an issue with reading or writing to USB dongle.
+   keMvDSXCORENotificationRentalPeriodExpiringSoon    // Indicates that the DSX Core license rental period will expire soon.
 };
 
 //
@@ -5160,13 +5440,13 @@ enum EMvMPEG2TSElementaryStreamType
    keMvMPEG2TSElementaryStreamTypeInvalid,
    keMvMPEG2TSElementaryStreamTypeOther,     // Elementary stream contains other type of data. There is no specific
                                              // information available for this type of elementary stream.
-   keMvMPEG2TSElementaryStreamTypeH264Video, // Elementary stream contains H.264 video. Use 
-                                             // IMvMPEG2TSDescription::GetElementaryStreamH264VideoDescription() to 
+   keMvMPEG2TSElementaryStreamTypeH264Video, // Elementary stream contains H.264 video. Use
+                                             // IMvMPEG2TSDescription::GetElementaryStreamH264VideoDescription() to
                                              // have specific information on the content of the stream.
-   keMvMPEG2TSElementaryStreamTypeAudioPCM,  // Elementary stream contains uncompressed PCM audio data. Use 
+   keMvMPEG2TSElementaryStreamTypeAudioPCM,  // Elementary stream contains uncompressed PCM audio data. Use
                                              // IMvMPEG2TSDescription::GetElementaryStreamAudioPCMDescription() to
                                              // have specific information on the content of the stream.
-   keMvMPEG2TSElementaryStreamTypeSMPTE2038, // Elementary stream contains SMPTE 2038 VANc data. There is no specific
+   keMvMPEG2TSElementaryStreamTypeSMPTE2038, // Elementary stream contains SMPTE 2038 ancillary data. There is no specific
                                              // information available for this type of elementary stream.
    keMvMPEG2TSElementaryStreamTypeLast,
 };
@@ -5184,7 +5464,7 @@ enum EMvMPEG2TSElementaryStreamType
 //    Describes the MPEG-2 elementary stream.
 // Remarks:
 //    - This is the generic description that is common to all elementary streams. To have more specific description,
-//      check the field SMvMPEG2TSElementaryStreamDesc::eType that specifies which specific information that can be 
+//      check the field SMvMPEG2TSElementaryStreamDesc::eType that specifies which specific information that can be
 //      retrieved.
 //
 struct SMvMPEG2TSElementaryStreamDesc
@@ -5194,11 +5474,11 @@ struct SMvMPEG2TSElementaryStreamDesc
    uint8_t   ui8ID;                 // Elementary stream ID.
    uint8_t   ui8StreamType;         // Stream type as specified in the PMT or PSM. If the PMT or PSM is not present this field may be 0.
                                     // (See specification ISO/IEC 13818-1 "Stream type assignments").
-   EMvMPEG2TSElementaryStreamType eType; // Specified the type of elementary stream Depending on the value, the 
+   EMvMPEG2TSElementaryStreamType eType; // Specified the type of elementary stream Depending on the value, the
                                     // application can use more precise method to determine the specific setting of
                                     // the elementary stream. All elementary stream answer the basic call to
-                                    // IMvMPEG2TSDescription::GetElementaryStreamDescription(). But for more precise 
-                                    // information the application must use the the enum value. See 
+                                    // IMvMPEG2TSDescription::GetElementaryStreamDescription(). But for more precise
+                                    // information the application must use the the enum value. See
                                     // EMvMPEG2TSElementaryStreamType for more information.
    uint32_t  ui32DescriptorLength;  // Length in bytes of the field pui8Descriptor.
    uint8_t * pui8Descriptor;        // Descriptor present in the PMT or PSM for this stream.
@@ -5253,6 +5533,7 @@ struct SMvMPEG2TSBufferInfo
 {
    uint32_t ui32Size;                     // Structure size in bytes.
    EMvMPEG2TSElementaryStreamType eType;  // Specified the type of elementary stream.
-   uint64_t ui64PTS;                      // Data presentation time in the program.
+   uint64_t ui64PTS;                      // Data presentation time in the program. The number is in units of 90 KHz 
+                                          // but has a granularity of units of 27 KHz.
 };
 

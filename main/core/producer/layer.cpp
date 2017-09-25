@@ -317,6 +317,16 @@ public:
 		}
 		return ret_value;
 	}
+
+	int getTimecode()
+	{
+		return foreground_->get_frameNumber();
+	}
+
+	double getFramerate()
+	{
+		return foreground_->get_frameRate();
+	}
 };
 
 layer::layer(int index) : impl_(new impl(index)){}
@@ -350,4 +360,11 @@ void layer::set_logokiller(std::wstring paramstr) { return impl_->set_logokiller
 bool layer::is_paused() const { return impl_->is_paused_; };
 bool layer::is_arrive_eom() const { return impl_->is_arrive_eom_; };
 //------------------
+int layer::getTimecode() { return impl_->getTimecode(); };
+
+double layer::getFramerate()
+{
+	return impl_->getFramerate();
+}
+
 }}

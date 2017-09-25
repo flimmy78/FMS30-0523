@@ -1,6 +1,6 @@
 //==============================================================================
 //
-// (c) Copyright Matrox Electronic Systems Ltd., 2003-2015. All rights reserved. 
+// (c) Copyright Matrox Electronic Systems Ltd., 2003-2017. All rights reserved. 
 //
 // This code and information is provided "as is" without warranty of any kind, 
 // either expressed or implied, including but not limited to the implied 
@@ -356,14 +356,14 @@ enum EMvH264Level
 
 //
 // Summary:
-//    Describes the Matrox H.264/AVC VANC model.
+//    Describes the Matrox H.264/AVC ancillary data model.
 //
 enum EMvH264VancModel
 {
    keMvH264VancModelInvalid,                                     // Not initialized. Invalid value. 
-   keMvH264VancModelANSI_SCTE_128_ETSI_TS_101_154,               // Indicates that the VANC model is ANSI/SCTE 128 and ETSI TS 101 154. 
-   keMvH264VancModelAVCIntra,                                    // Indicates that the VANC model is AVC-Intra.
-   keMvH264VancModelAVC_HD,                                      // Indicates that the VANC model is AVC-HD.
+   keMvH264VancModelANSI_SCTE_128_ETSI_TS_101_154,               // Indicates that the ancillary data model is ANSI/SCTE 128 and ETSI TS 101 154. 
+   keMvH264VancModelAVCIntra,                                    // Indicates that the ancillary data model is AVC-Intra.
+   keMvH264VancModelAVC_HD,                                      // Indicates that the ancillary data model is AVC-HD.
    keMvH264VancModelLast                                         // End of list indicator.
 };
 

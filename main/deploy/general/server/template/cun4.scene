@@ -1,0 +1,206 @@
+<scene width="1920" height="1080" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/CasparCG/Server/2.1.0/core/producer/scene/scene.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<!-- 节目预告 文字 模板 -->
+  <variables>  
+  
+    <variable type="string" id="h1"    public="true">Next...</variable>
+    <variable type="string" id="h2"    public="true">Big Bang Theory</variable>
+    <variable type="string" id="h2time"    public="true">16:00</variable>
+	
+    <variable type="string" id="h3"    public="true">Friends</variable>
+    <variable type="string" id="h3time"    public="true">17:00</variable>
+	
+    <variable type="string" id="h4"    public="true">Scorpion</variable>
+    <variable type="string" id="h4time"    public="true">18:00</variable>
+	
+	<variable type="number" id="videoWidth" public ="false" >${scene_width /8}</variable>
+	<variable type="number" id="videoheight" public ="false" >${scene_height /8}</variable>
+	
+	<variable type="number" id="op1" public ="false" >1</variable>
+	<variable type="number" id="op2" public ="false" >1</variable>
+	<variable type="number" id="op3" public ="false" >1</variable>
+	
+	<variable type="number" id="op4" public ="false" >${scene_width}</variable>
+	<variable type="number" id="h1pos" public ="false">200</variable>
+	
+  </variables>
+
+  <layers>  
+	<!-- 背景视频 -->
+	<layer id="bgvideo">
+		<producer>ban/cun4-bgvideo loop</producer>
+		<x>0</x>
+		<y>0</y>
+		<width>${scene_width}</width>
+		<height>${scene_height}</height>
+	</layer>
+	<!-- 大标题 -->	
+	<layer id="texth1">
+      <producer>[TEXT] "" 0 0 size 65 color green font STCAIYUN</producer>     
+	  <y>${scene_height /5 * 1 - layer.texth1.height}</y>
+	  <x>${variable.h1pos - (1- variable.op4)*(variable.h1pos+layer.texth1.width)}</x>
+	  <adjustments>
+        <opacity>1</opacity>
+      </adjustments>
+      <parameters>
+		<text>${h1}</text>
+      </parameters>
+    </layer> 
+	
+	<!-- 分组1 -->
+ 	<layer id="video1">
+		<producer>amx1 loop</producer>
+		<x>${scene_width*0.555 - layer.video1.width}</x>
+		<y>${scene_height*0.345 - layer.video1.height}</y>
+		<width>${variable.videoWidth}</width>
+		<height>${variable.videoheight}</height>
+		<!-- <rotation>${variable.op1*360}</rotation> -->
+		<adjustments>
+        <opacity>${variable.op1}</opacity>
+      </adjustments>
+	</layer>
+	
+	 <layer id="video2">
+		<producer>amx2 loop</producer>
+		<x>${scene_width*0.518 - layer.video2.width}</x>
+		<y>${scene_height*0.555 - layer.video2.height}</y>
+		<width>${variable.videoWidth}</width>
+		<height>${variable.videoheight}</height>
+		<adjustments>
+			<opacity>${variable.op2}</opacity>
+      </adjustments>
+	</layer>
+	
+	 <layer id="video3">
+		<producer>amx3 loop</producer>
+		<x>${scene_width*0.478 - layer.video3.width}</x>
+		<y>${scene_height*0.766 - layer.video3.height}</y>
+		<width>${variable.videoWidth}</width>
+		<height>${variable.videoheight}</height>
+		
+		<adjustments>
+        <opacity>${variable.op3}</opacity>
+      </adjustments>
+	</layer>
+	
+	<layer id="texth2">
+      <producer>[TEXT] "" 0 0 size 25 color green font Roboto-Regular</producer>     
+	  <x>${layer.video1.x + layer.video1.width}</x>
+	  <y>${layer.video1.y + layer.video1.height}</y>
+	  <adjustments>
+        <opacity>${variable.op1}</opacity>
+      </adjustments>
+      <parameters>
+		<text>${h2}</text>
+      </parameters>
+    </layer> 
+	
+	<layer id="texth2time">
+      <producer>[TEXT] "" 0 0 size 25 color green font Roboto-Regular</producer>     
+	  <x>${layer.texth2.x}</x>
+	  <y>${layer.texth2.y + layer.texth2.height + layer.texth2time.height}</y>
+	  <adjustments>
+        <opacity>${variable.op2}</opacity>
+      </adjustments>
+      <parameters>
+		<text>${h2time}</text>
+      </parameters>
+    </layer>
+
+		<layer id="texth3">
+      <producer>[TEXT] "" 0 0 size 25 color green font Roboto-Regular</producer>     
+	  <x>${layer.video2.x + layer.video2.width}</x>
+	  <y>${layer.video2.y + layer.video2.height}</y>
+	  <adjustments>
+        <opacity>${variable.op2}</opacity>
+      </adjustments>
+      <parameters>
+		<text>${h3}</text>
+      </parameters>
+    </layer> 
+	
+	<layer id="texth3time">
+      <producer>[TEXT] "" 0 0 size 25 color green font Roboto-Regular</producer>     
+	  <x>${layer.texth3.x}</x>
+	  <y>${layer.texth3.y + layer.texth3.height + layer.texth3time.height}</y>
+	  <adjustments>
+        <opacity>${variable.op2}</opacity>
+      </adjustments>
+      <parameters>
+		<text>${h3time}</text>
+      </parameters>
+    </layer>
+	
+		<layer id="texth4">
+      <producer>[TEXT] "" 0 0 size 25 color green font Roboto-Regular</producer>     
+	  <x>${layer.video3.x + layer.video3.width}</x>
+	  <y>${layer.video3.y + layer.video3.height}</y>
+	  <adjustments>
+        <opacity>${variable.op3}</opacity>
+      </adjustments>
+      <parameters>
+		<text>${h4}</text>
+      </parameters>
+    </layer> 
+	
+	<layer id="texth4time">
+      <producer>[TEXT] "" 0 0 size 25 color green font Roboto-Regular</producer>     
+	  <x>${layer.texth4.x}</x>
+	  <y>${layer.texth4.y + layer.texth4.height + layer.texth4time.height}</y>
+	  <adjustments>
+        <opacity>${variable.op3}</opacity>
+      </adjustments>
+      <parameters>
+		<text>${h4time}</text>
+      </parameters>
+    </layer>
+	
+  </layers>  
+
+   <marks>
+    <mark at="0" type="start" label="intro" />
+	 <mark at="60" type="start" />
+    <mark at="120" type="start" />
+    <mark at="180" type="stop"/>
+	<mark at="240" type ="start" label="outro"/>
+	<mark at="300" type="remove"/>
+  </marks>
+  
+  <tasks>
+	<!-- <goto_mark at="0" label="intro11" /> -->
+  </tasks>   
+ 
+<!--
+	播放动画指令
+	play 1-10 cun3 play() intro	
+-->
+  <timelines>
+  <!-- 移动动画 -->
+    <timeline variable="variable.op4">
+      <keyframe at="0">0</keyframe>
+	  <keyframe at="50" easing="linear">1</keyframe>
+    </timeline>
+  
+    <timeline variable="variable.op1">
+      <keyframe at="0">0</keyframe>
+	  <keyframe at="50" easing="linear">1</keyframe>
+    </timeline>
+	
+    <timeline variable="variable.op2">
+		<keyframe at="0">0</keyframe>
+	  <keyframe at="50" >0</keyframe>
+      <keyframe at="100" easing="linear">1</keyframe>
+    </timeline>
+	
+	<timeline variable="variable.op3">
+		<keyframe at="0">0</keyframe>
+      <keyframe at="100" >0</keyframe>
+	  <keyframe at="150" easing="linear">1</keyframe>
+    </timeline>
+	
+  </timelines>
+  
+  
+  
+
+</scene>

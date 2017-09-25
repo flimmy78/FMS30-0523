@@ -527,7 +527,7 @@ core::video_format_desc get_format_desc(bvc_wrapper& blue, EVideoMode vid_fmt, E
 		fmt.time_scale = 1000;
 		break;*/
 	}
-	fmt = core::video_format_desc(video_format_from_vid_fmt(vid_fmt), width, height, width, height, video_field_mode, time_scale, duration, std::wstring(L""), audio_cadence);
+	fmt = core::video_format_desc(video_format_from_vid_fmt(vid_fmt), width, height, width, height, video_field_mode, time_scale, duration, std::wstring(L""), audio_cadence, std::wstring(L""));
 	fmt.size = size;
 	return fmt;
 }

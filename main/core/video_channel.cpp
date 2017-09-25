@@ -124,6 +124,8 @@ struct video_channel::impl final
 	caspar::timer                                       framerate_timer_;
 	double                                              framerate_ = framerate_interval_;
 
+	std::wstring										signalSource_ = L"";
+
 public:
 	impl(
 			int index,
@@ -632,6 +634,16 @@ public:
 		}
 		stage_.set_logokiller(index, str);
 	}
+
+	void set_signalSource(std::wstring s)
+	{
+		signalSource_ = s;
+	}
+
+	std::wstring get_signalSource()
+	{
+		return signalSource_;
+	}
 };
 
 void video_channel::add_afd_item(spl::shared_ptr<afd_item> item)
@@ -684,6 +696,16 @@ std::shared_ptr<void> video_channel::add_tick_listener(std::function<void()> lis
 void video_channel::set_logokiller(int index, std::wstring s)
 {
 	return impl_->set_logokiller(index, s);
+}
+
+void video_channel::set_signalSource(std::wstring s)
+{
+	return impl_->set_signalSource(s);
+}
+
+std::wstring video_channel::get_signalSource()
+{
+	return impl_->get_signalSource();
 }
 
 }}

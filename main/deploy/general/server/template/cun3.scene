@@ -1,0 +1,102 @@
+<scene width="1920" height="1080" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/CasparCG/Server/2.1.0/core/producer/scene/scene.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!--
+    An example crawler scene. Does not support the "tail" on screen at the same
+    time as the "head", but otherwise a good demonstration of combined use of
+    timeline for intro, outro animations and the frame variable for "infinite"
+    animations.
+   -->
+  <variables>
+  <!-- 文本内容 -->
+    <variable type="string" id="text"       public="true">QQQQQQQQQQQZZZZZZZ</variable>
+	<!-- 移动速度 -->
+    <variable type="number" id="speed"      public="true">5</variable>
+	<!-- 循环次数 -->
+    <variable type="number" id="iterations" public="true">2</variable>
+	<variable type="number" id="mask_width" public="true">${scene_width*0.8}</variable>	
+	<variable type="number" id="positon" public="false">${scene_height - layer.plate.height}</variable>	
+	<!-- 等待时长 -->
+	<variable type="number" id="wait_time" public="true">1000</variable>
+	
+	<!-- 等待间距 = 移动速度 * 等待时长 / 帧率   -->
+	<variable type="number" id="wait_distance" public="false">${speed * wait_time * fps / 1000}</variable>	
+	<!-- 循环空间度量 = 文字长度 + 遮罩长度 + 等待时长 -->	
+	<variable type="number" id="cycle_distance" public="false">${layer.text.width + mask_width + variable.wait_distance}</variable>	
+	<!-- 循环时间度量 = 循环空间度量 / 移动速度 -->
+	<variable type="number" id="cycle_time" public="false">${layer.text.width + mask_width + variable.wait_distance}</variable>	
+	<!-- 移动位置 = 循环增量 + 遮罩长度 + 遮罩位置 -->
+	<variable type="number" id="current_text_pos">${(-frame * speed) % variable.cycle_distance + mask_width + layer.mask.x}</variable>
+	<!-- 播放次数 = 播放总长度 / 循环空间度量 -->
+    <variable type="number" id="current_iteration">${( frame * speed) / variable.cycle_distance}</variable>
+    <variable type="number" id="animation_pos_x">0</variable>
+	
+  </variables>
+  
+<!-- Ticker 背景  -->
+  <layers>
+  
+    <layer id="plate">
+      <producer>ban/cun3-bgvideo loop</producer>
+      <x>${variable.animation_pos_x}</x>
+      <y>${variable.positon}</y>
+      <width>${scene_width}</width>
+      <height>70</height>
+      <adjustments>
+        <opacity>0.8</opacity>
+      </adjustments>
+    </layer>
+	
+	<layer id="mask">
+      <producer>red</producer>
+      <x>${variable.animation_pos_x + layer.plate.width - layer.mask.width}</x>
+      <y>${variable.positon}</y>
+      <width>${mask_width}</width>
+      <height>${layer.plate.height}</height>
+		<is_key>true</is_key>	  
+	  <adjustments>
+        <opacity>1</opacity>
+      </adjustments>
+    </layer> 
+	
+    <layer id="text">
+      <producer>[TEXT] "" 0 0 size 70 color white font Roboto-Regular</producer>
+      <x>${variable.animation_pos_x + variable.current_text_pos}</x>
+      <y>${layer.plate.y + layer.text.height + (layer.plate.height - layer.text.height)/2 - 10}</y>
+      <parameters>
+        <text>${text}</text>
+      </parameters>
+    </layer>
+	
+<!-- 	 <layer id="texttt">
+      <producer>[TEXT] "" 0 0 size 70 color white font Roboto-Regular</producer>
+      <x>0</x>
+      <y>500</y>
+      <parameters>
+        <text>${variable.current_text_pos}</text>
+      </parameters>
+    </layer>
+	 -->
+  </layers> 
+
+  <tasks>
+  <!-- 指定循环几次 -->
+    <goto_mark when="${variable.current_iteration &gt; iterations}" label="outro" />
+  </tasks>
+  
+<!---->   	
+  
+  <marks>
+    <mark at="0" type="start" label="intro" />
+    <mark at="20" type="stop" />
+    <mark at="20" type="start" />
+    <mark at="40" type="remove" label="outro" />
+  </marks>
+
+<!--   <timelines>
+    <timeline variable="variable.animation_pos_x">
+      <keyframe at="0">${scene_width}</keyframe>
+      <keyframe at="20" easing="easeoutsine">0</keyframe>
+      <keyframe at="40" easing="easeoutsine">${-scene_width}</keyframe>
+    </timeline>	
+  </timelines> -->
+  
+</scene>

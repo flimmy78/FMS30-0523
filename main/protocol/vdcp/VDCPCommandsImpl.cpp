@@ -234,6 +234,16 @@ std::wstring MediaInfo(const boost::filesystem::path& path, const spl::shared_pt
 		+ L"\r\n";
 }
 
+std::wstring removMediaInfo(const boost::filesystem::path& path, const spl::shared_ptr<media_info_repository>& media_info_repo)
+{
+	if (!boost::filesystem::is_regular_file(path))
+		return L"";
+
+	media_info_repo->remove(path.wstring());
+
+	return L"";
+}
+
 std::wstring ListMedia(const spl::shared_ptr<media_info_repository>& media_info_repo)
 {	
 	std::wstringstream replyString;
@@ -333,9 +343,9 @@ std::wstring  openport_command(command_context& ctx)
 	unsigned Sum = 0x81 + 0x01 + boost::lexical_cast<HexTo<int>>(message.substr(4, 2));
 	Sum = (unsigned char)(~(Sum & 0xFF) + 0x01);
 	if (Sum > 0x0f)
-		swprintf(buf, 2, L"%2x", (unsigned char)Sum);
+		swprintf(buf, 4, L"%2x", (unsigned char)Sum);
 	else
-		swprintf(buf, 2, L"0%x", (unsigned char)Sum);
+		swprintf(buf, 4, L"0%x", (unsigned char)Sum);
 	sendmessage.append(buf);//校验合
 	return sendmessage;
 }
@@ -418,18 +428,18 @@ std::wstring  idlist_command(command_context& ctx)
 			{
 				wchar_t b8[10] = { 0 };
 				if (itnext->at(i) > 0x0f)
-					swprintf(b8, 2, L"%2x", itnext->at(i));
+					swprintf(b8, 4, L"%2x", itnext->at(i));
 				else
-					swprintf(b8, 2, L"0%x", itnext->at(i));
+					swprintf(b8, 4, L"0%x", itnext->at(i));
 				sd.append(b8);
 			}
 			filearry.append(sd);
 			datalen += itnext->size();
 		}
 		if (datalen > 0x0f)
-			swprintf(buf, 2, L"%2x", datalen);
+			swprintf(buf, 4, L"%2x", datalen);
 		else
-			swprintf(buf, 2, L"0%x", datalen);
+			swprintf(buf, 4, L"0%x", datalen);
 
 		sendmessage.append(L"02");	
 		sendmessage.append(buf);//字节大小/2
@@ -448,9 +458,9 @@ std::wstring  idlist_command(command_context& ctx)
 
 		Sum = (unsigned char)((~Sum) + 0x01);
 		if (Sum > 0x0f)
-			swprintf(buf, 2, L"%2x", (unsigned char)Sum);
+			swprintf(buf, 4, L"%2x", (unsigned char)Sum);
 		else
-			swprintf(buf, 2, L"0%x", (unsigned char)Sum);
+			swprintf(buf, 4, L"0%x", (unsigned char)Sum);
 		sendmessage.append(buf);
 	}
 	else
@@ -462,9 +472,9 @@ std::wstring  idlist_command(command_context& ctx)
 
 		Sum = (unsigned char)(~(Sum & 0xFF) + 0x01);
 		if (Sum > 0x0f)
-			swprintf(buf, 2, L"%2x", (unsigned char)Sum);
+			swprintf(buf, 4, L"%2x", (unsigned char)Sum);
 		else
-			swprintf(buf, 2, L"0%x", (unsigned char)Sum);
+			swprintf(buf, 4, L"0%x", (unsigned char)Sum);
 		sendmessage.append(buf);//校验合
 	}
 	return sendmessage;
@@ -542,9 +552,9 @@ std::wstring  nextdata_command(command_context& ctx)
 			datalen += itnext->size();
 		}
 		if (datalen > 0x0f)
-			swprintf(buf, 2, L"%2x", datalen);
+			swprintf(buf, 4, L"%2x", datalen);
 		else
-			swprintf(buf, 2, L"0%x", datalen);
+			swprintf(buf, 4, L"0%x", datalen);
 
 		sendmessage.append(L"02");
 		sendmessage.append(buf);//字节大小/2
@@ -562,9 +572,9 @@ std::wstring  nextdata_command(command_context& ctx)
 
 		Sum = (char)((~Sum) + 0x01);
 		if (Sum > 0x0f)
-			swprintf(buf, 2, L"%2x", (unsigned char)Sum);
+			swprintf(buf, 4, L"%2x", (unsigned char)Sum);
 		else
-			swprintf(buf, 2, L"0%x", (unsigned char)Sum);
+			swprintf(buf, 4, L"0%x", (unsigned char)Sum);
 		sendmessage.append(buf);
 	}
 	else
@@ -576,9 +586,9 @@ std::wstring  nextdata_command(command_context& ctx)
 
 		Sum = (unsigned char)(~(Sum & 0xFF) + 0x01);
 		if (Sum > 0x0f)
-			swprintf(buf, 2, L"%2x", (unsigned char)Sum);
+			swprintf(buf, 4, L"%2x", (unsigned char)Sum);
 		else
-			swprintf(buf, 2, L"0%x", (unsigned char)Sum);
+			swprintf(buf, 4, L"0%x", (unsigned char)Sum);
 		sendmessage.append(buf);//校验合
 	}
 	return sendmessage;
@@ -609,17 +619,17 @@ std::wstring  portstatus_command(command_context& ctx)
 		sendmessage.append(L"85");//反馈的命令码
 		sendmessage.append(L"01");//查询的状态命令字
 		if (nret>0x0f)
-			swprintf(buf, 2, L"%2x", (unsigned int)nret);
+			swprintf(buf, 4, L"%2x", (unsigned int)nret);
 		else
-			swprintf(buf, 2, L"0%x",(unsigned int)nret);
+			swprintf(buf, 4, L"0%x",(unsigned int)nret);
 		sendmessage.append(buf);//状态吗
 		sendmessage.append(openportmessage.substr(8, 2));//打开的端口
 		unsigned Sum = 0x85 + 0x01 + nret + port + boost::lexical_cast<HexTo<int>>(message_current.substr(4, 2));
 			Sum = (unsigned char)(~(Sum & 0xFF) + 0x01);
 		if (Sum > 0x0f)
-			swprintf(buf, 2, L"%2x", (unsigned char)Sum);
+			swprintf(buf, 4, L"%2x", (unsigned char)Sum);
 		else
-			swprintf(buf, 2, L"0%x", (unsigned char)Sum);
+			swprintf(buf, 4, L"0%x", (unsigned char)Sum);
 		sendmessage.append(buf);//校验合
 	}
 	else if (statustype == VDCP_PS_MEDIA_STATUS||statustype == VDCP_PS_SETTING)
@@ -630,18 +640,18 @@ std::wstring  portstatus_command(command_context& ctx)
 		sendmessage.append(message_current.substr(4, 2)); // 原始的命令字如B0
 		sendmessage.append(L"85");//反馈的命令码 
 		if (statustype > 0x0f)
-			swprintf(buf, 2, L"%2x", (unsigned int)statustype);
+			swprintf(buf, 4, L"%2x", (unsigned int)statustype);
 		else
-			swprintf(buf, 2, L"0%x", (unsigned int)statustype);
+			swprintf(buf, 4, L"0%x", (unsigned int)statustype);
 		sendmessage.append(buf);
 		sendmessage.append(L"0000");
 		sendmessage.append(openportmessage.substr(4, 2));//打开的端口
 		unsigned Sum = 0x85 + statustype + boost::lexical_cast<HexTo<int>>(message_current.substr(4, 2));
 			Sum = (unsigned char)(~(Sum & 0xFF) + 0x01);
 		if (Sum > 0x0f)
-			swprintf(buf, 2, L"%2x", (unsigned char)Sum);
+			swprintf(buf, 4, L"%2x", (unsigned char)Sum);
 		else
-			swprintf(buf, 2, L"0%x", (unsigned char)Sum);
+			swprintf(buf, 4, L"0%x", (unsigned char)Sum);
 		sendmessage.append(buf);//校验合
 	}
 	else if (statustype == VDCP_PS_ERRORS)
@@ -652,16 +662,16 @@ std::wstring  portstatus_command(command_context& ctx)
 		sendmessage.append(L"85");//commandcode
 		sendmessage.append(L"040000");//VDCP_PS_ERRORS
 		if (nret > 0x0f)
-			swprintf(buf, 2, L"%2x", (unsigned int)nret);
+			swprintf(buf, 4, L"%2x", (unsigned int)nret);
 		else
-			swprintf(buf, 2, L"0%x", (unsigned int)nret);
+			swprintf(buf, 4, L"0%x", (unsigned int)nret);
 		sendmessage.append(buf);//状态吗
 		unsigned Sum = 0x85 + statustype + boost::lexical_cast<HexTo<int>>(message_current.substr(4, 2));
 		Sum = (unsigned char)(~(Sum & 0xFF) + 0x01);
 		if (Sum > 0x0f)
-			swprintf(buf, 2, L"%2x", (unsigned char)Sum);
+			swprintf(buf, 4, L"%2x", (unsigned char)Sum);
 		else
-			swprintf(buf, 2, L"0%x", (unsigned char)Sum);
+			swprintf(buf, 4, L"0%x", (unsigned char)Sum);
 		sendmessage.append(buf);//校验合
 	}
 	else if (statustype == VDCP_PS_COMPRESSION_TYPE)
@@ -675,24 +685,24 @@ std::wstring  portstatus_command(command_context& ctx)
 		sendmessage.append(L"85");
 		sendmessage.append(L"0F");
 		if (nret > 0x0f)
-			swprintf(buf, 2, L"%2x", (unsigned int)nret);
+			swprintf(buf, 4, L"%2x", (unsigned int)nret);
 		else
-			swprintf(buf, 2, L"0%x", (unsigned int)nret);
+			swprintf(buf, 4, L"0%x", (unsigned int)nret);
 		sendmessage.append(buf);//状态吗
 		sendmessage.append(openportmessage.substr(8, 2));//打开的端口
 		sendmessage.append(L"00000000");
 		if (nret > 0x0f)
-			swprintf(buf, 2, L"%2x", (unsigned int)nret);
+			swprintf(buf, 4, L"%2x", (unsigned int)nret);
 		else
-			swprintf(buf, 2, L"0%x", (unsigned int)nret);
+			swprintf(buf, 4, L"0%x", (unsigned int)nret);
 		sendmessage.append(buf);//状态
 
 		unsigned Sum = 0x85+0x0f + nret+nret+port + boost::lexical_cast<HexTo<int>>(message_current.substr(4, 2));
 		Sum = (unsigned char)(~(Sum & 0xFF) + 0x01);
 		if (Sum > 0x0f)
-			swprintf(buf, 2, L"%2x", (unsigned char)Sum);
+			swprintf(buf, 4, L"%2x", (unsigned char)Sum);
 		else
-			swprintf(buf, 2, L"0%x", (unsigned char)Sum);
+			swprintf(buf, 4, L"0%x", (unsigned char)Sum);
 		sendmessage.append(buf);//校验合
 	}
 
@@ -724,13 +734,38 @@ std::wstring cinf_command(command_context& ctx)//文件大小
 		realname.push_back(boost::lexical_cast<HexTo<int>>(filename_hex.substr(i, 2)));
 	}
 
+	//wxg20130913Record
+	int frames = 0;
+	bool bupdateInfo = false;
+	for (auto it = ctx.channels.begin(); it != ctx.channels.end();)
+	{
+		auto channelcxt = it;
+		auto filename = boost::to_upper_copy(realname);
+		frames = channelcxt->channel->output().getRecordFrames(filename);
+		it++;
+		if (frames > 0)
+		{
+			bupdateInfo = true;//重新修改一下时长
+			break;
+		}
+	}
 	std::wstring info;
 	for (boost::filesystem::recursive_directory_iterator itr(env::media_folder()), end; itr != end && info.empty(); ++itr)
 	{
 		auto path = itr->path();
 		auto file = path.replace_extension(L"").filename().wstring();
 		if (boost::iequals(file, realname))
-			info += MediaInfo(itr->path(), ctx.media_info_repo);
+		{
+			if (bupdateInfo)
+			{
+				removMediaInfo(itr->path(), ctx.media_info_repo);
+				info += MediaInfo(itr->path(), ctx.media_info_repo);
+				removMediaInfo(itr->path(), ctx.media_info_repo);
+			}
+			else
+				info += MediaInfo(itr->path(), ctx.media_info_repo);
+			break;						
+		}
 	}
 	
 	if (info.empty())
@@ -742,6 +777,8 @@ std::wstring cinf_command(command_context& ctx)//文件大小
 	else
 	{
 		//解析时间
+		boost::replace_all(info, L"\"", L"");
+		boost::replace_all(info, L"\r\n", L"");
 		std::vector<std::wstring> tokens;
 		boost::split(tokens,info,boost::is_any_of(L" "));
 		if (tokens.size() != 6)
@@ -773,31 +810,31 @@ std::wstring cinf_command(command_context& ctx)//文件大小
 			
 			if (ff > 9)
 			{
-				swprintf(buf, 2, L"%d", ff);
+				swprintf(buf, 4, L"%d", ff);
 			}
 			else
-				swprintf(buf, 2, L"0%d", ff);
+				swprintf(buf, 4, L"0%d", ff);
 			sendmessage.append(buf);
 			if (second > 9)
 			{
-				swprintf(buf, 2, L"%d", second);
+				swprintf(buf, 4, L"%d", second);
 			}
 			else
-				swprintf(buf, 2, L"0%d", second);
+				swprintf(buf, 4, L"0%d", second);
 			sendmessage.append(buf);
 			if (min > 9)
 			{
-				swprintf(buf, 2, L"%d", min);
+				swprintf(buf, 4, L"%d", min);
 			}
 			else
-				swprintf(buf, 2, L"0%d", min);
+				swprintf(buf, 4, L"0%d", min);
 			sendmessage.append(buf);
 			if (hour > 9)
 			{
-				swprintf(buf, 2, L"%d", hour);
+				swprintf(buf, 4, L"%d", hour);
 			}
 			else
-				swprintf(buf, 2, L"0%d", hour);
+				swprintf(buf, 4, L"0%d", hour);
 			sendmessage.append(buf);
 			goto sus;
 		}
@@ -821,12 +858,89 @@ sus:
 
 	Sum = (unsigned char)((~Sum) + 0x01);
 	if (Sum > 0x0f)
-		swprintf(buf, 2, L"%2x", (unsigned char)Sum);
+		swprintf(buf, 4, L"%2x", (unsigned char)Sum);
 	else
-		swprintf(buf, 2, L"0%x", (unsigned char)Sum);
+		swprintf(buf, 4, L"0%x", (unsigned char)Sum);
 	sendmessage.append(buf);
 	return sendmessage;
 }
+std::wstring timecode_command(command_context& ctx)
+{
+	std::wstring sendmessage;
+	std::wstring message = ctx.parameters[0];
+	wchar_t buf[20] = { 0 };
+
+	auto channel = ctx.channel.channel;
+	int timecode = channel->stage().getTimecode(ctx.layer_index());
+	double framerRate = channel->stage().getFramerate(ctx.layer_index());
+
+	//wxg timecode 
+	timecode -= 3;
+	{
+		int frameL = 1;
+		int frameR = framerRate;
+		int ff = timecode*frameL %frameR;
+
+		sendmessage.append(L"02");
+		sendmessage.append(L"07");//字节大小/2
+		sendmessage.append(message.substr(4, 2));
+		sendmessage.append(L"86");
+		sendmessage.append(message.substr(6, 2));
+
+		int sumseconds = timecode*frameL / frameR;
+		int hour = sumseconds / 3600;
+		int min = sumseconds % 3600 / 60;
+		int second = sumseconds % 3600 % 60;
+		std::wstring secondstr = boost::lexical_cast<std::wstring>(second);
+
+		if (ff > 9)
+		{
+			swprintf(buf, 4, L"%d", ff);
+		}
+		else
+			swprintf(buf, 4, L"0%d", ff);
+		sendmessage.append(buf);
+		if (second > 9)
+		{
+			swprintf(buf, 4, L"%d", second);
+		}
+		else
+			swprintf(buf, 4, L"0%d", second);
+		sendmessage.append(buf);
+		if (min > 9)
+		{
+			swprintf(buf, 4, L"%d", min);
+		}
+		else
+			swprintf(buf, 4, L"0%d", min);
+		sendmessage.append(buf);
+		if (hour > 9)
+		{
+			swprintf(buf, 4, L"%d", hour);
+		}
+		else
+			swprintf(buf, 4, L"0%d", hour);
+		sendmessage.append(buf);
+	}
+
+	unsigned Sum = 0;
+	for (size_t i = 4; i < sendmessage.size(); i += 2)
+	{
+		int s = boost::lexical_cast<HexTo<int>>(sendmessage.substr(i, 2));
+		Sum += s;
+	}
+	Sum = Sum & 0xFF;
+
+	Sum = (unsigned char)((~Sum) + 0x01);
+	if (Sum > 0x0f)
+		swprintf(buf, 4, L"%2x", (unsigned char)Sum);
+	else
+		swprintf(buf, 4, L"0%x", (unsigned char)Sum);
+	sendmessage.append(buf);
+
+	return sendmessage;
+}
+
 std::wstring idexist_command(command_context& ctx)//文件大小
 {
 	std::wstring sendmessage;
@@ -877,9 +991,9 @@ std::wstring idexist_command(command_context& ctx)//文件大小
 
 	Sum = (unsigned char)((~Sum) + 0x01);
 	if (Sum > 0x0f)
-		swprintf(buf, 2, L"%2x", (unsigned char)Sum);
+		swprintf(buf, 4, L"%2x", (unsigned char)Sum);
 	else
-		swprintf(buf, 2, L"0%x", (unsigned char)Sum);
+		swprintf(buf, 4, L"0%x", (unsigned char)Sum);
 	sendmessage.append(buf);
 	return sendmessage;
 }
@@ -915,7 +1029,7 @@ std::wstring cuedata_command(command_context& ctx)
 
 	//重置参数
 	ctx.parameters.clear();
-	ctx.parameters.push_back(realname);
+//	ctx.parameters.push_back(realname);
 
 	int startframe = 0;
 	int endframe = 0;
@@ -950,7 +1064,7 @@ std::wstring cuedata_command(command_context& ctx)
 	core::diagnostics::call_context::for_thread().video_channel = ctx.channel_index + 1;
 	core::diagnostics::call_context::for_thread().layer = ctx.layer_index();
 	auto pFP = ctx.producer_registry->create_producer(get_producer_dependencies(ctx.channel.channel, ctx), ctx.parameters);
-	ctx.channel.channel->stage().load(ctx.layer_index(), pFP, false);
+	ctx.channel.channel->stage().load_ext(ctx.layer_index(), pFP, false, true);
 
 	return ack_command(ctx);
 }
@@ -986,7 +1100,7 @@ std::wstring cue_command(command_context& ctx)
 	core::diagnostics::call_context::for_thread().video_channel = ctx.channel_index + 1;
 	core::diagnostics::call_context::for_thread().layer = ctx.layer_index();
 	auto pFP = ctx.producer_registry->create_producer(get_producer_dependencies(ctx.channel.channel, ctx), ctx.parameters);
-	ctx.channel.channel->stage().load(ctx.layer_index(), pFP, true);
+	ctx.channel.channel->stage().load_ext(ctx.layer_index(), pFP, false, true);
 
 	//ack
 	return ack_command(ctx);
@@ -1012,6 +1126,65 @@ std::wstring continue_command(command_context& ctx)
 std::wstring stop_command(command_context& ctx)
 {
 	ctx.channel.channel->stage().stop(ctx.layer_index());
+	ctx.channel.channel->output().record_stop(ctx.layer_index(), true);
+	return ack_command(ctx);
+}
+
+std::wstring record_init_command(command_context& ctx)
+{
+	std::wstring filename_hex;
+	std::wstring message = ctx.parameters[0];
+	if (boost::lexical_cast<HexTo<int>>(message.substr(4, 2)) > 0x80)//新协议
+	{
+		int lens = boost::lexical_cast<HexTo<int>>(message.substr(8, 2)) * 2;
+		filename_hex = message.substr(10, lens);
+
+	}
+	else
+	{
+		filename_hex = message.substr(8, 16);
+	}
+
+	std::wstring realname;
+	for (int i = 0; i < filename_hex.size(); i += 2)
+	{
+		realname.push_back(boost::lexical_cast<HexTo<int>>(filename_hex.substr(i, 2)));
+	}
+
+	auto channel = ctx.channel.channel;
+	bool ret = channel->output().record_init(ctx.layer_index(), realname, true);
+
+	ctx.parameters.erase(ctx.parameters.begin(), ctx.parameters.begin() + 1);
+
+	std::wstring signalSource = channel->get_signalSource();
+
+	//上层没有传递播放源，需要从配置文件得到
+	if (ctx.parameters.size() == 0)
+	{
+		ctx.parameters.push_back(signalSource);
+	}
+	try
+	{
+		//cuedata_command(ctx);
+		core::diagnostics::scoped_call_context save;
+		core::diagnostics::call_context::for_thread().video_channel = ctx.channel_index + 1;
+		core::diagnostics::call_context::for_thread().layer = ctx.layer_index();
+		auto pFP = ctx.producer_registry->create_producer(get_producer_dependencies(ctx.channel.channel, ctx), ctx.parameters);
+		ctx.channel.channel->stage().load_ext(ctx.layer_index(), pFP, false, true);
+
+		//play_command(ctx);
+	}
+	catch (...)
+	{
+	}
+
+	return ack_command(ctx);
+}
+
+std::wstring record_start_command(command_context& ctx)
+{
+	play_command(ctx);
+	ctx.channel.channel->output().record_start(ctx.layer_index(), true);
 	return ack_command(ctx);
 }
 
@@ -1034,8 +1207,12 @@ void register_commands(vdcp_command_repository& repo)
 	repo.register_channel_command(	L"Basic Commands",		L"CONTINUE",					vdcp_describer,						continue_command,				0);
 	repo.register_channel_command(	L"Basic Commands",		L"STOP",						vdcp_describer,						stop_command,					0);
 
+	repo.register_channel_command(	L"Basic Commands",		L"VDCP_RECORD_INIT",			vdcp_describer,						record_init_command,			0);
+	repo.register_channel_command(	L"Basic Commands",		L"VDCP_RECORD",					vdcp_describer,						record_start_command,			0);
+	repo.register_channel_command(	L"Query Commands",		L"TIMECODE",					vdcp_describer,						timecode_command,				0);
+
 	repo.register_command(			L"Query Commands",		L"CINF",						vdcp_describer,						cinf_command,					1);
-	repo.register_command(			L"Query Commands",		L"IDLIST",						vdcp_describer,						idlist_command,					0);
+	repo.register_command(			L"Query Commands",		L"IDLIST",						vdcp_describer,						idlist_command,					0);	
 }
 
 }	//namespace vdcp

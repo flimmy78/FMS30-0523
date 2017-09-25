@@ -138,6 +138,14 @@ struct frame_producer_base::impl
 	{
 		return ;
 	}
+	uint32_t get_frameNumber()
+	{
+		return 0;
+	}
+	double get_frameRate()
+	{
+		return 25;
+	}
 };
 
 frame_producer_base::frame_producer_base() : impl_(new impl(*this))
@@ -167,6 +175,16 @@ int frame_producer_base::producer_type()
 void frame_producer_base::set_logokiller(std::wstring s)
 {
 	return impl_->set_logokiller(s);
+}
+
+uint32_t frame_producer_base::get_frameNumber()
+{
+	return impl_->get_frameNumber();
+}
+
+double frame_producer_base::get_frameRate()
+{
+	return impl_->get_frameRate();
 }
 
 std::future<std::wstring> frame_producer_base::call(const std::vector<std::wstring>&)
@@ -229,6 +247,14 @@ const spl::shared_ptr<frame_producer>& frame_producer::empty()
 		void set_logokiller(std::wstring s)
 		{
 			return;
+		}
+		uint32_t get_frameNumber()
+		{
+			return 0;
+		}
+		double get_frameRate()
+		{
+			return 25;
 		}
 	};
 
@@ -329,6 +355,8 @@ public:
 	constraints&										pixel_constraints() override													{return producer_->pixel_constraints();}
 	int													producer_type() override														{return producer_->producer_type(); }
 	void                                                set_logokiller(std::wstring s)override											{return producer_->set_logokiller(s); }
+	uint32_t											get_frameNumber() override														{return producer_->get_frameNumber(); }
+	double											    get_frameRate() override														{return producer_->get_frameRate(); }
 };
 
 spl::shared_ptr<core::frame_producer> create_destroy_proxy(spl::shared_ptr<core::frame_producer> producer)

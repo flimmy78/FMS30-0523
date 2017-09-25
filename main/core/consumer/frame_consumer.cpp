@@ -136,6 +136,11 @@ public:
 	int64_t presentation_frame_age_millis() const override																			{return consumer_->presentation_frame_age_millis();}
 	monitor::subject& monitor_output() override																						{return consumer_->monitor_output();}										
 	const frame_consumer* unwrapped() const override																				{return consumer_->unwrapped();}
+	bool record_init(std::wstring strFileName) const override																		{return consumer_->record_init(strFileName);}
+	bool record_start() const override																								{return consumer_->record_start(); }
+	bool record_stop() const override																								{return consumer_->record_stop(); }
+	bool is_recording() const override																								{return consumer_->is_recording();}
+	uint32_t getRecordFrames(std::wstring& fileName) const override																	{return consumer_->getRecordFrames(fileName); }
 };
 
 class print_consumer_proxy : public frame_consumer
@@ -170,6 +175,11 @@ public:
 	int64_t presentation_frame_age_millis() const override																			{return consumer_->presentation_frame_age_millis();}
 	monitor::subject& monitor_output() override																						{return consumer_->monitor_output();}										
 	const frame_consumer* unwrapped() const override																				{ return consumer_->unwrapped(); }
+	bool record_init(std::wstring strFileName) const override																	    {return consumer_->record_init(strFileName);}
+	bool record_start() const override																								{return consumer_->record_start(); }
+	bool record_stop() const override																								{return consumer_->record_stop(); }
+	bool is_recording() const override																								{return consumer_->is_recording();}
+	uint32_t getRecordFrames(std::wstring& fileName) const override																	{return consumer_->getRecordFrames(fileName); }
 };
 
 class recover_consumer_proxy : public frame_consumer
@@ -224,6 +234,11 @@ public:
 	int64_t presentation_frame_age_millis() const override					{return consumer_->presentation_frame_age_millis();}
 	monitor::subject& monitor_output() override								{return consumer_->monitor_output();}										
 	const frame_consumer* unwrapped() const override                        { return consumer_->unwrapped(); }
+	bool record_init(std::wstring strFileName) const override				{return consumer_->record_init(strFileName);}
+	bool record_start() const override										{return consumer_->record_start(); }
+	bool record_stop() const override										{return consumer_->record_stop(); }
+	bool is_recording() const override										{return consumer_->is_recording();}
+	uint32_t getRecordFrames(std::wstring& fileName) const override         {return consumer_->getRecordFrames(fileName);}
 };
 
 // This class is used to guarantee that audio cadence is correct. This is important for NTSC audio.
@@ -279,6 +294,11 @@ public:
 	int64_t presentation_frame_age_millis() const override					{return consumer_->presentation_frame_age_millis();}
 	monitor::subject& monitor_output() override								{return consumer_->monitor_output();}										
 	const frame_consumer* unwrapped() const override						{ return consumer_->unwrapped(); }
+	bool record_init(std::wstring strFileName) const override				{return consumer_->record_init(strFileName);}
+	bool record_start() const override										{return consumer_->record_start(); }
+	bool record_stop() const override										{return consumer_->record_stop(); }
+	bool is_recording() const override										{return consumer_->is_recording();}
+	uint32_t getRecordFrames(std::wstring& fileName) const override			{return consumer_->getRecordFrames(fileName); }
 };
 
 spl::shared_ptr<core::frame_consumer> frame_consumer_registry::create_consumer(

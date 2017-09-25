@@ -118,6 +118,15 @@ public:
 	{
 		return dest_producer_->set_logokiller(s);
 	}
+	uint32_t get_frameNumber()
+	{
+		return dest_producer_->get_frameNumber();
+	}
+
+	double get_frameRate()
+	{
+		return dest_producer_->get_frameRate();
+	}
 
 	draw_frame last_frame() override
 	{

@@ -257,6 +257,16 @@ public:
 		return source_->set_logokiller(s);
 	}
 
+	uint32_t get_frameNumber()
+	{
+		return source_->get_frameNumber();
+	}
+
+	double get_frameRate()
+	{
+		return source_->get_frameRate();
+	}
+
 	std::future<std::wstring> call(const std::vector<std::wstring>& params) override
 	{
 		if (!boost::iequals(params.at(0), L"framerate"))

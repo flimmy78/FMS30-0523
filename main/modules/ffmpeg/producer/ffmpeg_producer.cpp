@@ -164,6 +164,7 @@ public:
 		, framerate_(read_framerate(*input_.context(), format_desc.framerate))
 		, thumbnail_mode_(thumbnail_mode)
 		, last_frame_(core::draw_frame::empty())
+		, frame_number_(0)
 		,afd_aspect_ratio_(extreanlPas.afd_aspect_ratio)
 		,afd_command_(extreanlPas.afd_command)		
 	{
@@ -362,6 +363,16 @@ public:
 			return FFMPEG_Resource::FFMPEG_FILE;
 	}
 
+	uint32_t get_frameNumber()
+	{
+		return file_frame_number_;
+	}
+
+	double get_frameRate()
+	{
+		double fps = static_cast<double>(framerate_.numerator()) / static_cast<double>(framerate_.denominator());
+		return fps;
+	}
 	// frame_producer
 
 	core::draw_frame receive_impl() override
@@ -566,7 +577,7 @@ public:
 		if (is_url() || input_.loop())
 			return std::numeric_limits<uint32_t>::max();
 
-		auto nb_frames = std::min(input_.out(),file_nb_frames());
+		auto nb_frames = std::min(input_.out(), file_nb_frames());
 		if (nb_frames >= input_.in())
 			nb_frames -= input_.in();
 
@@ -587,7 +598,7 @@ public:
 		if (params.size() > 1)
 			value = params.at(1);
 
-		if (boost::iequals(cmd, L"loop"))
+		if(boost::iequals(cmd,L"loop"))
 		{
 			if (!value.empty())
 				input_.loop(boost::lexical_cast<bool>(value));
@@ -952,14 +963,14 @@ spl::shared_ptr<core::frame_producer> create_producer(
 	constexpr auto uint32_max = std::numeric_limits<uint32_t>::max();
 
 	auto loop					= contains_param(L"LOOP",		params);
-	auto in					    = get_param(L"SEEK",			params, static_cast<uint32_t>(0)); // compatibility
-	in							= get_param(L"IN",				params, in);
+	auto in						= get_param(L"SEEK",			params, static_cast<uint32_t>(0)); // compatibility
+	in							= get_param(L"IN", params, in);
 	auto out					= get_param(L"LENGTH",			params, uint32_max);
 	if (out < uint32_max - in)
 		out += in;
 	else
 		out = uint32_max;
-	out							= get_param(L"OUT",				params, out);
+	out = get_param(L"OUT", params, out);
 
 	auto filter_str				= get_param(L"FILTER",			params, L"");
 	auto custom_channel_order	= get_param(L"CHANNEL_LAYOUT",	params, L"");

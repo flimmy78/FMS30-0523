@@ -530,7 +530,7 @@ spl::shared_ptr<core::frame_producer> create_scroll_producer(const core::frame_p
 		return static_cast<bool>(file);
 	});
 
-	if (ext == supported_extensions().end())
+	if(ext == supported_extensions().end())
 		return core::frame_producer::empty();
 	
 	double duration = 0.0;

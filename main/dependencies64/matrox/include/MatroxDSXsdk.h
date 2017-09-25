@@ -1,6 +1,6 @@
 //==============================================================================
 //
-// (c) Copyright Matrox Electronic Systems Ltd., 2013-2015. All rights reserved. 
+// (c) Copyright Matrox Electronic Systems Ltd., 2013-2017. All rights reserved. 
 //
 // This code and information is provided "as is" without warranty of any kind, 
 // either expressed or implied, including but not limited to the implied 
@@ -305,7 +305,7 @@ interface IMvHostNode : public IMvNode
 //
 // Summary:
 //    Interface that represents a node containing compressed video data, compressed audio data, 
-//    compressed VANC data, or transport stream (TS) muxed buffers in a workflow topology.
+//    compressed ancillary data, or transport stream (TS) muxed buffers in a workflow topology.
 // Remarks:
 //    - The compressed data is located in host memory.
 //    - A compressed host node can only contain one type of data. For example, it can contain only compressed video data.
@@ -397,7 +397,7 @@ interface IMvCompressedHostNode : public IMvNode
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface that represents a node containing video data, audio data, VANC data that can be 
+//    Interface that represents a node containing video data, audio data, ancillary data that can be 
 //    received from an object in a GPU card.
 // Remarks:
 //    - The node act as an host node but with some added feature for GPU transfers.
@@ -455,7 +455,7 @@ interface IMvTextureNode : public IMvHostNode
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface that represents a node containing video data, audio data, VANC data that can be 
+//    Interface that represents a node containing video data, audio data, ancillary data that can be 
 //    transfered into object in a GPU card.
 // Remarks:
 //    - The node act as an host node but with some added feature for GPU transfers.
@@ -524,19 +524,19 @@ interface IMvRenderingTargetNode : public IMvHostNode
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    This structure is an extension of SMvGerericVancPacket, and provides the VANC packet line number.
+//    This structure is an extension of SMvGerericVancPacket, and provides the ancillary packet line number.
 //
 //////////////////////////////////////////////////////////////////////////////////
 struct SMvVancPacket : public SMvGenericVancPacket
 {
-   uint32_t ui32LineNumber;   // Indicates the line number from which the VANC packet was extracted 
-                              // or to which the VANC packet will be inserted.
+   uint32_t ui32LineNumber;   // Indicates the line number from which the ancillary packet was extracted 
+                              // or to which the ancillary packet will be inserted.
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 //
 // Summary:
-//    Interface available for host nodes allowing VANC data packet manipulation.
+//    Interface available for host nodes allowing ancillary data packet manipulation.
 // Remarks:
 //    - This interface is obtained by querying IMvHostNode for IID_IMvVancDataPackets using IUnknown::QueryInterface().
 //
@@ -545,14 +545,14 @@ interface IMvVancDataPackets : public IUnknown
 {
    //
    // Summary: 
-   //    Enables VANC data packet manipulation.
+   //    Enables ancillary data packet manipulation.
    // Return value:
    //    - MV_NOERROR, if completed successfully.
    //    - MV_E_INCOMPATIBLE_NODE_CONTENT, if node content does not contain keMvNodeContentVanc.
-   //    - MV_E_UNSUPPORTED_SURFACE_FORMAT, if the VANC format is other than keMvSurfaceFormatMatroxAncillaryData.
+   //    - MV_E_UNSUPPORTED_SURFACE_FORMAT, if the ancillary format is other than keMvSurfaceFormatMatroxAncillaryData.
    // Remarks:
    //    - In order to use the IMvVancDataPackets interface, it must be enabled.
-   //    - VANC must be handled with the IMvVancDataPackets interface when it is enabled. Otherwise, if the VANC 
+   //    - Ancillary data must be handled with the IMvVancDataPackets interface when it is enabled. Otherwise, if the ancillary 
    //      surface parameters are not null, the IMvNode::GetNodeContentField(), IMvNode::GetNodeContentFields(), 
    //      and IMvNode::GetNodeContentFrame() methods will fail with MV_E_INVALID_PARAMETER, and no ancillary data 
    //      will be provided to the node notification callback interface (IMvNodeNotificationCallback).
@@ -560,18 +560,18 @@ interface IMvVancDataPackets : public IUnknown
    virtual HRESULT __stdcall EnableVancDataPackets() = 0;
    //
    // Summary: 
-   //    Disables VANC data packet manipulation.
+   //    Disables ancillary data packet manipulation.
    // Return value:
    //    - MV_NOERROR, if completed successfully.
    //    - MV_E_INCOMPATIBLE_NODE_CONTENT, if node content does not contain keMvNodeContentVanc.
    // Remarks:
-   //    - When the IMvVancDataPackets interface is disabled, trying to manipulate VANC data packets with it will fail with MV_E_NOT_AVAILABLE.
+   //    - When the IMvVancDataPackets interface is disabled, trying to manipulate ancillary data packets with it will fail with MV_E_NOT_AVAILABLE.
    //
    virtual HRESULT __stdcall DisableVancDataPackets() = 0;
 
    //
    // Summary:
-   //   Gets arrays of VANC packets from a host node.
+   //   Gets arrays of ancillary data packets from a host node.
    // Return value:
    //    - MV_E_NOT_FOUND, if packets are not available at the time specified by in_ui64Timestamp.
    //    - MV_E_ARRAY_TOO_SMALL, if the number of packets available at in_ui64Timestamp exceeds in_ui32ArraySizeF0 or in_ui32ArraySizeF1.
@@ -581,15 +581,15 @@ interface IMvVancDataPackets : public IUnknown
    virtual HRESULT __stdcall GetVancPacketsFields
       (
       uint64_t in_ui64Timestamp,          // Indicates the time at which the packets will be extracted from the host node.
-      SMvVancPacket* io_paVancPacketsF0,  // Pointer to the array of VANC packets of the first video field.
-      uint32_t& io_ui32ArraySizeF0,        // Size of the array of VANC packets for Field 0.
-      SMvVancPacket* io_paVancPacketsF1,  // Pointer to the array of VANC packets of the second video field.
-      uint32_t& io_ui32ArraySizeF1         // Size of the array of VANC packets for Field 1.
+      SMvVancPacket* io_paVancPacketsF0,  // Pointer to the array of ancillary data packets of the first video field.
+      uint32_t& io_ui32ArraySizeF0,        // Size of the array of ancillary data packets for Field 0.
+      SMvVancPacket* io_paVancPacketsF1,  // Pointer to the array of ancillary data packets of the second video field.
+      uint32_t& io_ui32ArraySizeF1         // Size of the array of ancillary data packets for Field 1.
       ) = 0;
 
    //
    // Summary:
-   //   Sends arrays of VANC packets to a host node.
+   //   Sends arrays of ancillary data packets to a host node.
    // Return value:
    //    - MV_E_MAX_VALUE_REACHED, if too many packets are sent before their time stamp expires.
    //    - MV_E_NOT_AVAILABLE, if IMvVancDataPackets is disabled.
@@ -597,15 +597,15 @@ interface IMvVancDataPackets : public IUnknown
    virtual HRESULT __stdcall SetVancPacketsFields
       (
       uint64_t in_ui64Timestamp,          // Indicates the time at which the packets will be inserted in the host node.
-      SMvVancPacket* in_paVancPacketsF0,  // Pointer to the array of VANC packets of the first video field.
-      uint32_t in_ui32ArraySizeF0,        // Size of the array of VANC packets for Field 0.
-      SMvVancPacket* in_paVancPacketsF1,  // Pointer to the array of VANC packets of the second video field.
-      uint32_t in_ui32ArraySizeF1         // Size of the array of VANC packets for Field 1.
+      SMvVancPacket* in_paVancPacketsF0,  // Pointer to the array of ancillary data packets of the first video field.
+      uint32_t in_ui32ArraySizeF0,        // Size of the array of ancillary data packets for Field 0.
+      SMvVancPacket* in_paVancPacketsF1,  // Pointer to the array of ancillary data packets of the second video field.
+      uint32_t in_ui32ArraySizeF1         // Size of the array of ancillary data packets for Field 1.
       ) = 0;
 
    //
    // Summary:
-   //   Gets an array of VANC packets from a host node.
+   //   Gets an array of ancillary data packets from a host node.
    // Return value:
    //    - MV_E_NOT_FOUND, if packets are not available at the time specified by in_ui64Timestamp.
    //    - MV_E_ARRAY_TOO_SMALL, if the number of packets available at in_ui64Timestamp exceeds in_ui32ArraySize.
@@ -615,13 +615,13 @@ interface IMvVancDataPackets : public IUnknown
    virtual HRESULT __stdcall GetVancPacketsField
       (
       uint64_t in_ui64Timestamp,       // Indicates the time at which the packets will be extracted from the host node.
-      SMvVancPacket* io_paVancPackets, // Pointer to the array of VANC packets of the video field.
-      uint32_t& io_ui32ArraySize       // Size of the array of VANC packets for the field.
+      SMvVancPacket* io_paVancPackets, // Pointer to the array of ancillary data packets of the video field.
+      uint32_t& io_ui32ArraySize       // Size of the array of ancillary data packets for the field.
       ) = 0;
 
    //
    // Summary:
-   //   Sends an array of VANC packets to a host node.
+   //   Sends an array of ancillary data packets to a host node.
    // Return value:
    //    - MV_E_MAX_VALUE_REACHED, if too many packets are sent before their time stamp expires.
    //    - MV_E_NOT_AVAILABLE, if IMvVancDataPackets is disabled.
@@ -630,13 +630,13 @@ interface IMvVancDataPackets : public IUnknown
    virtual HRESULT __stdcall SetVancPacketsField
       (
       uint64_t in_ui64Timestamp,       // Indicates the time at which the packets will be inserted in the host node.
-      SMvVancPacket* in_paVancPackets, // Pointer to the array of VANC packets of the video field.
-      uint32_t in_ui32ArraySize        // Size of the array of VANC packets for the field.
+      SMvVancPacket* in_paVancPackets, // Pointer to the array of ancillary data packets of the video field.
+      uint32_t in_ui32ArraySize        // Size of the array of ancillary data packets for the field.
       ) = 0;
 
    //
    // Summary:
-   //   Gets an array of VANC packets from a host node.
+   //   Gets an array of ancillary data packets from a host node.
    // Return value:
    //    - MV_E_NOT_FOUND, if packets are not available at the time specified by in_ui64Timestamp.
    //    - MV_E_ARRAY_TOO_SMALL, if the number of packets available at in_ui64Timestamp exceeds in_ui32ArraySize.
@@ -646,13 +646,13 @@ interface IMvVancDataPackets : public IUnknown
    virtual HRESULT __stdcall GetVancPacketsFrame
       (
       uint64_t in_ui64Timestamp,       // Indicates the time at which the packets will be extracted from the host node.
-      SMvVancPacket* io_paVancPackets, // Pointer to the array of VANC packets of the video frame.
-      uint32_t& io_ui32ArraySize       // Size of the array of VANC packets for the frame.
+      SMvVancPacket* io_paVancPackets, // Pointer to the array of ancillary data packets of the video frame.
+      uint32_t& io_ui32ArraySize       // Size of the array of ancillary data packets for the frame.
       ) = 0;
 
    //
    // Summary:
-   //   Sends an array of VANC packets to a host node.
+   //   Sends an array of ancillary data packets to a host node.
    // Return value:
    //    - MV_E_MAX_VALUE_REACHED, if too many packets are sent before their time stamp expires.
    //    - MV_E_NOT_AVAILABLE, if IMvVancDataPackets is disabled.
@@ -661,72 +661,72 @@ interface IMvVancDataPackets : public IUnknown
    virtual HRESULT __stdcall SetVancPacketsFrame
       (
       uint64_t in_ui64Timestamp,       // Indicates the time at which the packets will be inserted in the host node.
-      SMvVancPacket* in_paVancPackets, // Pointer to the array of VANC packets of the video frame.
-      uint32_t in_ui32ArraySize        // Size of the array of VANC packets for the frame.
+      SMvVancPacket* in_paVancPackets, // Pointer to the array of ancillary data packets of the video frame.
+      uint32_t in_ui32ArraySize        // Size of the array of ancillary data packets for the frame.
       ) = 0;
 
    //
    // Summary:
-   //   Determines the VANC packet type.
+   //   Determines the ancillary data packet type.
    // Return value:
    //   - MV_NOERROR, if successful.
    //
    virtual HRESULT __stdcall GetVancPacketType
       (
-      SMvVancPacket* in_pVancPacket,            // Pointer to the VANC packet structure.
-      EMvVANCPacketType &out_reVancPacketType   // Indicates the VANC packet type.
+      SMvVancPacket* in_pVancPacket,            // Pointer to the ancillary data packet structure.
+      EMvVANCPacketType &out_reVancPacketType   // Indicates the ancillary data packet type.
       ) = 0;
 
    //
    // Summary:
-   //   Transforms VANC data packets to caption distribution packets.
+   //   Transforms ancillary data packets to caption distribution packets.
    // Return value:
    //    - MV_E_NOT_AVAILABLE, if IMvVancDataPackets is disabled.
    //    - MV_E_INCONSISTENCY_DETECTED, if in_pVancPacket is not a caption distribution packet.
    //
    virtual HRESULT __stdcall TransformVancPacketToCaptionDistributionPacket
       (
-      SMvVancPacket* in_pVancPacket,				// Pointer to the structure indicating the VANC packet.
+      SMvVancPacket* in_pVancPacket,				// Pointer to the structure indicating the ancillary data packet.
       SMvCaptionDistributionPacket *io_pCdpPacket	// Pointer to the structure indicating the caption distribution packets.
       ) = 0;
 
    //
    // Summary:
-   //   Transforms caption distribution packets to VANC data packets.
+   //   Transforms caption distribution packets to ancillary data packets.
    // Return value:
    //    - MV_E_NOT_AVAILABLE, if IMvVancDataPackets is disabled.
    //
    virtual HRESULT __stdcall TransformCaptionDistributionPacketToVancPacket
       (
       SMvCaptionDistributionPacket *in_pCdpPacket,	// Pointer to the structure indicating the caption distribution packets.
-      uint32_t in_ui32LineNumber,					// Indicates the VANC packet line number to which the caption distribution packet will be inserted.
-      SMvVancPacket* io_pVancPacket					// Pointer to the structure indicating the VANC packet.
+      uint32_t in_ui32LineNumber,					// Indicates the ancillary data packet line number to which the caption distribution packet will be inserted.
+      SMvVancPacket* io_pVancPacket					// Pointer to the structure indicating the ancillary data packet.
       ) = 0;
 
    //
    // Summary:
-   //   Transforms VANC data packets to AFD and bar data packets.
+   //   Transforms ancillary data packets to AFD and bar data packets.
    // Return value:
    //    - MV_E_NOT_AVAILABLE, if IMvVancDataPackets is disabled.
    //    - MV_E_INCONSISTENCY_DETECTED, if in_pVancPacket is not an AFD packet.
    //
    virtual HRESULT __stdcall TransformVancPacketToAFDAndBarDataPacket
       (
-      SMvVancPacket* in_pVancPacket,			// Pointer to the structure indicating the VANC packet.
+      SMvVancPacket* in_pVancPacket,			// Pointer to the structure indicating the ancillary data packet.
       SMvAFDAndBarDataVancPacket*io_pAFDPacket	// Pointer to the structure indicating the AFD and bar data packets.
       ) = 0;
 
    //
    // Summary:
-   //   Transforms AFD and bar data packets to VANC data packets.
+   //   Transforms AFD and bar data packets to ancillary data packets.
    // Return value:
    //    - MV_E_NOT_AVAILABLE, if IMvVancDataPackets is disabled.
    //
    virtual HRESULT __stdcall TransformAFDAndBarDataPacketToVancPacket
       (
       SMvAFDAndBarDataVancPacket *in_pAFDPacket,	// Pointer to the structure indicating the AFD and bar data packets.
-      uint32_t in_ui32LineNumber,					// Indicates the VANC packet line number to which the AFD and bar data packet will be inserted.
-      SMvVancPacket* io_pVancPacket					// Pointer to the structure indicating the VANC data.
+      uint32_t in_ui32LineNumber,					// Indicates the ancillary data packet line number to which the AFD and bar data packet will be inserted.
+      SMvVancPacket* io_pVancPacket					// Pointer to the structure indicating the ancillary data.
       ) = 0;
 };
 
@@ -735,7 +735,7 @@ interface IMvVancDataPackets : public IUnknown
 // Summary:
 //    Interface that represents an encoder stream in a workflow topology.
 // Remarks:
-//    - This interface is used to compress video, audio, and VANC data.
+//    - This interface is used to compress video, audio, and ancillary data.
 //    - The input of this stream is a host node, and the output is a compressed host node.
 //
 //////////////////////////////////////////////////////////////////////////////////
@@ -901,10 +901,10 @@ interface IMvEncoderStream : public IMvStream
 // Summary:
 //    Interface that represents a muxer stream in a workflow topology. 
 // Remarks:
-//    - This interface is used to multiplexe compressed video, audio, and VANC elementary streams into a single 
+//    - This interface is used to multiplexe compressed video, audio, and ancillary data elementary streams into a single 
 //      MPEG-2 program transport stream (SPTS) muxed buffer.
 //    - Both the input and the output of this stream are compressed host nodes.
-//    - The muxer stream can multiplexe compressed video and audio streams, or compressed video, audio, and VANC streams.
+//    - The muxer stream can multiplexe compressed video and audio streams, or compressed video, audio, and ancillary data streams.
 //
 //////////////////////////////////////////////////////////////////////////////////
 interface IMvMuxerStream : public IMvStream
@@ -996,7 +996,7 @@ interface IMvMuxerStream : public IMvStream
 
    //
    // Summary:
-   //   Gets the input compressed host node currently bound to the muxer stream containing compressed VANC. 
+   //   Gets the input compressed host node currently bound to the muxer stream containing compressed ancillary data. 
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -1008,7 +1008,7 @@ interface IMvMuxerStream : public IMvStream
 
    //
    // Summary:
-   //   Modifies the input compressed host node currently bound to the muxer stream containing compressed VANC.  
+   //   Modifies the input compressed host node currently bound to the muxer stream containing compressed ancillary data.  
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    // Remarks:
@@ -1835,7 +1835,7 @@ interface IMvWriterStreamValidator : public IUnknown
 
    //
    // Summary:
-   //   Gets the video, audio, and VANC settings for the node.  
+   //   Gets the video, audio, and ancillary data settings for the node.  
    // Return value:
    //    - MV_TRUE, if at least one setting was modified. Otherwise, MV_FALSE is returned.
    //
@@ -1843,7 +1843,7 @@ interface IMvWriterStreamValidator : public IUnknown
       (
       SMvNodeSettingsVideo   & io_sVideoSettings,  // Structure that receives the node's video settings.
       SMvNodeSettingsAudio   & io_sAudioSettings,  // Structure that receives the node's audio settings.
-      SMvNodeSettingsVanc    & io_sVancSettings    // Structure that receives the node's VANC settings.
+      SMvNodeSettingsVanc    & io_sVancSettings    // Structure that receives the node's ancillary data settings.
       ) = 0;
    
    //
@@ -1895,7 +1895,7 @@ interface IMvWriterStreamValidationFactory : public IUnknown
       const GUID &                        in_krguidWriterStream,           // GUID used to create the writer stream.
       SMvNodeSettingsVideo&               in_rsNodeVideoSettings,          // Structure of the host node's video settings.
       SMvNodeSettingsAudio&               in_rsNodeAudioSettings,          // Structure of the host node's audio settings.
-      SMvNodeSettingsVanc&                in_reNodeVancSettings,           // Structure of the host node's VANC settings.
+      SMvNodeSettingsVanc&                in_reNodeVancSettings,           // Structure of the host node's ancillary data settings.
       const SMvWriterStreamSettings &     in_krsSettings,                  // Structure of the writer stream settings.
       IMvEncoderStreamSettingsCallback*   in_pIVideoCodecSettings,         // Pointer to the video encoder stream settings callback interface.
       IMvEncoderStreamSettingsCallback*   in_pIAudioCodecSettings,         // Pointer to the audio encoder stream settings callback interface.
@@ -2880,7 +2880,7 @@ interface IMvReaderStream : public IMvStream
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    // Remarks:
-   //    - Audio and VANC are output according to the reader stream settings.
+   //    - Audio and ancillary data are output according to the reader stream settings.
    //    - The last seek issued will be repeated until a new command is received.
    //    - It is possible to cue multiple seek commands. However, the reader stream can only process the commands in real time.
    //      This means that a seek command may get canceled if another command is to be processed at the same time.
@@ -3048,7 +3048,7 @@ interface IMvUniversalClockNotificationCallback : public IUnknown
 //    Interface that represents a specific workflow topology. 
 // Remarks:
 //    - A topology is made up of a sequence of streams and nodes that accomplishes a configurable set of actions on
-//      video, audio, and VANC data.
+//      video, audio, and ancillary data.
 //    - This interface creates the nodes and streams contained in the topology.
 //    - This interface can be queried for detailed information about the topology configuration and can be used to
 //      destroy the topology or all its components.
@@ -3073,10 +3073,14 @@ interface IMvSystemTopology : public IUnknown
    //    Creates an input stream for SDI input connectors in the system topology.
    // Remarks:
    //    - This method allows the input stream to automatically determine whether or not alpha connectors are required.
+   //    - The audio input connectors are given to the input stream as an array of interfaces that consists of 
+   //      embedded audio input connectors and/or AES/EBU audio input connectors.
    //    - If you would like to capture ultra high definition (UHD), a list of four video input connectors 
-   //      are needed. The audio and VANC are obtained from the first connector in the in_pIVideoInputConnectors 
-   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In addition, 
+   //      are needed. The audio and ancillary data are obtained from the first connector in the in_pIVideoInputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData format is supported. In addition, 
    //      each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
+   //    - If you would like to capture UHD with the X.mio3 12G card, only one video connector is needed 
+   //      when the input stream is created. 
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //
@@ -3087,7 +3091,7 @@ interface IMvSystemTopology : public IUnknown
       uint32_t in_ui32VideoConnectorsCount,                 // Indicates the number of video input connectors.
       IMvAudioInputConnector* in_apIAudioInputConnectors[],	// Pointer to the array of audio input connector interfaces.
       uint32_t in_ui32AudioInputConnectorsCount,            // Indicates the number of audio input connectors.
-      IMvNode* in_pIOutputNode,                             // Pointer to the output node interface that receives the audio, video, and VANC data.
+      IMvNode* in_pIOutputNode,                             // Pointer to the output node interface that receives the audio, video, and ancillary data.
       const SMvResolutionInfo& in_krsResInfo,               // Structure of the resolution settings of the input stream. 
       const SMvInputStreamSettings& in_krsStreamSettings,   // Structure of the input stream settings.
       IMvInputStream **out_ppIInputStream                   // Pointer that receives the created input stream 
@@ -3101,19 +3105,22 @@ interface IMvSystemTopology : public IUnknown
    //    - MV_NOERROR, if completed successfully. 
    // Remarks:
    //    - This method allows the user application to determine whether or not alpha connectors are required.
+   //    - The audio input connectors are given to the input stream as an array of interfaces that consists of 
+   //      embedded audio input connectors and/or AES/EBU audio input connectors.
    //    - If the user application does not specify using alpha connectors, the input stream will only capture the 
    //      video part of the node, even if the card node contains alpha values.
    //    - If alpha connectors are not used, the alpha part of the card node is put to opaque.
    //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
-   //      In this case, the input stream behaves the same as when it is created using IMvSystemTopology::CreateInputStream().
    //    - The user application can get the associated alpha connector for in_apISdiInputConnectors using 
    //      IMvVideoInputConnector::GetAssociatedAlphaConnector().
    //    - If you would like to capture ultra high definition (UHD), a list of four video input connectors are needed.
    //      If alpha connectors are used, a list of four alpha connectors are also needed. (Otherwise, set the alpha 
    //      connectors to NULL.) 
-   //      The audio and VANC are obtained from the first connector in the in_apISdiInputConnectors 
-   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      The audio and ancillary data are obtained from the first connector in the in_apISdiInputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData format is supported. In
    //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
+   //    - If you would like to capture UHD with the X.mio3 12G card, only one video and alpha (if used) connector is needed 
+   //      when the input stream is created.
    //
    virtual HRESULT __stdcall CreateInputStreamSdi
       (
@@ -3124,7 +3131,7 @@ interface IMvSystemTopology : public IUnknown
       IMvConnector* in_apIAudioInputConnectors[],           // Pointer to the array of audio input connector interfaces.
       uint32_t in_ui32AudioInputConnectorsCount,            // Indicates the number of audio input connectors.
       IMvNode* in_pIOutputNode,                             // Pointer to the node interface that receives the audio,
-                                                            // video, and VANC data. This parameter can be NULL.
+                                                            // video, and ancillary data. This parameter can be NULL.
       const SMvResolutionInfo& in_krsResolution,            // Structure of the resolution settings of the input stream.
       const SMvInputStreamSettings& in_krsStreamSettings,   // Structure of the input stream settings.
       IMvInputStream **out_ppIInputStream                   // Pointer that receives the created input stream
@@ -3133,20 +3140,19 @@ interface IMvSystemTopology : public IUnknown
 
    //
    // Summary:
-   //    Creates an input stream for SMPTE 2022-6 streams over SFP+ transceivers in the system topology.
+   //    Creates an input stream for IP streams conforming to SMPTE 2022-6 and SMPTE 2022-7 over SFP+ ports in the system topology.
    // Remarks:
    //    - This method allows the user application to determine whether or not alpha connectors are required.
    //    - If the user application does not specify using alpha connectors, the input stream will only capture the 
    //      video part of the node, even if the card node contains alpha values.
    //    - If alpha connectors are not used, the alpha part of the card node is put to opaque.
    //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
-   //      In this case, the input stream behaves the same as when it is created using IMvSystemTopology::CreateInputStream().
    //    - The user application can get the associated alpha connector for in_pISdiIpInputConnectors using 
    //      IMvSdiIpInputConnector::GetAssociatedAlphaConnector().
-   //    - If you would like to capture ultra high definition (UHD), a list of four SDI IP input connectors are needed. 
+   //    - If you would like to capture ultra high definition (UHD), a list of four video input connectors are needed. 
    //      If alpha connectors are used, a list of four alpha connectors are also needed. (Otherwise, set the alpha 
-   //      connectors to NULL.) The audio and VANC are obtained from the first connector in the in_pISdiIpInputConnectors
-   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      connectors to NULL.) The audio and ancillary data are obtained from the first connector in the in_pISdiIpInputConnectors
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData format is supported. In
    //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
@@ -3154,12 +3160,44 @@ interface IMvSystemTopology : public IUnknown
    virtual HRESULT __stdcall CreateInputStreamSdiIp
       (
       const char * in_kszName,                              // Indicates the name of the input stream to create.   
-      IMvConnector* in_pISdiIpInputConnectors[],            // Pointer to the array of SDI IP video input connector interfaces.
-      IMvConnector* in_pISdiIpAlphaInputConnectors[],       // Pointer to the array of SDI IP alpha input connector interfaces.
-      uint32_t in_ui32ConnectorsCount,                      // Indicates the number of SDI IP video input connectors.
-      IMvConnector* in_apIAudioInputConnectors[],           // Pointer to the array of SDI IP audio input connector interfaces.
-      uint32_t in_ui32AudioInputConnectorsCount,            // Indicates the number of SDI IP audio input connectors.
-      IMvNode* in_pIOutputNode,                             // Pointer to the output node interface that receives the audio, video, and VANC data.
+      IMvConnector* in_pISdiIpInputConnectors[],            // Pointer to the array of video input connector interfaces.
+      IMvConnector* in_pISdiIpAlphaInputConnectors[],       // Pointer to the array of alpha input connector interfaces.
+      uint32_t in_ui32ConnectorsCount,                      // Indicates the number of video input connectors.
+      IMvConnector* in_apIAudioInputConnectors[],           // Pointer to the array of audio input connector interfaces.
+      uint32_t in_ui32AudioInputConnectorsCount,            // Indicates the number of audio input connectors.
+      IMvNode* in_pIOutputNode,                             // Pointer to the output node interface that receives the audio, video, and ancillary data.
+      const SMvResolutionInfo & in_krsResolution,           // Structure of the resolution settings of the input stream. 
+      const SMvInputStreamSettings& in_krsStreamSettings,   // Structure of the input stream settings.
+      IMvInputStream **out_ppIInputStream                   // Pointer that receives the created input stream
+                                                            // interface, if the method is completed successfully.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Creates an input stream for SMPTE 2110 streams over SFP+ transceivers in the system topology.
+   // Remarks:
+   //    - This method allows the user application to determine whether or not alpha connectors are required.
+   //    - If the user application does not specify using alpha connectors, the input stream will only capture the 
+   //      video part of the node, even if the card node contains alpha values.
+   //    - If alpha connectors are not used, the alpha part of the card node is put to opaque.
+   //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
+   //    - The user application can get the associated alpha connector for in_apIIpVideoInputConnectors using 
+   //      IMvIpVideoInputConnector::GetAssociatedAlphaConnector().
+   //    - If you would like to capture ultra high definition (UHD), a list of four IP input connectors are needed. 
+   //      If alpha connectors are used, a list of four alpha connectors are also needed. (Otherwise, set the alpha 
+   //      connectors to NULL.) The audio and ancillary data are obtained from the first connector in the in_apIIpVideoInputConnectors
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData ancillary data format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //
+   virtual HRESULT __stdcall CreateInputStreamIp
+      (
+      const char * in_kszName,                              // Indicates the name of the input stream to create.   
+      IMvConnector* in_apIIpVideoInputConnectors[],          // Pointer to the array of IP video input connector interfaces.
+      IMvConnector* in_apIIpAlphaInputConnectors[],          // Pointer to the array of IP alpha input connector interfaces.
+      uint32_t in_ui32ConnectorsCount,                      // Indicates the number of IP video input connectors.
+      IMvNode* in_pIOutputNode,                             // Pointer to the output node interface that receives the audio, video, and ancillary data.
       const SMvResolutionInfo & in_krsResolution,           // Structure of the resolution settings of the input stream. 
       const SMvInputStreamSettings& in_krsStreamSettings,   // Structure of the input stream settings.
       IMvInputStream **out_ppIInputStream                   // Pointer that receives the created input stream
@@ -3171,11 +3209,16 @@ interface IMvSystemTopology : public IUnknown
    //    Creates an output stream for SDI output connectors in the system topology.
    // Remarks:
    //    - This method allows the output stream to automatically determine whether or not alpha connectors are required.
-   //    - If you would like to output ultra high definition (UHD), a list of four video 
+   //    - The embedded audio output connector associated with the SDI video output connector will be used automatically.
+   //      If AES/EBU audio output connectors are used, the user application must associate the proper connectors with the 
+   //      output stream.
+   //    - If you would like to play back ultra high definition (UHD), a list of four video 
    //      output connectors are needed when the output stream is created using this method.
-   //      The audio and VANC are obtained from the first connector in the in_pIVideoOuputConnectors 
-   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      The audio and ancillary data are obtained from the first connector in the in_pIVideoOuputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData format is supported. In
    //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
+   //    - If you would like to play back UHD with the X.mio3 12G card, only one video connector is needed 
+   //      when the output stream is created.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //   
@@ -3186,6 +3229,8 @@ interface IMvSystemTopology : public IUnknown
       const SMvResolutionInfo& in_krsResInfo,                // Structure of the resolution settings of the output stream.
       const SMvOutputStreamSettings& in_krsStreamSettings,   // Structure of the output stream settings.
       IMvVideoOutputConnector* in_pIVideoOutputConnectors[], // Pointer to the array of video output connector interfaces.
+                                                             // The audio and ancillary data associated with the SDI video output 
+                                                             // connector will be used automatically.
       uint32_t in_ui32VideoConnectorsCount,                  // Indicates the number of video output connectors.
       IMvOutputStream **out_ppIOutputStream                  // Pointer that receives the created output stream 
                                                              // interface, if the method is completed successfully.
@@ -3196,17 +3241,21 @@ interface IMvSystemTopology : public IUnknown
    //    Creates an output stream for SDI output connectors in the system topology.
    // Remarks:
    //    - This method allows the user application to determine whether or not alpha connectors are required.
+   //    - The embedded audio output connector associated with the SDI video output connector will be used automatically.
+   //      If AES/EBU audio output connectors are used, the user application must associate the proper connectors with the 
+   //      output stream.
    //    - If the user application does not specify using alpha connectors, the output stream will only output the 
    //      video part of the node, even if the card node contains alpha values.
    //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
-   //      In this case, the output stream behaves the same as when it is created using IMvSystemTopology::CreateOutputStream().
    //    - The user application can get the associated alpha connector for in_pISdiOutputConnectors using 
    //      IMvVideoOutputConnector::GetAssociatedAlphaConnector().
-   //    - If you would like to output ultra high definition (UHD), a list of four video output connectors are needed. 
+   //    - If you would like to play back ultra high definition (UHD), a list of four video output connectors are needed. 
    //      If alpha connectors are used, a list of four alpha connectors are also needed. (Otherwise, set the alpha connectors to NULL.) 
-   //      The audio and VANC are obtained from the first connector in the in_pISdiOutputConnectors 
-   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      The audio and ancillary data are obtained from the first connector in the in_pISdiOutputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData format is supported. In
    //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
+   //    - If you would like to play back UHD with the X.mio3 12G card, only one video and alpha (if used) connector is needed 
+   //      when the output stream is created.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
    //   
@@ -3217,6 +3266,8 @@ interface IMvSystemTopology : public IUnknown
       const SMvResolutionInfo & in_krsResolution,              // Structure of the resolution settings of the output stream.
       const SMvOutputStreamSettings & in_krsStreamSettings,    // Structure of the output stream settings.
       IMvConnector * in_pISdiOutputConnectors[],               // Pointer to the array of SDI video output connector interfaces.
+                                                               // The audio and  data associated with the SDI video output 
+                                                               // connector will be used automatically.
       IMvConnector * in_pAlphaOutputConnectors[],              // Pointer to the array of SDI alpha output connector interfaces.
       uint32_t in_ui32ConnectorsCount,                         // Indicates the number of SDI video output connectors.
       IMvOutputStream ** out_ppIOutputStream                   // Pointer that receives the created output stream 
@@ -3225,19 +3276,18 @@ interface IMvSystemTopology : public IUnknown
 
    //
    // Summary:
-   //    Creates an output stream for SMPTE 2022-6 streams over SFP+ transceivers in the system topology.
+   //    Creates an output stream for IP streams conforming to SMPTE 2022-6 and SMPTE 2022-7 over SFP+ ports in the system topology.
    // Remarks:
    //    - This method allows the user application to determine whether or not alpha connectors are required.
    //    - If the user application does not specify using alpha connectors, the output stream will only output the 
    //      video part of the node, even if the card node contains alpha values.
-   //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
-   //      In this case, the output stream behaves the same as when it is created using IMvSystemTopology::CreateOutputStream().
+   //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it.
    //    - The user application can get the associated alpha connector for in_pISdiIpOutputConnectors using 
    //      IMvSdiIpOutputConnector::GetAssociatedAlphaConnector().
-   //    - If you would like to output ultra high definition (UHD), a list of four SDI IP output connectors are needed. 
+   //    - If you would like to play back ultra high definition (UHD), a list of four video output connectors are needed. 
    //      If alpha connectors are used, a list of four alpha connectors are also needed. (Otherwise, set the alpha connectors to NULL.) 
-   //      The audio and VANC are obtained from the first connector in the in_pISdiIpOutputConnectors 
-   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      The audio and ancillary data are obtained from the first connector in the in_pISdiIpOutputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData format is supported. In
    //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
@@ -3248,16 +3298,18 @@ interface IMvSystemTopology : public IUnknown
       IMvNode    * in_pIInputNode,                              // Pointer to the input node interface of the output stream.
       const SMvResolutionInfo & in_krsResolution,               // Structure of the resolution settings of the output stream.
       const SMvOutputStreamSettings & in_krsStreamSettings,     // Structure of the output stream settings.
-      IMvConnector * in_pISdiIpOutputConnectors[],              // Pointer to the array of SDI IP video output connector interfaces.
-      IMvConnector * in_pSdiIpAlphaOutputConnectors[],          // Pointer to the array of SDI IP alpha output connector interfaces.
-      uint32_t in_ui32ConnectorsCount,                          // Indicates the number of SDI IP video output connectors.
+      IMvConnector * in_pISdiIpOutputConnectors[],              // Pointer to the array of video output connector interfaces.
+                                                                // The audio and ancillary data associated with the video output 
+                                                                // connector will be used automatically.
+      IMvConnector * in_pSdiIpAlphaOutputConnectors[],          // Pointer to the array of alpha output connector interfaces.
+      uint32_t in_ui32ConnectorsCount,                          // Indicates the number of video output connectors.
       IMvOutputStream ** out_ppIOutputStream                    // Pointer that receives the created output stream
                                                                 // interface, if the method is completed successfully.
       ) = 0;
 
    //
    // Summary:
-   //    Creates an output stream for ASPEN streams over SFP+ transceivers in the system topology.
+   //    Creates an output stream for IP streams conforming to the ASPEN protocol over SFP+ ports in the system topology.
    // Remarks:
    //    - This method allows the user application to determine whether or not alpha connectors are required.
    //    - If the user application does not specify using alpha connectors, the output stream will only output the 
@@ -3265,9 +3317,10 @@ interface IMvSystemTopology : public IUnknown
    //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
    //    - The user application can get the associated alpha connector for in_apIVideoOutputConnectors using 
    //      IMvAspenVideoOutputConnector::GetAssociatedAlphaConnector().
-   //    - If you would like to output ultra high definition (UHD), a list of four video output connectors are needed. 
+   //    - If you would like to play back ultra high definition (UHD), a list of four video output connectors are needed. 
    //      If alpha connectors are used, a list of four alpha connectors are also needed. (Otherwise, set the alpha connectors to NULL.) 
-   //      However, only the keMvSurfaceFormatMatroxAncillaryData VANC format is supported. In
+   //      The audio and ancillary data are obtained from the first connector in the in_apIVideoOutputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData format is supported. In
    //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
    // Return value:
    //    - MV_NOERROR, if completed successfully. 
@@ -3279,12 +3332,50 @@ interface IMvSystemTopology : public IUnknown
                                                             // This parameter can be NULL.
       const SMvResolutionInfo & in_krsResolution,           // Structure of the resolution settings of the output stream.
       const SMvOutputStreamSettings & in_krsStreamSettings, // Structure of the output stream settings.
-      IMvConnector * in_apIVideoOutputConnectors[],         // Pointer to the array of ASPEN video output connector interfaces.
-      IMvConnector * in_apAlphaOutputConnectors[],          // Pointer to the array of ASPEN alpha output connector interfaces.
-      uint32_t       in_ui32VideoConnectorsCount,           // Indicates the number of ASPEN video output connectors.
-      IMvConnector * in_apIAudioConnectors[],               // Pointer to the array of ASPEN audio output connector interfaces.
-      uint32_t       in_ui32AudioConnectorsCount,           // Indicates the number of ASPEN audio output connectors.
-      IMvConnector * in_pIVancConnector,                    // Pointer to the ASPEN VANC output connector interface.
+      IMvConnector * in_apIVideoOutputConnectors[],         // Pointer to the array of video output connector interfaces.
+                                                            // The audio and ancillary data associated with the video output 
+                                                            // connector will be used automatically.
+      IMvConnector * in_apAlphaOutputConnectors[],          // Pointer to the array of alpha output connector interfaces.
+      uint32_t       in_ui32VideoConnectorsCount,           // Indicates the number of video output connectors.
+      IMvConnector * in_apIAudioConnectors[],               // Pointer to the array of audio output connector interfaces.
+      uint32_t       in_ui32AudioConnectorsCount,           // Indicates the number of audio output connectors.
+      IMvConnector * in_pIVancConnector,                    // Pointer to the ancillary data output connector interface.
+      IMvOutputStream ** out_ppIOutputStream                // Pointer that receives the created output stream
+                                                            // interface, if the method is completed successfully.
+      ) = 0;
+
+   //
+   // Summary:
+   //    Creates an output stream for IP streams conforming to the SMPTE ST 2110 draft version over SFP+ ports in the system topology.
+   // Note:
+   //    Draft version implies that SMPTE ST 2110 is not an official document. It is still under review and development, which means that it is subject to change.
+   // Remarks:
+   //    - This method allows the user application to determine whether or not alpha connectors are required.
+   //    - If the user application does not specify using alpha connectors, the output stream will only output the 
+   //      video part of the node, even if the card node contains alpha values.
+   //    - If alpha connectors are used, the user application must follow the alpha connector mapping of the card using it. 
+   //    - The user application can get the associated alpha connector for in_apIVideoOutputConnectors using 
+   //      IMvIpVideoOutputConnector::GetAssociatedAlphaConnector().
+   //    - If you would like to play back ultra high definition (UHD), a list of four video output connectors are needed. 
+   //      If alpha connectors are used, a list of four alpha connectors are also needed. (Otherwise, set the alpha connectors to NULL.) 
+   //      The audio and ancillary data are obtained from the first connector in the in_apIVideoOutputConnectors 
+   //      array. However, only the keMvSurfaceFormatMatroxAncillaryData format is supported. In
+   //      addition, each line in keMvSurfaceFormatMatroxAncillaryData must match the resolution of the first connector.
+   // Return value:
+   //    - MV_NOERROR, if completed successfully. 
+   //   
+   virtual HRESULT __stdcall CreateOutputStreamIp
+      (
+      const char * in_kszName,                              // Indicates the name of the output stream to create.
+      IMvNode    * in_pIInputNode,                          // Pointer to the input node interface of the output stream.
+                                                            // This parameter can be NULL.
+      const SMvResolutionInfo & in_krsResolution,           // Structure of the resolution settings of the output stream.
+      const SMvOutputStreamSettings & in_krsStreamSettings, // Structure of the output stream settings.
+      IMvConnector * in_apIVideoOutputConnectors[],         // Pointer to the array of video output connector interfaces. 
+                                                            // The audio and ancillary data associated with the video output 
+                                                            // connector will be used automatically.
+      IMvConnector * in_apAlphaOutputConnectors[],          // Pointer to the array of alpha output connector interfaces.
+      uint32_t       in_ui32VideoConnectorsCount,           // Indicates the number of video output connectors.
       IMvOutputStream ** out_ppIOutputStream                // Pointer that receives the created output stream
                                                             // interface, if the method is completed successfully.
       ) = 0;
@@ -3337,7 +3428,7 @@ interface IMvSystemTopology : public IUnknown
    //    - MV_NOERROR, if completed successfully.
    // Remarks:
    //    - The input node settings and the output node settings must be the same. The data is copied without modification.
-   //    - In the case where the resolution of a card node is PsF, the VANC data is converted to progressive when transfered 
+   //    - In the case where the resolution of a card node is PsF, the ancillary data is converted to progressive when transfered 
    //      to a host node (or vice-versa). For more information, see the <i>Matrox DSX Topology API User Guide</i>.
    //    - The transfer stream uses the card's DMA to transfer data between onboard memory and host memory. This means that 
    //      if the input node is a card node, the output node must be a host node, and vice-versa.
@@ -3394,7 +3485,7 @@ interface IMvSystemTopology : public IUnknown
       const char  * in_kszName,                             // Indicates the name of the muxer stream to create. 
       IMvCompressedHostNode * in_pIVideoNode,               // Pointer to the input compressed host node interface containing compressed video data.
       IMvCompressedHostNode * in_pIAudioNode,               // Pointer to the input compressed host node interface containing compressed audio data.
-      IMvCompressedHostNode * in_pIVancNode,                // Pointer to the input compressed host node interface containing compressed VANC data.
+      IMvCompressedHostNode * in_pIVancNode,                // Pointer to the input compressed host node interface containing compressed ancillary data.
       IMvCompressedHostNode * in_pIOutputNode,              // Pointer to the output compressed host node interface containing a single MPEG-2 program transport stream (SPTS) muxed buffer.
       const SMvMuxerStreamSettings   & in_krsSettings,      // Structure of the muxer stream settings.
       IMvMuxerStream ** out_ppNewStream                     // Pointer that receives the created muxer stream interface, if the method is completed successfully.      
@@ -3458,7 +3549,7 @@ interface IMvSystemTopology : public IUnknown
       const GUID                              & in_krguidWriterStream,     // Indicates the GUID that will be used to create the compressed writer stream.
       IMvCompressedHostNode                   * in_pIVideoInputNode,       // Pointer to the input compressed host node interface containing compressed video data.
       IMvCompressedHostNode                   * in_pIAudioInputNode,       // Pointer to the input compressed host node interface containing compressed audio data.
-      IMvCompressedHostNode                   * in_pIVancInputNode,        // Pointer to the input compressed host node interface containing compressed VANC data. <b>Note</b>: This parameter is currently not supported.
+      IMvCompressedHostNode                   * in_pIVancInputNode,        // Pointer to the input compressed host node interface containing compressed ancillary data. <b>Note</b>: This parameter is currently not supported.
       const SMvCompressedWriterStreamSettings & in_krsSettings,            // Structure of the compressed writer stream settings.
       IMvCompressedWriterStream              ** out_ppNewStream            // Pointer that receives the created compressed writer stream interface, if the method is completed successfully.
       ) = 0;
@@ -3522,7 +3613,7 @@ interface IMvSystemTopology : public IUnknown
       const SMvNodeSettings      & in_rsNodeSettings,   // Structure of the card node's settings.
       const SMvNodeSettingsVideo * in_psVideoSettings,  // Pointer to the input card node's video settings.
       const SMvNodeSettingsAudio * in_psAudioSettings,  // Pointer to the input card node's audio settings.
-      const SMvNodeSettingsVanc  * in_psVancSettings,   // Pointer to the input card node's VANC settings.
+      const SMvNodeSettingsVanc  * in_psVancSettings,   // Pointer to the input card node's ancillary data settings.
       IMvCardConfiguration       * in_pICardIgnored,    // This parameter is ignored. For possible future use.
       IMvNode                   ** out_ppINode          // Pointer that receives the created node interface, if the 
                                                         // method is completed successfully.
@@ -3558,7 +3649,7 @@ interface IMvSystemTopology : public IUnknown
       const SMvNodeSettings      & in_rsNodeSettings,    // Structure of the host node's settings.
       const SMvNodeSettingsVideo * in_psVideoSettings,   // Pointer to the input host node's video settings.
       const SMvNodeSettingsAudio * in_psAudioSettings,   // Pointer to the input host node's audio settings.
-      const SMvNodeSettingsVanc  * in_psVancSettings,    // Pointer to the input host node's VANC settings.
+      const SMvNodeSettingsVanc  * in_psVancSettings,    // Pointer to the input host node's ancillary data settings.
       IMvHostNode               ** out_ppINode           // Pointer that receives the created host node interface, if the 
                                                          // method is completed successfully.
       ) = 0;
@@ -3577,7 +3668,7 @@ interface IMvSystemTopology : public IUnknown
       const SMvNodeSettings      & in_rsNodeSettings,    // Structure of the host node's settings.
       const SMvNodeSettingsVideo * in_psVideoSettings,   // Pointer to the input host node's video settings.
       const SMvNodeSettingsAudio * in_psAudioSettings,   // Pointer to the input host node's audio settings.
-      const SMvNodeSettingsVanc  * in_psVancSettings,    // Pointer to the input host node's VANC settings.
+      const SMvNodeSettingsVanc  * in_psVancSettings,    // Pointer to the input host node's ancillary data settings.
       IMvHostNode               ** out_ppINode           // Pointer that receives the created host node interface, if the 
                                                          // method is completed successfully.
       ) = 0;
@@ -3611,7 +3702,7 @@ interface IMvSystemTopology : public IUnknown
       const SMvNodeSettings      & in_krsNodeSettings,      // Structure of the node's settings.
       const SMvNodeSettingsVideo * in_psVideoSettings,      // Pointer to the input host node's video settings.
       const SMvNodeSettingsAudio * in_psAudioSettings,      // Pointer to the input host node's audio settings.
-      const SMvNodeSettingsVanc  * in_psVancSettings,       // Pointer to the input host node's VANC settings.
+      const SMvNodeSettingsVanc  * in_psVancSettings,       // Pointer to the input host node's ancillary data settings.
       IMvTextureNode            ** out_ppINode              // Pointer that receives the created texture node interface, 
                                                             // if the method is completed successfully.
       ) = 0;
@@ -3632,7 +3723,7 @@ interface IMvSystemTopology : public IUnknown
       const SMvNodeSettings      & in_krsNodeSettings,   // Structure of the node's settings.
       const SMvNodeSettingsVideo * in_psVideoSettings,   // Pointer to the input host node's video settings.
       const SMvNodeSettingsAudio * in_psAudioSettings,   // Pointer to the input host node's audio settings.
-      const SMvNodeSettingsVanc  * in_psVancSettings,    // Pointer to the input host node's VANC settings.
+      const SMvNodeSettingsVanc  * in_psVancSettings,    // Pointer to the input host node's ancillary data settings.
       IMvTextureNode            ** out_ppINode           // Pointer that receives the created texture node interface,
                                                          // if the method is completed successfully.
       ) = 0;
@@ -3653,7 +3744,7 @@ interface IMvSystemTopology : public IUnknown
       const SMvNodeSettings      & in_krsNodeSettings,   // Structure of the node's settings.
       const SMvNodeSettingsVideo * in_psVideoSettings,   // Pointer to the input host node's video settings.
       const SMvNodeSettingsAudio * in_psAudioSettings,   // Pointer to the input host node's audio settings.
-      const SMvNodeSettingsVanc  * in_psVancSettings,    // Pointer to the input host node's VANC settings.
+      const SMvNodeSettingsVanc  * in_psVancSettings,    // Pointer to the input host node's ancillary data settings.
       IMvRenderingTargetNode    ** out_ppINode           // Pointer that receives the created rendering target node 
                                                          // interface, if the method is completed successfully.
       ) = 0;
@@ -3674,7 +3765,7 @@ interface IMvSystemTopology : public IUnknown
       const SMvNodeSettings      & in_krsNodeSettings,   // Structure of the node's settings.
       const SMvNodeSettingsVideo * in_psVideoSettings,   // Pointer to the input host node's video settings.
       const SMvNodeSettingsAudio * in_psAudioSettings,   // Pointer to the input host node's audio settings.
-      const SMvNodeSettingsVanc  * in_psVancSettings,    // Pointer to the input host node's VANC settings.
+      const SMvNodeSettingsVanc  * in_psVancSettings,    // Pointer to the input host node's ancillary data settings.
       IMvRenderingTargetNode    ** out_ppINode           // Pointer that receives the created rendering target node 
                                                          // interface, if the method is completed successfully.
       ) = 0;
@@ -4754,7 +4845,7 @@ public:
 // Summary:
 //    Interface that represents a decoder stream in a workflow topology.
 // Remarks:
-//    - This interface is used to decompress video, audio, and VANC data.
+//    - This interface is used to decompress video, audio, and ancillary data.
 //    - The input of this stream is a compressed host node, and the output is a host node.
 //
 //////////////////////////////////////////////////////////////////////////////////

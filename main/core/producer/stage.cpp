@@ -493,6 +493,16 @@ public:
 			curlayer.set_logokiller(paramstr);
 		}, task_priority::high_priority);
 	}
+
+	int getTimecode(int index)
+	{
+		return get_layer(index).getTimecode();
+	}
+
+	double getFramerate(int index)
+	{
+		return get_layer(index).getFramerate();
+	}
 };
 
 stage::stage(int channel_index, spl::shared_ptr<diagnostics::graph> graph) : impl_(new impl(channel_index, std::move(graph))){}
@@ -528,6 +538,15 @@ void stage::on_interaction(const interaction_event::ptr& event) { impl_->on_inte
 void stage::set_logokiller(int index, std::wstring str)
 {
 	return impl_->set_logokiller(index, str);
+}
+int stage::getTimecode(int index)
+{
+	return impl_->getTimecode(index);
+}
+
+double stage::getFramerate(int index)
+{
+	return impl_->getFramerate(index);
 }
 
 }}

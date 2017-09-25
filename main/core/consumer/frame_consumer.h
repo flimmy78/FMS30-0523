@@ -71,6 +71,13 @@ public:
 	virtual int								index() const = 0;
 	virtual int64_t							presentation_frame_age_millis() const = 0;
 	virtual const frame_consumer*           unwrapped() const { return this; }
+
+	virtual bool record_init(std::wstring strFileName) const { return true; }
+	virtual bool record_start() const { return true; }
+	virtual bool record_stop() const { return true; }
+	virtual bool is_recording() const { return true; }
+	virtual uint32_t getRecordFrames(std::wstring& fileName) const { return 0; }
+
 };
 
 typedef std::function<spl::shared_ptr<frame_consumer>(

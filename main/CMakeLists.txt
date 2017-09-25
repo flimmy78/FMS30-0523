@@ -10,6 +10,7 @@ set(GIT_REV "0")
 #			OUTPUT_VARIABLE GIT_REV)
 #endif ()
 
+
 configure_file("${PROJECT_SOURCE_DIR}/version.tmpl" "${PROJECT_SOURCE_DIR}/version.h")
 
 set(DEPENDENCIES_FOLDER			"${PROJECT_SOURCE_DIR}/dependencies64")
@@ -39,7 +40,20 @@ set(DTAPI_INCLUDE_PATH			"${DEPENDENCIES_FOLDER}/dtapi/include")
 set(MAINCONCEPT_INCLUDE_PATH		"${DEPENDENCIES_FOLDER}/mainconcept/include")
 set(LDKDOG_INCLUDE_PATH			"${DEPENDENCIES_FOLDER}/ldkdog/include")
 set(IPP_INCLUDE_PATH			"${DEPENDENCIES_FOLDER}/intel/ipp/include" )
+       
+if (MSVC)          
+	set(MATROX_INCLUDE_PATH			"${DEPENDENCIES_FOLDER}/matrox/include" )
+else (CMAKE_COMPILER_IS_GNUCXX)
+	set(MATROX_INCLUDE_PATH			"${DEPENDENCIES_FOLDER}/matrox/include/linux" ) 
+endif ()
 
+if (MSVC)
+	set(REDLINK_INCLUDE_PATH		"${DEPENDENCIES_FOLDER}/redlink/include-win32")
+	set(PLATFORM_FOLDER_NAME		"win32")
+else ()
+	set(REDLINK_INCLUDE_PATH		"${DEPENDENCIES_FOLDER}/redlink/include")
+	set(PLATFORM_FOLDER_NAME		"linux")
+endif ()
 set(FFMPEG_BIN_PATH			"${DEPENDENCIES_FOLDER}/ffmpeg/bin/${PLATFORM_FOLDER_NAME}")
 set(FREEIMAGE_BIN_PATH			"${DEPENDENCIES_FOLDER}/freeimage/bin/${PLATFORM_FOLDER_NAME}")
 set(GLEW_BIN_PATH			"${DEPENDENCIES_FOLDER}/glew/bin/${PLATFORM_FOLDER_NAME}")
@@ -50,6 +64,7 @@ set(CEF_PATH				"${DEPENDENCIES_FOLDER}/cef")
 set(CEF_BIN_PATH			"${DEPENDENCIES_FOLDER}/cef/bin/${PLATFORM_FOLDER_NAME}")
 set(MAINCONCEPT_BIN_PATH		"${DEPENDENCIES_FOLDER}/mainconcept/bin/${PLATFORM_FOLDER_NAME}")
 set(LDKDOG_BIN_PATH			"${DEPENDENCIES_FOLDER}/ldkdog/bin/${PLATFORM_FOLDER_NAME}")
+set(REDLINK_BIN_PATH			"${DEPENDENCIES_FOLDER}/redlink/bin/${PLATFORM_FOLDER_NAME}")
 
 link_directories("${DEPENDENCIES_FOLDER}/boost/stage/lib/${PLATFORM_FOLDER_NAME}")
 link_directories("${DEPENDENCIES_FOLDER}/tbb/lib/${PLATFORM_FOLDER_NAME}")
@@ -68,12 +83,14 @@ link_directories("${DEPENDENCIES_FOLDER}/gtest/lib/${PLATFORM_FOLDER_NAME}")
 link_directories("${DEPENDENCIES_FOLDER}/dtapi/lib/${PLATFORM_FOLDER_NAME}")
 link_directories("${DEPENDENCIES_FOLDER}/mainconcept/lib/${PLATFORM_FOLDER_NAME}")
 link_directories("${DEPENDENCIES_FOLDER}/ldkdog/lib/${PLATFORM_FOLDER_NAME}")
+link_directories("${DEPENDENCIES_FOLDER}/redlink/lib/${PLATFORM_FOLDER_NAME}")
 if (MSVC)
 	link_directories("${DEPENDENCIES_FOLDER}/NDI/lib/${PLATFORM_FOLDER_NAME}/x64")
 else ()
 	link_directories("${DEPENDENCIES_FOLDER}/NDI/lib/${PLATFORM_FOLDER_NAME}/x86_64-linux-gnu-4.7")
 endif ()
 link_directories("${DEPENDENCIES_FOLDER}/intel/ipp/lib/${PLATFORM_FOLDER_NAME}")
+link_directories("${DEPENDENCIES_FOLDER}/matrox/lib/${PLATFORM_FOLDER_NAME}")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -102,6 +119,7 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
 	add_compile_options( -fPIC )
 	add_compile_options( -fnon-call-exceptions ) # Allow signal handler to throw exception
 	add_definitions( -DBOOST_NO_SWPRINTF ) # swprintf on Linux seems to always use , as decimal point regardless of C-locale or C++-locale
+	add_definitions( -DLINUX_PLATFORM )  #matrox
 endif ()
 
 if (POLICY CMP0045)

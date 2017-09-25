@@ -409,6 +409,14 @@ public:
 	{
 		return;
 	}
+	uint32_t get_frameNumber()
+	{
+		return 0;
+	}
+	double get_frameRate()
+	{
+		return 0;
+	}
 private:
 	std::wstring generate_template_data_xml() const
 	{

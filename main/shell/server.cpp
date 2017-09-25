@@ -318,6 +318,8 @@ struct server::impl : boost::noncopyable
 			auto logo_killer = xml_channel.second.get(L"logo-killer", L"0,-1,-1,-1,-1,0,1");
 			logo_killer = L"{" + logo_killer + L"}";
 			format_desc.wstr_logo_killer = logo_killer;
+			//wxg20170912
+			std::wstring signalSource = xml_channel.second.get(L"signalsource", L"");
 			//AFD change
 			//---------------------------------------------
 			auto afd = xml_channel.second.get(L"afd-mode", L"invalid-afd");
@@ -355,6 +357,7 @@ struct server::impl : boost::noncopyable
 
 			auto channel_id = static_cast<int>(channels_.size() + 1);
 			auto channel = spl::make_shared<video_channel>(channel_id, format_desc, *channel_layout, accelerator_.create_image_mixer(channel_id));
+			channel->set_signalSource(signalSource);
 			// afd-table
 			if (afd == L"table")
 			{

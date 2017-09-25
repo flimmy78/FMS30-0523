@@ -90,6 +90,8 @@ public:
 	void add_afd_item(spl::shared_ptr<afd_item> item);
 	void find_afd_msg_by_afd_code(int afd_code, std::wstring& des);
 	void set_logokiller(int index,std::wstring s);
+	void set_signalSource(std::wstring s);
+	std::wstring get_signalSource();
 private:
 	struct impl;
 	spl::unique_ptr<impl> impl_;

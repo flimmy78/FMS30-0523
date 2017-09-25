@@ -834,7 +834,7 @@ DEFINE_GUID(GUID_MvFlexQTClipWriterOptionsCodecType,
 0x9480342b, 0xbd30, 0x48ef, 0xbf, 0xf1, 0xb, 0xc, 0xe1, 0x2c, 0xc4, 0x36);
 
 // {46482BD0-2334-4d2e-B4F5-70BF37FFA6C1}
-// Description: bool: Enable/Disable the creation of a «Flattened» QuickTime movie file when the clip is closed.  
+// Description: bool: Enable/Disable the creation of a «Flattened?QuickTime movie file when the clip is closed.  
 // Flattening to a new QuickTime movie file can improve the playback performances of the QuickTime movie file.  
 // It is also strongly recommended to flatten the QuickTime movie to a new file after truncating and adding new  
 // data to an existing movie.

@@ -74,7 +74,7 @@ public:
 		{
 			boost::replace_all(data, L"\n", L"\\n");
 			boost::replace_all(data, L"\r", L"\\r");
-			CASPAR_LOG_COMMUNICATION(info) << L"Sent message to " << client_->address() << L":" << data;
+			CASPAR_LOG_COMMUNICATION(trace) << L"Sent message to " << client_->address() << L":" << data;
 		}
 		else
 			CASPAR_LOG_COMMUNICATION(info) << L"Sent more than 512 bytes to " << client_->address();

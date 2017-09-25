@@ -301,7 +301,7 @@ public:
 	}
 	void Parse(const std::wstring& message, ClientInfoPtr client)
 	{
-		CASPAR_LOG_COMMUNICATION(info) << L"VDCP message from " << client->address() << ": " << message << L"\\r\\n";
+		CASPAR_LOG_COMMUNICATION(trace) << L"VDCP message from " << client->address() << ": " << message << L"\\r\\n";
 		//校正message,出错返回nak
 		if (!SpellCheck(message))
 		{
@@ -419,6 +419,24 @@ bool interpret_command_string(const std::wstring& message, command_interpreter_r
 
 			}
 			break;
+			case VDCP_RECORD_INIT:
+			{
+				history_.clear();
+				result.command_name = L"VDCP_RECORD_INIT";
+				is_channel_command = true;
+				history_.push_back(message);
+
+			}
+			break;
+			case VDCP_RECORD:
+			{
+				history_.clear();
+				result.command_name = L"VDCP_RECORD";
+				is_channel_command = true;
+				history_.push_back(message);
+
+			}
+			break;
 			case VDCP_PORT_STATUS_REQ:
 			{
 				history_.clear();
@@ -442,6 +460,14 @@ bool interpret_command_string(const std::wstring& message, command_interpreter_r
 				history_.clear();
 				result.command_name = L"IDEXIST";
 				is_channel_command = false;
+				history_.push_back(message);
+			}
+			break;
+			case VDCP_POSITION_REQ:
+			{
+				history_.clear();
+				result.command_name = L"TIMECODE";
+				is_channel_command = true;
 				history_.push_back(message);
 			}
 			break;

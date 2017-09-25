@@ -1,43 +1,27 @@
-Mainconcept consumer采用maincocept sdk输出mpegts格式的udp流；
-	支持的编码格式有：
+﻿mainconcept consumer支持的编码格式有：
 		视频：H264、MPEG2
 		音频：MPEG-1 Layer 2、AAC
-	支持的出流方式有：Mainconcept出流和Dektec卡出流。
-
-在Famous3.0中配置如下：
-	<mainconcept>
-		<path>udp://234.5.5.1:2345</path>
-		<args>-netrender dt -devtype 2162 -devport 1 -delaytime 1000 -format mpegts -vcodec mpeg2 -acodec aac -vbitrate 8000000 -enablepaddings 1 -requiredbitrate 9000000</args>
-    </mainconcept>
-	或
-	<mainconcept>
-		<path>udp://234.5.5.1:2345</path>
-		<args>-netrender mc -format mpegts -vcodec mpeg2 -acodec aac -vbitrate 8000000 -enablepaddings 1 -requiredbitrate 9000000</args>
-    </mainconcept>
-也可通过发送AMCP命令来添加和移除mainconcept consumer：
-	ADD 1 MAINCONCEPT output.ts -format mpegts -vcodec mpeg2 -acodec aac
-	REMOVE 1 MAINCONCEPT output.ts
-
-	ADD 1 MAINCONCEPT e:/output.ts -format mpegts -vcodec mpeg2 -acodec aac
-	REMOVE 1 MAINCONCEPT e:/output.ts
-
-	ADD 1 MAINCONCEPT udp://234.5.5.1:2345 -netrender mc -format mpegts -vcodec mpeg2 -acodec aac
-	REMOVE 1 MAINCONCEPT udp://234.5.5.1:2345
-
-配置格式说明：
-	1.<path>：指定输出流的地址及出流网卡IP；
-	eg：
-		<!--流地址为udp://234.5.5.1:2345-->
-		<path>udp://234.5.5.1:2345</path> 
-
-		<!--mc方式出流时，可指定出流网卡IP，即172.16.3.186，流地址为udp://234.5.5.1:2345-->
-		<path>udp://234.1.1.1:2345?localaddr=172.16.3.186</path>
-	
-	2.<args>：指定出流方式、流复用格式、视频编码格式、音频编码格式及参数设置。args参数为空，默认输出H264+ MPEG-1 Layer 2的MPEGTS流。args中各参数项说明：
-		-netrender：指定出流方式，支持的格式有mc、dt，默认为mc。采用dt方式时，须指定复用参数-enablepaddings为1，并设置-requiredbitrate。
-		-format：指定流复用格式，仅支持mpegts，默认为mpegts。
-		-vcodec：指定视频编码格式，支持的格式有h264、mpeg2，默认为h264。
-		-acodec：指定音频编码格式，支持的格式有mpa、aac，默认为mpa。
+	    	输出方式有：mainconcept写文件，mainconcept出流和dektec卡出流。
+参数说明：
+	1.<path>：指定输出格式；
+      rtype=mcfile/mcnet/dtnet  分别对应mainconcept写文件/mainconcept出流/dektec卡出流，对应的打包格式format应为mcmpegts
+      localaddr：指定出流网卡ip
+	  ttl：指定time to live的值
+      devtype：dektec板卡型号
+      devport：dektec板卡出流端口
+      delaytime：指定缓存时间ms
+      bitrate：dektec板卡输出码率 bps;与mcmpegts复用参数rbitrate相同，且enpaddings须为1。
+	  pkt_size: 设定udp包大小
+    eg：<path>udp://236.0.0.2:10002?rtype=dtnet&devtype=2162&devport=2&delaytime=1000&bitrate=8000000&ttl=255&pkt_size=1316</path>
+		<path>udp://236.0.0.2:10002?rtype=mcnet&localaddr=172.16.3.83&ttl=255</path>
+		<path>d:/test.ts?rtype=mcfile</path>
+	2.<args>：指定复用格式、视频编码格式、音频编码格式及参数设置。
+	  <args2>:选配，指定音频编码模式及参数设置（用于双音轨输出时第二路音轨的参数设置），配置说明与args中音频相关参数一致。
+	  
+	  args中各参数项说明：		
+		-format：指定流复用格式，仅支持mcmpegts。
+		-vcodec：指定视频编码格式，支持的格式有h264、mpeg2。
+		-acodec：指定音频编码格式，支持的格式有mpa、aac、ac3(ac3目前仅支持windows)。
 	    
 		视频编码器相关参数设置：
 		-vpreset：指定视频编码器的preset。
@@ -101,78 +85,38 @@ Mainconcept consumer采用maincocept sdk输出mpegts格式的udp流；
 		-vbframes：指定参考帧间隔，默认为2。
 		
 		音频编码器相关参数设置：
-		-abitrateindex：音频比特率索引值，针对不同的音频编码器，取值代表的含义也不同。
-			对mpa（MPEG-1 Layer 2）而言，取值范围为1~14，其中1~3、5仅用于mono模式，11~14不适用于mono模式，默认为12，即256kbit/sec。
-				#define L2_AUDIOBITRATE32    1			///< 32 kbit/sec
-				#define L2_AUDIOBITRATE48    2			///< 48 kbit/sec
-				#define L2_AUDIOBITRATE56    3			///< 56 kbit/sec
-				#define L2_AUDIOBITRATE64    4			///< 64 kbit/sec
-				#define L2_AUDIOBITRATE80    5			///< 80 kbit/sec
-				#define L2_AUDIOBITRATE96    6			///< 96 kbit/sec
-				#define L2_AUDIOBITRATE112   7			///< 112 kbit/sec
-				#define L2_AUDIOBITRATE128   8			///< 128 kbit/sec
-				#define L2_AUDIOBITRATE160   9			///< 160 kbit/sec
-				#define L2_AUDIOBITRATE192   10			///< 192 kbit/sec
-				#define L2_AUDIOBITRATE224   11			///< 224 kbit/sec
-				#define L2_AUDIOBITRATE256   12			///< 256 kbit/sec
-				#define L2_AUDIOBITRATE320   13			///< 320 kbit/sec
-				#define L2_AUDIOBITRATE384   14			///< 384 kbit/sec
-			对aac而言，取值范围为1-31，默认为19，即128kbit/sec。
-				#define AAC_AUDIOBITRATE_CUSTOM 0       	///<   Custom audio bitrate
-				#define AAC_AUDIOBITRATE_006  	1			///<   6 kbits/sec
-				#define AAC_AUDIOBITRATE_007  	2			///<   7 kbits/sec
-				#define AAC_AUDIOBITRATE_008  	3			///<   8 kbits/sec
-				#define AAC_AUDIOBITRATE_010  	4			///<   10 kbits/sec
-				#define AAC_AUDIOBITRATE_012  	5			///<   12 kbits/sec
-				#define AAC_AUDIOBITRATE_014  	6			///<   14 kbits/sec
-				#define AAC_AUDIOBITRATE_016  	7			///<   16 kbits/sec
-				#define AAC_AUDIOBITRATE_020  	8			///<   20 kbits/sec
-				#define AAC_AUDIOBITRATE_024  	9			///<   24 kbits/sec
-				#define AAC_AUDIOBITRATE_028 	10			///<   28 kbits/sec
-				#define AAC_AUDIOBITRATE_032 	11			///<   32 kbits/sec
-				#define AAC_AUDIOBITRATE_040 	12			///<   40 kbits/sec
-				#define AAC_AUDIOBITRATE_048 	13			///<   48 kbits/sec
-				#define AAC_AUDIOBITRATE_056 	14			///<   56 kbits/sec
-				#define AAC_AUDIOBITRATE_064 	15			///<   64 kbits/sec
-				#define AAC_AUDIOBITRATE_080 	16			///<   80 kbits/sec
-				#define AAC_AUDIOBITRATE_096 	17			///<   96 kbits/sec
-				#define AAC_AUDIOBITRATE_112 	18			///<   112 kbits/sec
-				#define AAC_AUDIOBITRATE_128 	19			///<   128 kbits/sec
-				#define AAC_AUDIOBITRATE_160 	20			///<   160 kbits/sec
-				#define AAC_AUDIOBITRATE_192 	21			///<   192 kbits/sec
-				#define AAC_AUDIOBITRATE_224 	22			///<   224 kbits/sec
-				#define AAC_AUDIOBITRATE_256 	23			///<   256 kbits/sec
-				#define AAC_AUDIOBITRATE_320 	24			///<   320 kbits/sec
-				#define AAC_AUDIOBITRATE_384 	25			///<   384 kbits/sec
-				#define AAC_AUDIOBITRATE_448 	26			///<   448 kbits/sec
- 				#define AAC_AUDIOBITRATE_512 	27			///<   512 kbits/sec
-				#define AAC_AUDIOBITRATE_640 	28			///<   640 kbits/sec
-				#define AAC_AUDIOBITRATE_768 	29			///<   768 kbits/sec
-				#define AAC_AUDIOBITRATE_896 	30			///<   896 kbits/sec
-				#define AAC_AUDIOBITRATE_1024 	31			///<   1024 kbits/sec	
-		-amode：指定通道模式，默认为0，即Stereo。该参数仅适用于mpa（MPEG-1 Layer 2）。	
+		-abitrate：音频比特率,单位kbit/sec，默认为192。
+			对mpa（MPEG-1 Layer 2）而言，值可为32、48、56、64、80、96、112、128、160、192、224、256、320、384。
+			对aac而言，值可为：6、7、8、10、12、14、16、20、24、28、32、40、48、56、64、80、96、112、128、160、192、224、256、320、384、448、512、640、768、896、1024。
+			对ac3而言，值可为：32、40、48、56、64、72、80、88、96、104、112、120、128、144、160、176、192、200、208、216、224、232、240、248、256、272、
+			                   288、300、304、320、336、352、368、384、400、448、512、576、640、704、768、832、896、960、1008、1024。			
+		
+		mpa参数：
+		-amode：指定通道模式，默认为0，即Stereo。可选取值如下
 				#define MPG_MD_STEREO           0			///< Stereo mode
 				#define MPG_MD_JOINT_STEREO     1			///< Allow joint stereo (intensity stereo) mode
 				#define MPG_MD_DUAL_CHANNEL     2			///< Dual channel mode
 				#define MPG_MD_MONO             3			///< Single channel (mono) mode
-		-alayer：指定Audio layer，默认为2，即MPEG_AUDIO_LAYER2。该参数仅适用于mpa（MPEG-1 Layer 2）。可选取值如下：	
+		-alayer：指定Audio layer，默认为2，即MPEG_AUDIO_LAYER2。可选取值如下：	
 				#define MPEG_AUDIO_LAYER1      1       ///<    ISO/IEC 11172-3 layer 1
 				#define MPEG_AUDIO_LAYER2      2       ///<    ISO/IEC 11172-3 layer 2
-		-aversion：指定编码采用的mpeg版本，默认为7，即MPEG4_AAC_AUDIO。该参数仅适用于aac。可选取值有6，7，16：	
+		
+		aac参数：
+		-aversion：指定编码采用的mpeg版本，默认为7，即MPEG4_AAC_AUDIO。可选取值有6，7，16：	
 				#define MPEG2_AAC_AUDIO        6       ///<    MPEG-2 AAC
 				#define MPEG4_AAC_AUDIO        7       ///<    MPEG-4 AAC
 				#define MPEG4_AAC_AUDIO_PSP    16      ///<    MPEG-4 AAC with Sony Play Station Portable restrictions	
-		-aheader：指定编码的头类型，默认为1，即AAC_HEADER_ADTS。该参数仅适用于aac。可选取值为0、1、2：	
+		-aheader：指定编码的头类型，默认为1，即AAC_HEADER_ADTS。可选取值为0、1、2：	
 				#define AAC_HEADER_RAW          0 ///< no header
 				#define AAC_HEADER_ADTS         1 ///< ADTS header
 				#define AAC_HEADER_LATMLOAS     2 ///< LATM in LOAS header
 				注：对mpegts复用出流，AAC_HEADER_RAW值不可用。
-		-ahe：指定是否采用High Efficiency AAC编码，默认为0，即AAC_HE_NOTUSED。该参数仅适用于aac。可选取值为0、1、2：	
+		-ahe：指定是否采用High Efficiency AAC编码，默认为0，即AAC_HE_NOTUSED。可选取值为0、1、2：	
 				#define AAC_HE_NOTUSED            0 ///< HE not used
 				#define AAC_HE_IMPLICIT           1 ///< HE v1 used and implicitly signaled in the bitstream
 				#define AAC_HE_IMPLICIT_WITH_PS   2 ///< HE v2 used and implicitly signaled in the bitstream	
 				注：采用HE时，不可用可变码率模式。
-		-avbr：指定是否采用vbr(可变码率)模式，默认取值为0，即AAC_VBR_NOTUSED，采用cbr(恒定码率)模式。该参数仅适用于aac。可选取值如下：		
+		-avbr：指定是否采用vbr(可变码率)模式，默认取值为0，即AAC_VBR_NOTUSED，采用cbr(恒定码率)模式。可选取值如下：		
 				#define AAC_VBR_NOTUSED		0 ///<  vbr mode not used
 				#define AAC_VBR_LOW1        1 ///<  low quality vbr mode 1 (worst quality)
 				#define AAC_VBR_LOW2        2 ///<  low quality vbr mode 2
@@ -183,46 +127,79 @@ Mainconcept consumer采用maincocept sdk输出mpegts格式的udp流；
 				#define AAC_VBR_HIGH1       7 ///<  high quality vbr mode 1
 				#define AAC_VBR_HIGH2       8 ///<  high quality vbr mode 2
 				#define AAC_VBR_HIGH3       9 ///<  high quality vbr mode 3 (best quality)	
-		
-		复用器相关参数设置：
-		-enablepaddings：是否允许加空包，即复用器为恒定码率还是可变码率。0-不允许加空包，可变码率；1-允许加空包，恒定码率，须配合requiredbitrate使用。默认为0。
-		-requiredbitrate：指定复用器的码率。enalbepaddings为1时，必须指定该值。
-		-pcrinterval：指定PCR间隔，默认为30ms。
-		-psiinterval：指定PSI间隔，默认为100ms。
-		-videopid：指定流中视频的pid，取值范围为100~8190，默认从1001开始。需与音频pid区分。
-		-audiopid：指定流中音频的pid，取值范围为100~8190，默认从1001开始。需与视频pid区分。
-
-		Dektec卡出流参数设置：
-		-devtype：指定板卡类型，默认为2162，目前仅有2162。 
-		-devport：指定出流端口，默认为1，可选值为1、2；
-		-txmode： 指定传输模式，默认为17（DTAPI_TXMODE_188），通常使用默认值，可选取值为：
-				#define DTAPI_TXMODE_TS             0x10
-				#define DTAPI_TXMODE_TS_MODE_BITS   0x0F
-				#define DTAPI_TXMODE_188            (DTAPI_TXMODE_TS | 0x01)
-				#define DTAPI_TXMODE_192            (DTAPI_TXMODE_TS | 0x02)
-				#define DTAPI_TXMODE_204            (DTAPI_TXMODE_TS | 0x03)
-				#define DTAPI_TXMODE_ADD16          (DTAPI_TXMODE_TS | 0x04)
-				#define DTAPI_TXMODE_MIN16          (DTAPI_TXMODE_TS | 0x05)
-				#define DTAPI_TXMODE_IPRAW          (DTAPI_TXMODE_TS | 0x06)
-				#define DTAPI_TXMODE_RAW            (DTAPI_TXMODE_TS | 0x07)
-				#define DTAPI_TXMODE_RAWASI         (DTAPI_TXMODE_TS | 0x08)
-				#define DTAPI_TXMODE_TS_MASK        (DTAPI_TXMODE_TS | DTAPI_TXMODE_TS_MODE_BITS)
-		-delaytime：指定缓存时间，单位ms，默认为1000，最小值为1000。
+		ac3参数：
+		-aencodermode：指定AC3编码器模式，默认取值为0，即DD_ENC_MODE_DDP；可选取值如下：
+				#define DD_ENC_MODE_DDP              0 /**< @brief  Dolby Digital Plus (bsid 16)                          */
+				#define DD_ENC_MODE_DD               1 /**< @brief  Dolby Digital (bsid 6)                                */
+				#define DD_ENC_MODE_BLURAY_PRIMARY   3 /**< @brief  BD-compliant primary stream (I0: bsid 6, D0: bsid 16) */
+				#define DD_ENC_MODE_DD_LEGACY        7 /**< @brief  Dolby Digital Legacy Mode (bsid 8)                    */
+		-acodingmode：指定AC3编码方式，默认取值为2，即DD_AUDIOMODE_2_0；可选取值如下：
+				#define DD_AUDIOMODE_1_0              1    /**< @brief   (C)                1 channel total  */
+				#define DD_AUDIOMODE_2_0              2    /**< @brief   (L,R)              2 channels total */
+				#define DD_AUDIOMODE_3_0              3    /**< @brief   (L,C,R)            3 channels total */
+				#define DD_AUDIOMODE_2_1              4    /**< @brief   (L,R,l)            3 channels total */
+				#define DD_AUDIOMODE_3_1              5    /**< @brief   (L,C,R,l)          4 channels total */
+				#define DD_AUDIOMODE_2_2              6    /**< @brief   (L,R,l,r)          4 channels total */
+				#define DD_AUDIOMODE_3_2              7    /**< @brief   (L,C,R,l,r)        5 channels total */
+				#define DD_AUDIOMODE_3_4             21    /**< @brief   (L,C,R,l,r,Lb,Rb)  7 channels total */
+				#define DD_AUDIOMODE_3_3             24    /**< @brief   (L,C,R,l,r,Cs)     6 channels total */
 	
 
-	eg：
-		<!—args参数为空，默认输出h264+mpa的mpegts-->
-		<args></args>
-    
-		<!—输出h264+aac的mpegts流-->
-		<args>-netrender mc -format mpegts -vcodec h264 -acodec aac</args>
+		复用器相关参数设置：
+		mcmpegts打包参数形如：-enpaddings 1 -rbitrate 10000000 -pcr 30 -psi 50 -vpid 1234 -apids 1235,1236
+		enpaddings：是否加空包，1加空包，0不加空包；为1时，须配合rbitrate使用
+		rbitrate：复用码率，恒定码流，即enpaddings为1时用。
+		pcr： pcr间隔时间，单位ms，默认30ms
+		psi： psi间隔时间，单位ms，默认为100ms 
+		vdelay：视频时间戳相对延迟,单位ms,默认为0
+	    adelay：音频时间戳相对延迟,单位ms,默认为0
+		vpid：视频pid
+		apids：音频pid，若是多音轨，则以逗号间隔各pid
+     eg：       
+	   <args>-format mcmpegts -enpaddings 1 -rbitrate 10000000 -pcr 50 -psi 30 -vpid 1234 -apids 1235 -c:v mpeg2 -vpreset 2 -vprof 1 -vlevel 4 -vperf 16 -vframetype 0 -vfieldorder 1 -vframerate 25 -vratemode 1 -vbitrate 8000000 -vgop 15 -vbframes 2 -c:a mpa -abitrate 192 –amode 2 –alayer 2</args>
+	   
+	   
+	   <args>-format mcmpegts -enpaddings 1 -rbitrate 10000000 -pcr 50 -psi 30 -vpid 1234 -apids 1236,1235 -c:v h264 -vpreset 5 -vprof 3 -vlevel 40 -vperf 9 -vframetype 1 -vfieldorder 0 -vframerate 25 -vratemode 0 -vbitrate 8000000 -vgop 33 -vbframes 2  -c:a aac -abitrate 192 -aversion 7 -aheader 1 -ahe 0 -avbr 0</args>
+	   <args2>-c:a ac3 -acodingmode 2 -abitrate 192</args2>
+	   
+eg: 
+1.mainconcept写文件
+add 1 mainconcept D:/zibj/mcfile.ts?rtype=mcfile args "-format mcmpegts -enpaddings 1 -rbitrate 10000000 -c:v h264 -c:a aac" args2 "-c:a ac3"
+remove 1 mainconcept D:/zibj/mcfile.ts?rtype=mcfile
+对应配置文件中consumer配置如下：
+	<mainconcept>
+		<path>D:/zibj/mcfile.ts?rtype=mcfile</path>
+		<args>-format mcmpegts -enpaddings 1 -rbitrate 10000000 -c:v h264 -c:a aac</args>
+		<args2>-c:a ac3</args2>
+    </mainconcept>
 
-		<!—输出mpeg2+mpa的mpegts流-->
-		<args>-netrender dt -format mpegts -vcodec mpeg2 -acodec mpa</args>
+2.mainconcept出流
+add 1 mainconcept udp://236.0.0.11:10004?rtype=mcnet args "-format mcmpegts -enpaddings 1 -rbitrate 10000000 -c:v h264 -c:a aac"
+remove 1 mainconcept udp://236.0.0.11:10004?rtype=mcnet
+对应配置文件中consumer配置如下：
+	<mainconcept>
+		<path>udp://236.0.0.11:10004?rtype=mcnet</path>
+		<args>-format mcmpegts -enpaddings 1 -rbitrate 10000000 -c:v h264 -c:a aac</args>
+    </mainconcept>
 
-		<!—输出h264+aac的mpegts流，复用码率为9000000bit/secs，恒定码率-->
-		<args>-netrender dt -devtype 2162 -devport 1 -delaytime 1000 -format mpegts -vcodec h264 -acodec aac -vpreset 2 -vprof 1 -vlevel 30 -vpref 9 -vframetype 1 -vfieldorder 0 -vframerate 25 -vratemode 0 -vbitrate 8000000 -vgop 33 -vbframes 2 -abitrateindex 19 -aversion 7 -aheader 1 -ahe 0 -avbr 0 -enablepaddings 1 -requiredbitrate 9000000 -pcrinterval 30 -psiinterval 100 -videopid 1234 -audiopid 2134</args>
+指定出流网卡ip：
+add 1 mainconcept udp://236.0.0.11:10004?rtype=mcnet&localaddr=172.16.3.83 args "-format mcmpegts -enpaddings 1 -rbitrate 10000000 -c:v h264 -c:a aac" 
+remove 1 mainconcept udp://236.0.0.11:10004?rtype=mcnet&localaddr=172.16.3.83
+对应配置文件中consumer配置如下：
+	<mainconcept>
+		<path>udp://236.0.0.11:10004?rtype=mcnet&localaddr=172.16.3.83</path>
+		<args>-format mcmpegts -enpaddings 1 -rbitrate 10000000 -c:v h264 -c:a aac</args>
+    </mainconcept>
 
-		<!—输出mpeg2+mpa的mpegts流，复用码率为9000000bit/secs，恒定码率-->
-		<args>-netrender dt -format mpegts -vcodec mpeg2 -acodec mpa -vpreset 2 -vprof 4 -vlevel 8 -vpref 16 -vframetype 0 -vfieldorder 1 -vframerate 25 -vratemode 1 -vbitrate 8000000 -vgop 15 -vbframes 2 -abitrateindex 12 –amode 2 –alayer 2 -enablepaddings 1 -requiredbitrate 9000000 -pcrinterval 30 -psiinterval 100 -videopid 1234 -audiopid 2134</args>
+3.dektec出流
+add 1 mainconcept udp://236.0.0.11:10004?rtype=dtnet&devtype=2162&devport=1&delaytime=1000&bitrate=10000000 args "-format mcmpegts -enpaddings 1 -rbitrate 10000000 -c:v h264 -c:a aac" 
+remove 1 mainconcept udp://236.0.0.11:10004?rtype=dtnet&devtype=2162&devport=1&delaytime=1000&bitrate=10000000
+对应配置文件中consumer配置如下：
+	<mainconcept>
+		<path>udp://236.0.0.11:10004?rtype=dtnet&devtype=2162&devport=1&delaytime=1000&bitrate=10000000</path>
+		<args>-format mcmpegts -enpaddings 1 -rbitrate 10000000 -c:v h264 -c:a aac</args>
+    </mainconcept>
+
+
+
 	

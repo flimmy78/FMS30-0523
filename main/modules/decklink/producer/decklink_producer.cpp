@@ -142,8 +142,8 @@ class decklink_producer : boost::noncopyable, public IDeckLinkInputCallback
 	//logo killer wxg20170105
 	//------------------
 	std::shared_ptr<SwsContext>				        sws_;
-	typedef std::vector<uint8_t, tbb::cache_aligned_allocator<uint8_t>>	byte_vector;
 	logo_killer_params                              logo_killer_params_;
+	tbb::cache_aligned_allocator<uint8_t>           cc_memory_pool;
 	//------------------
 public:
 	decklink_producer(
@@ -494,15 +494,16 @@ public:
 			boost::range::rotate(audio_cadence_, std::begin(audio_cadence_)+1);
 
 			//logokiller wxg201170105
+			std::shared_ptr<uint8_t> buf;
 			if (logo_killer_params_.logo_killer_enable)
 			{
 				int nPlanes = av_pix_fmt_count_planes(AV_PIX_FMT_UYVY422);
 				if (nPlanes != 3)
 				{
 					auto decoded_frame_sws = av_frame_clone(video_frame.get());
-					byte_vector	picture_buf_;
-					picture_buf_.resize(avpicture_get_size(AV_PIX_FMT_YUV422P, video_frame->width, video_frame->height));
-					avpicture_fill(reinterpret_cast<AVPicture*>(video_frame.get()), picture_buf_.data(), AV_PIX_FMT_YUV422P, in_format_desc_.width, in_format_desc_.height);
+					uint8_t* pdest = (uint8_t*)cc_memory_pool.allocate(avpicture_get_size(AV_PIX_FMT_YUV422P, video_frame->width, video_frame->height));
+					buf = std::shared_ptr<uint8_t>(pdest, [&](uint8_t* p) {cc_memory_pool.deallocate(p, avpicture_get_size(AV_PIX_FMT_YUV422P, video_frame->width, video_frame->height)); });
+					avpicture_fill(reinterpret_cast<AVPicture*>(video_frame.get()), buf.get(), AV_PIX_FMT_YUV422P, in_format_desc_.width, in_format_desc_.height);
 					sws_scale(sws_.get(), decoded_frame_sws->data, decoded_frame_sws->linesize, 0, in_format_desc_.height, video_frame->data, video_frame->linesize);
 					av_frame_free(&decoded_frame_sws);
 					video_frame->format = AV_PIX_FMT_YUV422P;

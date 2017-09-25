@@ -1,0 +1,128 @@
+<scene width="1920" height="1080" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/CasparCG/Server/2.1.0/core/producer/scene/scene.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<!-- 底部标题 文字 模板 -->
+  <variables>  
+  
+    <variable type="string" id="h1"   public="true">Friday</variable>
+    <variable type="string" id="h2"   public="true">An Mu Xi</variable>
+    <variable type="string" id="h3"   public="true">15:30</variable>
+	
+	<variable type="number" id="op1" public ="false" >0</variable>
+	<variable type="number" id="op2" public ="false" >0</variable>
+	<variable type="number" id="op3" public ="false" >0</variable>
+	<variable type="number" id="op4" public ="false" >0</variable>
+
+	<variable type="number" id="h1posx" public ="false">${scene_width/9 + 10}</variable>
+	<variable type="number" id="h1posy" public ="false">${scene_width/9 - layer.texth1.height*1.5}</variable>
+	
+	<variable type="number" id="h2posx" public ="false">${layer.video1.x}</variable>
+	<variable type="number" id="h2posy" public ="false">${layer.video1.y + layer.video1.height + layer.texth2.height*2 + 10}</variable>
+	
+	<variable type="number" id="h3posx" public ="false">${layer.texth2.x}</variable>
+	<variable type="number" id="h3posy" public ="false">${layer.texth2.y + layer.texth3.height + 30}</variable>
+	
+	<variable type="number" id="video1posx" public ="false">${layer.texth1.x}</variable>
+	<variable type="number" id="video1posy" public ="false">${scene_width/9}</variable>
+	
+  </variables>
+
+  <layers>  
+	<!-- 背景视频 -->
+	<layer id="bgvideo">
+		<producer>ban/cun2-bgvideo loop</producer>
+		<x>0</x>
+		<y>${scene_height - layer.bgvideo.height}</y>
+		<width>${scene_width}</width>
+		<height>${scene_height}</height>
+	</layer>
+	
+	<!-- 大标题 -->	
+	<layer id="texth1">
+      <producer>[TEXT] "" 0 0 size 45 color green font Roboto-Light</producer>     
+	   <x>${variable.h1posx - (layer.texth1.width + variable.h1posx) * variable.op1}</x>
+	   <y>${variable.h1posy}</y>
+      <parameters>
+		<text>${h1}</text>
+      </parameters>
+    </layer> 
+	
+	<!-- 预告视频 -->
+	<layer id="video1">
+		<producer>amx loop</producer>
+		<x>${variable.video1posx - (layer.video1.width + variable.video1posx) * variable.op2}</x>
+		<y>${variable.video1posy}</y>
+		<width>${scene_width/5}</width>
+		<height>${scene_height/5}</height>
+	</layer>
+	
+		<!-- 节目名称 -->	
+	<layer id="texth2">
+      <producer>[TEXT] "" 0 0 size 45 color green font Roboto-Light</producer>     
+	   <x>${variable.h2posx - (layer.texth2.width + variable.h2posx) * variable.op3}</x>
+	   <y>${variable.h2posy}</y>
+      <parameters>
+		<text>${h2}</text>
+      </parameters>
+    </layer> 
+	
+	<!-- 播出时间 -->
+	<layer id="texth3">
+      <producer>[TEXT] "" 0 0 size 45 color green font Roboto-Light</producer>     
+	   <x>${variable.h3posx - (layer.texth3.width + variable.h3posx) * variable.op4}</x>
+	   <y>${variable.h3posy}</y>
+      <parameters>
+		<text>${h3}</text>
+      </parameters>
+    </layer> 
+	
+  </layers>
+  
+  <marks>
+    <mark at="0" type="start" label="intro" />
+	<mark at="25" type="start" />
+    <mark at="75" type="start" />
+  </marks>  
+  
+<!--    <tasks>    
+	<goto_mark at="0" label="intro" />
+  </tasks> -->
+  
+<!--
+	播放动画指令
+	play 1-10 cun1 play() intro	
+--> 
+
+ <!-- 移动动画 -->
+  <timelines>  
+    <timeline variable="variable.op1">
+	  <keyframe at="-1">0</keyframe><!-- 解决使用动画与不使用动画都能达到同样显示结果问题 -->
+      <keyframe at="0">1</keyframe><!-- 解决使用动画与不使用动画都能达到同样显示结果问题 -->
+	  <keyframe at="50" easing="linear">0</keyframe>
+    </timeline>
+  
+    <timeline variable="variable.op2">
+	<keyframe at="-1">0</keyframe><!-- 解决使用动画与不使用动画都能达到同样显示结果问题 -->
+	<keyframe at="0">1</keyframe><!-- 解决使用动画与不使用动画都能达到同样显示结果问题 -->
+      <keyframe at="10">1</keyframe>
+	  <keyframe at="60" easing="linear">0</keyframe>
+    </timeline>
+	
+	<timeline variable="variable.op3">
+	<keyframe at="-1">0</keyframe><!-- 解决使用动画与不使用动画都能达到同样显示结果问题 -->
+	<keyframe at="0">1</keyframe><!-- 解决使用动画与不使用动画都能达到同样显示结果问题 -->
+      <keyframe at="20">1</keyframe>
+	  <keyframe at="70" easing="linear">0</keyframe>
+    </timeline>
+	<timeline variable="variable.op4">
+		<keyframe at="-1">0</keyframe><!-- 解决使用动画与不使用动画都能达到同样显示结果问题 -->
+		<keyframe at="0">1</keyframe><!-- 解决使用动画与不使用动画都能达到同样显示结果问题 -->
+      <keyframe at="30">1</keyframe>
+	  <keyframe at="80" easing="linear">0</keyframe>
+    </timeline>
+	
+  </timelines>
+  
+  
+  
+
+</scene>

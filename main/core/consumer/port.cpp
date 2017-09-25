@@ -69,6 +69,31 @@ public:
 	{
 		return consumer_;
 	}
+
+	//wxg record
+	bool record_init(std::wstring strFileName) const
+	{
+		return consumer_->record_init(strFileName);
+	}
+
+	bool record_start() const
+	{
+		return consumer_->record_start();
+	}
+
+	bool record_stop() const
+	{
+		return consumer_->record_stop();
+	}
+
+	bool is_recording() const
+	{
+		return consumer_->is_recording();
+	}
+	uint32_t getRecordFrames(std::wstring& fileName)
+	{
+		return consumer_->getRecordFrames(fileName);
+	}
 };
 
 port::port(int index, int channel_index, spl::shared_ptr<frame_consumer> consumer) : impl_(new impl(index, channel_index, std::move(consumer))){}
@@ -84,4 +109,31 @@ bool port::has_synchronization_clock() const{return impl_->has_synchronization_c
 boost::property_tree::wptree port::info() const{return impl_->info();}
 int64_t port::presentation_frame_age_millis() const{ return impl_->presentation_frame_age_millis(); }
 spl::shared_ptr<const frame_consumer> port::consumer() const { return impl_->consumer(); }
-}}
+
+bool port::record_init(std::wstring strFileName) const
+{
+	return impl_->record_init(strFileName);
+}
+
+bool port::record_start() const
+{
+	return impl_->record_start();
+}
+
+bool port::record_stop() const
+{
+	return impl_->record_stop();
+}
+
+bool port::is_recording() const
+{
+	return impl_->is_recording();
+}
+
+uint32_t port::getRecordFrames(std::wstring& fileName) const
+{
+	return impl_->getRecordFrames(fileName);
+}
+
+}
+}

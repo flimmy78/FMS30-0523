@@ -110,12 +110,19 @@ DEFINE_GUID(CLSID_MvcH264SWDecoder,
 #define CLSID_MvcH264SWCodec CLSID_MvcH264SWDecoder
 
 //----------------------------------------------------
+// mvcMCH264SWCodec DLL GUID
 // Used for the Matrox H.264/AVC software decoder 2.
-// This class ID is for future use.
 //----------------------------------------------------
 // {63DECB69-2B78-4D8B-8473-A408FC1ABE65}
 DEFINE_GUID(CLSID_MvcH264SWDecoder2,
    0x63decb69, 0x2b78, 0x4d8b, 0x84, 0x73, 0xa4, 0x8, 0xfc, 0x1a, 0xbe, 0x65);
+
+//----------------------------------------------------
+// Used for the Matrox H.264/AVC software decoder 3.
+//----------------------------------------------------
+// {1EEEB9E5-1237-4D98-9145-F7B64CECDD6A}
+DEFINE_GUID(CLSID_MvcH264SWDecoder3,
+   0x1eeeb9e5, 0x1237, 0x4d98, 0x91, 0x45, 0xf7, 0xb6, 0x4c, 0xec, 0xdd, 0x6a);
 
 //----------------------------------------------------
 // MvfAVCH264HardwareCodec DLL GUID

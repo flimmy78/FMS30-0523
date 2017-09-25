@@ -68,6 +68,12 @@
 #include <cctype>
 #include <future>
 
+#pragma warning(push)
+#pragma warning(disable: 4244)
+#pragma warning(disable: 4245)
+#include <boost/crc.hpp>
+#pragma warning(pop)
+
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
@@ -233,6 +239,16 @@ std::wstring MediaInfo(const boost::filesystem::path& path, const spl::shared_pt
 		+ L"\r\n";
 }
 
+std::wstring removMediaInfo(const boost::filesystem::path& path, const spl::shared_ptr<media_info_repository>& media_info_repo)
+{
+	if (!boost::filesystem::is_regular_file(path))
+		return L"";
+
+	media_info_repo->remove(path.wstring());
+
+	return L"";
+}
+
 boost::optional<media_info> GetMediaInfoByFileName(const std::wstring& strFileName, const spl::shared_ptr<media_info_repository>& media_info_repo)
 {
 	for (boost::filesystem::recursive_directory_iterator itr(env::media_folder()), end; itr != end; ++itr)
@@ -380,7 +396,8 @@ std::wstring loadbg_command(command_context& ctx)
 		int64_t nlength = get_param(L"LENGTH", param, 0);
 		if (nseek + nlength > ndur)
 		{
-			return L"404 LOADBG PARAMETERS ERROR\r\n";
+			//return L"404 LOADBG PARAMETERS ERROR\r\n";
+			CASPAR_LOG(error) << L"404 LOADBG PARAMETERS ERROR ";
 		}
 	}
 	//-----------------------------------
@@ -2432,13 +2449,38 @@ void cinf_describer(core::help_sink& sink, const core::help_repository& repo)
 
 std::wstring cinf_command(command_context& ctx)
 {
+	int frames = 0;
+	bool bupdateInfo = false;
+	for (auto it = ctx.channels.begin(); it != ctx.channels.end();)
+	{
+		auto channelcxt = it;
+		auto filename = boost::to_upper_copy(ctx.parameters.at(0));
+		frames = channelcxt->channel->output().getRecordFrames(filename);
+		it++;
+		if (frames > 0)
+		{
+			bupdateInfo = true;//重新修改一下时长
+			break;
+		}
+	}
+
 	std::wstring info;
 	for (boost::filesystem::recursive_directory_iterator itr(env::media_folder()), end; itr != end; ++itr)
 	{
 		auto path = itr->path();
 		auto file = path.stem().wstring();
 		if (boost::iequals(file, ctx.parameters.at(0)))
-			info += MediaInfo(itr->path(), ctx.media_info_repo);
+		{
+			if (bupdateInfo)
+			{
+				removMediaInfo(itr->path(), ctx.media_info_repo);
+				info += MediaInfo(itr->path(), ctx.media_info_repo);
+				removMediaInfo(itr->path(), ctx.media_info_repo);
+			}
+			else
+				info += MediaInfo(itr->path(), ctx.media_info_repo);
+			break;						//播出不能查找多个文件，所以不能有重名文件
+		}
 	}
 
 	if (info.empty())
@@ -3165,6 +3207,204 @@ void req_describer(core::help_sink& sink, const core::help_repository& repo)
 		L"<< RES unique 202 PLAY OK");
 }
 
+void record_describer(core::help_sink& sink, const core::help_repository& repository)
+{
+	sink.short_description(L"Record a media file or resource.");
+	sink.syntax(LR"(Record [video_channel:int]{-[layer:int]|-0} {[clip:string]} {"additional parameters"})");
+	sink.para()
+		->text(L"Record a clip. If a transition ()")
+		->text(L") is prepared, it will be executed.");
+	sink.para()->text(L"Examples:");
+	sink.example(L">> RECORD 1-100000 MY_FILE INIT  source ");
+	sink.example(L">> RECORD 1-100000 MY_FILE START");
+	sink.example(L">> RECORD 1-100000 MY_FILE STOP");
+	sink.para()->text(L"Note: See ")->see(L"LOADBG")->text(L" for additional details.");
+}
+
+//wxg record
+int crc16(const std::string& str)
+{
+	boost::crc_16_type result;
+
+	result.process_bytes(str.data(), str.length());
+
+	return result.checksum();
+}
+
+template<typename C>
+std::size_t tokenize(const std::wstring& message, C& pTokenVector)
+{
+	//split on whitespace but keep strings within quotationmarks
+	//treat \ as the start of an escape-sequence: the following char will indicate what to actually put in the string
+
+	std::wstring currentToken;
+
+	bool inQuote = false;
+	bool getSpecialCode = false;
+
+	for (unsigned int charIndex = 0; charIndex < message.size(); ++charIndex)
+	{
+		if (getSpecialCode)
+		{
+			//insert code-handling here
+			switch (message[charIndex])
+			{
+			case L'\\':
+				currentToken += L"\\";
+				break;
+			case L'\"':
+				currentToken += L"\"";
+				break;
+			case L'n':
+				currentToken += L"\n";
+				break;
+			default:
+				break;
+			};
+			getSpecialCode = false;
+			continue;
+		}
+
+		if (message[charIndex] == L'\\')
+		{
+			getSpecialCode = true;
+			continue;
+		}
+
+		if (message[charIndex] == L' ' && inQuote == false)
+		{
+			if (!currentToken.empty())
+			{
+				pTokenVector.push_back(currentToken);
+				currentToken.clear();
+			}
+			continue;
+		}
+
+		if (message[charIndex] == L'\"')
+		{
+			inQuote = !inQuote;
+
+			if (!currentToken.empty() || !inQuote)
+			{
+				pTokenVector.push_back(currentToken);
+				currentToken.clear();
+			}
+			continue;
+		}
+
+		currentToken += message[charIndex];
+	}
+
+	if (!currentToken.empty())
+	{
+		pTokenVector.push_back(currentToken);
+		currentToken.clear();
+	}
+
+	return pTokenVector.size();
+}
+
+std::wstring record_command(command_context& ctx)
+{
+	int recordChn = 0;
+	std::string strRecordChn = std::to_string(ctx.layer_index());
+	recordChn = crc16(strRecordChn) + 100000;
+	bool allChnRecord = ctx.layer_index() == 0;
+	if (!ctx.parameters.empty())
+	{
+		std::wstring recordType = boost::to_upper_copy(ctx.parameters[0]);
+		if (recordType == L"INIT")
+		{
+			std::wstring strName = L"";
+			if (ctx.parameters.size() > 1)
+				strName = boost::to_upper_copy(ctx.parameters[1]);
+
+			if (strName == L"")
+				return L"404 RECORD INIT ERROR\r\n";
+			//wxg record 设置收录素材的文件名称
+			auto channel = ctx.channel.channel;
+			bool ret = channel->output().record_init(recordChn,strName,allChnRecord);
+
+			ctx.parameters.erase(ctx.parameters.begin(), ctx.parameters.begin() + 2);
+			
+			std::wstring signalSource = channel->get_signalSource();
+			//上层没有传递播放源，需要从配置文件得到
+			if (ctx.parameters.size() == 0)
+			{
+				//ctx.parameters.push_back(signalSource);
+				std::list<std::wstring> tokens;
+				tokenize(signalSource, tokens);
+				std::vector<std::wstring> parameters(tokens.begin(), tokens.end());
+				ctx.parameters = std::move(parameters);
+				//ctx.channel.channel->stage().stop(ctx.layer_index());  //不知道别人在哪个层上播，管不住上层的play
+			}
+			try
+			{
+				if (ctx.parameters.size() > 0 && ret)
+					loadbg_command(ctx);
+			}
+			catch (...)
+			{
+			}
+
+			if (ret)
+				return L"202 RECORD INIT OK\r\n";
+			else
+				return L"404 RECORD INIT ERROR\r\n";
+
+		}
+		else if(recordType == L"START")
+		{
+			ctx.channel.channel->stage().play(ctx.layer_index());
+
+			bool ret = ctx.channel.channel->output().record_start(recordChn,allChnRecord);
+			if (ret)
+				return L"202 RECORD START OK\r\n";
+			else
+				return L"404 RECORD START ERROR\r\n";
+		}else if (recordType == L"STOP")
+		{
+			ctx.channel.channel->stage().stop(ctx.layer_index());
+
+			bool ret = ctx.channel.channel->output().record_stop(recordChn,allChnRecord);
+			if (ret)
+				return L"202 RECORD STOP OK\r\n";
+			else
+				return L"404 RECORD STOP ERROR\r\n";
+		}
+	}
+	
+	return L"404 RECORD COMMAND ERROR\r\n";
+
+}
+
+void timecode_describer(core::help_sink& sink, const core::help_repository& repository)
+{
+	sink.short_description(L"Timecode.");
+	sink.syntax(LR"(Timecode [video_channel:int]{-[layer:int]|-0} })");
+	sink.para()->text(L"Examples:");
+	sink.example(L">> TIMECODE 1-100000");
+}
+
+std::wstring timecode_command(command_context& ctx)
+{
+	auto channel = ctx.channel.channel;
+	try
+	{
+		int timecode = channel->stage().getTimecode(ctx.layer_index());
+		std::wstring strTimecode = std::wstring()
+			+ L"200 TIMECODE OK"
+			+ L" " + boost::lexical_cast<std::wstring>(	timecode)
+			+L"\r\n";
+		return strTimecode;
+	}
+	catch(...)
+	{
+		return L"404 TIMECODE  ERROR\r\n";
+	}
+}
+
 void register_commands(amcp_command_repository& repo)
 {
 	repo.register_channel_command(	L"Basic Commands",		L"LOADBG",						loadbg_describer,					loadbg_command,					1);
@@ -3184,6 +3424,9 @@ void register_commands(amcp_command_repository& repo)
 	repo.register_channel_command(	L"Basic Commands",		L"SET",							set_describer,						set_command,					2);
 	repo.register_command(			L"Basic Commands",		L"LOCK",						lock_describer,						lock_command,					2);
 	repo.register_channel_command(	L"Basic Commands",		L"LAYERSTATUS",					layerstatus_describer,				layerstatus_command,			0);
+	//wxg add record command
+	repo.register_channel_command(	L"Basic Commands",		L"RECORD",						record_describer,					record_command,					1);
+	repo.register_channel_command(	L"Basic Commands",		L"TIMECODE",					timecode_describer,					timecode_command,				0);
 
 	repo.register_command(			L"Data Commands", 		L"DATA STORE",					data_store_describer,				data_store_command,				2);
 	repo.register_command(			L"Data Commands", 		L"DATA RETRIEVE",				data_retrieve_describer,			data_retrieve_command,			1);

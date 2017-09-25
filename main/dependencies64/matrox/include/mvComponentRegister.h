@@ -1,6 +1,6 @@
 /*
 
-(c) Copyright Matrox Electronic Systems Ltd., 2003. All rights reserved. 
+(c) Copyright Matrox Electronic Systems Ltd., 2003-2017. All rights reserved. 
 
 This code and information is provided "as is" without warranty of any kind, 
 either expressed or implied, including but not limited to the implied 

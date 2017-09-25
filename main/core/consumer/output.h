@@ -58,6 +58,14 @@ public:
 	void remove(const spl::shared_ptr<frame_consumer>& consumer);
 	void remove(int index);
 	
+	//wxg record
+	//------------------------------------------------------
+	bool record_init(int index,std::wstring strFileName, bool isAllChnRecord);
+	bool record_start(int index, bool isAllChnRecord);
+	bool record_stop(int index, bool isAllChnRecord);
+	uint32_t getRecordFrames(std::wstring& fileName);
+	//bool is_recording(int index, bool isAllChnRecord);
+	//-------------------------------------------------------
 	monitor::subject& monitor_output();
 
 	// Properties

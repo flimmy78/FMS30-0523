@@ -1,0 +1,103 @@
+<scene width="1920" height="1080" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/CasparCG/Server/2.1.0/core/producer/scene/scene.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<!-- 底部标题 文字 模板 -->
+  <variables>  
+  
+    <variable type="string" id="h1"   public="true">This is title first</variable>
+	
+    <variable type="string" id="h2"   public="true">This is  title sceond</variable>
+	
+	
+	<variable type="number" id="op1" public ="false" >1</variable>
+	<variable type="number" id="op2" public ="false" >1</variable>
+	<variable type="number" id="op3" public ="false" >1</variable>
+	<variable type="number" id="op4" public ="false" >1</variable>
+	
+	<variable type="number" id="h1pos" public ="false">200</variable>
+	<variable type="number" id="h2pos" public ="false">400</variable>
+	
+	<variable type="number" id="h1pos" public ="false">200</variable>
+	<variable type="number" id="h2pos" public ="false">400</variable>
+	
+  </variables>
+
+  <layers>  
+	<!-- 背景视频 -->
+	<layer id="bgvideo">
+		<producer>ban/cun1-bgvideo loop</producer>
+		<x>0</x>
+		<y>${scene_height - layer.bgvideo.height}</y>
+		<width>${scene_width}</width>
+		<height>${scene_height}</height>
+	</layer>
+	<!-- 大标题 -->	
+	<layer id="texth1">
+      <producer>[TEXT] "" 0 0 size 45 color green font Roboto-Light</producer>     
+	   <x>${layer.bgvideo.x + (layer.bgvideo.width - layer.texth1.width)/2}</x>	  
+	   <y>${layer.bgvideo.height - layer.texth1.height*4 + variable.op3}</y>	 
+	  <adjustments>
+        <opacity>${variable.op1}</opacity>
+      </adjustments>
+      <parameters>
+		<color>red</color>
+		<text>${h1}</text>
+      </parameters>
+    </layer> 
+	
+		<!-- 副标题 -->	
+	<layer id="texth2">
+      <producer>[TEXT] "" 0 0 size 45 color green font Roboto-Light</producer>     
+	   <x>${layer.bgvideo.x + (layer.bgvideo.width - layer.texth2.width)/2}</x>	  
+	   <y>${layer.texth1.y + layer.texth2.height*2 + variable.op4}</y>	 
+	  <adjustments>
+        <opacity>${variable.op2}</opacity>
+      </adjustments>
+      <parameters>
+		<text>${h2}</text>
+      </parameters>
+    </layer> 
+	
+  </layers>    
+    <marks>
+    <mark at="0" type="start" label="intro" />
+	 <mark at="25" type="start" />
+    <mark at="75" type="start" />
+    <!-- <mark at="100" type="remove" label="outro" /> -->
+	
+  </marks>  
+  
+<!--    <tasks>    
+	<goto_mark at="0" label="intro" />
+  </tasks> -->
+  
+<!--
+	播放动画指令
+	play 1-10 cun1 play() intro	
+-->
+  <timelines>
+  <!-- 移动动画 -->
+    <timeline variable="variable.op1">
+      <keyframe at="0">0</keyframe>
+	  <keyframe at="50" easing="linear">1</keyframe>
+    </timeline>
+  
+    <timeline variable="variable.op2">
+      <keyframe at="0">0</keyframe>
+	  <keyframe at="75" easing="linear">1</keyframe>
+    </timeline>
+	
+	<timeline variable="variable.op3">
+      <keyframe at="0">${scene_height}</keyframe>
+	  <keyframe at="25" easing="linear">0</keyframe>
+    </timeline>
+	<timeline variable="variable.op4">
+      <keyframe at="0">${scene_height}</keyframe>
+	  <keyframe at="50" easing="linear">0</keyframe>
+    </timeline>
+	
+  </timelines>
+  
+  
+  
+
+</scene>

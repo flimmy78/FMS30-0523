@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 //
-//  (c) Copyright Matrox Electronic Systems Ltd., 2003-2015. All rights reserved. 
+//  (c) Copyright Matrox Electronic Systems Ltd., 2003-2017. All rights reserved. 
 //
 //  This software code is subject to the terms and conditions outlined 
 //  in the non-disclosure agreement between Matrox and your company. 

@@ -3,7 +3,6 @@ project (ffmpeg)
 
 set(SOURCES
 		consumer/ffmpeg_consumer.cpp
-		consumer/streaming_consumer.cpp
 
 		producer/audio/audio_decoder.cpp
 
@@ -29,7 +28,6 @@ set(SOURCES
 )
 set(HEADERS
 		consumer/ffmpeg_consumer.h
-		consumer/streaming_consumer.h
 
 		producer/audio/audio_decoder.h
 
@@ -59,12 +57,14 @@ add_precompiled_header(ffmpeg StdAfx.h FORCEINCLUDE)
 
 include_directories(..)
 include_directories(../..)
+include_directories(../common_zq)
 include_directories(${BOOST_INCLUDE_PATH})
 include_directories(${TBB_INCLUDE_PATH})
 include_directories(${FFMPEG_INCLUDE_PATH})
 include_directories(${RXCPP_INCLUDE_PATH})
 include_directories(${ASMLIB_INCLUDE_PATH})
 include_directories(${IPP_INCLUDE_PATH})
+include_directories(${MAINCONCEPT_INCLUDE_PATH})
 
 set_target_properties(ffmpeg PROPERTIES FOLDER modules)
 source_group(sources ./*)
@@ -81,6 +81,7 @@ if (MSVC)
 	target_link_libraries(ffmpeg
 			common
 			core
+			common_zq
 
 			avformat.lib
 			avcodec.lib
@@ -96,6 +97,7 @@ else()
 	target_link_libraries(ffmpeg
 			common
 			core
+			common_zq
 
 			-Wl,--start-group
 			avformat.so

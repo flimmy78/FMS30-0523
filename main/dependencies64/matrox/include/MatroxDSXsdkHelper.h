@@ -1578,4 +1578,6 @@ namespace NMvH {
       out_sCreateDesc.sWaveFormat.ulBitsPerSample = eAudioBitsPerSample;
       out_sCreateDesc.ulMaxBufferSize = ulSampleCount * in_eChannelType * 4;
    }
+
+   EMvVideoConnectorLabel GetConnectorLabel(IMvConnector * in_pIConnector);
 }

@@ -1,7 +1,7 @@
 
 //==========================================================================;
 //
-// (c) Copyright Matrox Electronic Systems Ltd., 2002. All rights reserved. 
+// (c) Copyright Matrox Electronic Systems Ltd., 2002-2017. All rights reserved. 
 //
 // This code and information is provided "as is" without warranty of any kind, 
 // either expressed or implied, including but not limited to the implied 
@@ -1023,82 +1023,90 @@ enum EMvPlaybackSpeed
    kePlaybackSpeedLast
 };
 
-// Used for XDCAM EX and Z1U pulldown. 
+// Specifies the pulldown for XDCAM EX and Z1U. 
 enum EMvdPulldownType
 {
-   PullDownTypeNone = 0,
-   PullDownType2_3,
-   PullDownType3_2,
-   PullDownType1_1,
-   PullDownType2_2,
-   PullDownType2_3_3_2,
-   PullDownType24_25,
-   PullDownTypeOther,
-   PullDownTypeLast
+   PullDownTypeNone = 0,      // Indicates that no pulldown is used.
+   PullDownType2_3,           // Indicates 2:3 pulldown.
+   PullDownType3_2,           // Indicates 3:2 pulldown.
+   PullDownType1_1,           // Indicates 1:1 pulldown.
+   PullDownType2_2,           // Indicates 2:2 pulldown.
+   PullDownType2_3_3_2,       // Indicates 2:3:3:2 pulldown.
+   PullDownType24_25,         // Indicates 24:25 pulldown.
+   PullDownTypeOther,         // Indicates that the pulldown type is other than listed here.
+   PullDownTypeLast           // End of list indicator.
 };
 
-// Used for reporting the maker of the encoded codec of the file.
+// Specifies the encoder ID of the encoded codec of the file.
 enum EMvdEncoderID
 {
-   EncoderIDUnknown = 0,
-   EncoderIDMatroxSW,
-   EncoderIDMatroxHW,
-   EncoderIDApple,
-   EncoderIDSony,
-   EncoderIDTypeLast
+   EncoderIDUnknown = 0,      // Indicates that the encoder ID is unknown.
+   EncoderIDMatroxSW,         // Indicates a Matrox software encoder ID.
+   EncoderIDMatroxHW,         // Indicates a Matrox hardware encoder ID.
+   EncoderIDApple,            // Indicates an Apple encoder ID.
+   EncoderIDSony,             // Indicates a Sony encoder ID.
+   EncoderIDTypeLast          // End of list indicator.
 };
 
-// Used for reporting the file origin for MP4 files, but could be used for other file types (such as MXF) when needed.
+// Specifies the file ID used for reporting the file origin for MP4 files (can be used for other file types, such as MXF when needed).
 enum EMvdFileCreatorID
 {
-   FileCreatorIDUnknown = 0,
-   FileCreatorIDMatrox,
-   FileCreatorIDMS,
-   FileCreatorIDApple,
-   FileCreatorIDSony,
-   FileCreatorIDPanasonic,
-   FileCreatorIDOmneon,
-   FileCreatorIDAVID,
-   FileCreatorIDTypeLast
+   FileCreatorIDUnknown = 0,     // Indicates that the file ID is unknown.
+   FileCreatorIDMatrox,          // Indicates a Matrox file ID.
+   FileCreatorIDMS,              // Indicates a Microsoft file ID.
+   FileCreatorIDApple,           // Indicates an Apple file ID.
+   FileCreatorIDSony,            // Indicates a Sony file ID.
+   FileCreatorIDPanasonic,       // Indicates a Panasonic file ID.
+   FileCreatorIDOmneon,          // Indicates an Omneon file ID.
+   FileCreatorIDAVID,            // Indicates an AVID file ID.
+   FileCreatorIDTypeLast         // End of list indicator.
 };
 
+//
+// Summary:
+//    Specifies the MXF file type.
+//
 enum EMvMXFFileType
 {
    MXFFileTypeNone = 0,
-   MXFFileTypeAtomAudio,
-   MXFFileTypeP2Video,
-   MXFFileTypeXdcamD10,
-   MXFFileTypeXdcamDvCam,
-   MXFFileTypeXdcamDvCPro,
-   MXFFileTypeXdcamHD420,
-   MXFFileTypeXdcamHD422,
-   MXFFileTypeGenericMpeg2,
-   MXFFileTypeGenericMpeg2SparseIndex,
-   MXFFileType_GC,
-   MXFFileTypeOP1B,        // external essence
-   MXFFileTypeAS02VBIType,
-   MXFFileTypeAS03Type,
-   MXFFileTypeAS11Type,
-   MXFFileTypeOP1BInternal,
-   MXFFileTypeAVCULongG,
-   MXFFileTypeXAVCIntra,
-   MXFFileTypeXAVCLongGOP,
-   MXFFileTypeLast
+   MXFFileTypeAtomAudio,                  // Indicates MXF (OP-Atom).
+   MXFFileTypeP2Video,                    // Indicates Panasonic P2 (OP-Atom).
+   MXFFileTypeXdcamD10,                   // Indicates Sony XDCAM (OP1a) D10.
+   MXFFileTypeXdcamDvCam,                 // Indicates Sony XDCAM (OP1a) DVCAM.
+   MXFFileTypeXdcamDvCPro,                // Indicates Panasonic P2 (OP-Atom) DVCPRO.
+   MXFFileTypeXdcamHD420,                 // Indicates Sony XDCAM HD (MPEG HD).
+   MXFFileTypeXdcamHD422,                 // Indicates Sony XDCAM HD422 (MPEG HD422).
+   MXFFileTypeGenericMpeg2,               // Indicates generic MPEG-2 (OP1a).
+   MXFFileTypeGenericMpeg2SparseIndex,    // Indicates generic MPEG-2 (OP1a) with sparse index (similar to RDD-9 wrapping).
+   MXFFileType_GC,                        // Indicates MXF generic container.
+   MXFFileTypeOP1B,                       // Indicates MXF (OP1b) externally referenced essence.
+   MXFFileTypeAS02VBIType,                // Indicates AS-02 OP1b.
+   MXFFileTypeAS03Type,                   // Indicates AMWA AS-03.
+   MXFFileTypeAS11Type,                   // Indicates AMWA AS-11 (OP1a).
+   MXFFileTypeOP1BInternal,               // Indicates MXF (OP1b) internally stored essence.
+   MXFFileTypeAVCULongG,                  // Indicates Panasonic AVC-LongG (OP1b).
+   MXFFileTypeXAVCIntra,                  // Indicates Sony XAVC Intra (OP1a).
+   MXFFileTypeXAVCLongGOP,                // Indicates Sony XAVC Long GOP (OP1a).
+   MXFFileTypeLast                        // End of list indicator.
 };
 
+//
+// Summary:
+//    Specifies the type of file format.
+//
 enum EMvFileFormatTypes
 {
-   keFileFormatUnknown = 0,
-   keFileFormatWAV,
-   keFileFormatWAV64,
-   keFileFormatAIFF,
-   keFileFormatAVI,
-   keFileFormatMOVMP4,
-   keFileFormatMXF,
-   keFileFormatGXF,
-   keFileFormatLXF,
-   keFileFormatTS,
-   keFileFormatLast
+   keFileFormatUnknown = 0,      // Indicates that the file format type is unknown.
+   keFileFormatWAV,              // Indicates a WAV audio file format.
+   keFileFormatWAV64,            // Indicates a WAV64 audio file format.
+   keFileFormatAIFF,             // Indicates an AIFF audio file format.
+   keFileFormatAVI,              // Indicates an AVI file format.
+   keFileFormatMOVMP4,           // Indicates an MOV/MP4 file format.
+   keFileFormatMXF,              // Indicates an MXF file format.
+   keFileFormatGXF,              // Indicates a GXF file format.
+   keFileFormatLXF,              // Indicates an LXF file format.
+   keFileFormatTS,               // Indicates a transport stream (TS) file format.
+   keFileFormatLast              // End of list indicator.
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1296,59 +1304,60 @@ struct SMvXAVCFileInfo
 
 //
 // Summary:
-//    Contains the audio track information of a mov/mp4 file. 
+//    Specifies the audio track information of an MOV/MP4 file. 
 //
 struct SMvMovAudioTrackInfo
 {
-    uint32_t   ui32OffsetInSamples;             // offset in the MOV audio EDIT atom in the unit of samples
-    uint32_t   ui32TrackChannelsCount;          // Number of channels with the offset.
+    uint32_t   ui32OffsetInSamples;             // Indicates the offset in the MOV audio EDIT Atom in the unit of samples.
+    uint32_t   ui32TrackChannelsCount;          // Indicates the number of channels with the offset.
 };
 
+
+#define	MAX_MOV_AUDIOTRACKINFO	16
 //
 // Summary:
-//    Contains the audio and video specific information of a mov/mp4 file. 
+//   Specifies the audio and video specific information of an MOV/MP4 file. 
 //
-#define	MAX_MOV_AUDIOTRACKINFO	16
 struct SMvMOVSpecificFileInfo
 {
-   uint32_t				size;
-   uint64_t				ui64VideoFrameCountFromMediaHeader;				// The number of video frame which gets from media header.
-   uint64_t				ui64VideoFrameCountFromTrackHeader;				// The number of video frame which gets from video track header.
-   uint32_t				ui32CountOfAudioTrackInfo;						// Number of audio tracks info filled.
-   SMvMovAudioTrackInfo sMovAudioTrackInfo[MAX_MOV_AUDIOTRACKINFO];     // An array of SMvMovAudioTrackInfo
+   uint32_t				size;                                        // Structure size in bytes.
+   uint64_t				ui64VideoFrameCountFromMediaHeader;				// Indicates the video frame number obtained from the media header.
+   uint64_t				ui64VideoFrameCountFromTrackHeader;				// Indicates the video frame number obtained from the video track header.
+   uint32_t				ui32CountOfAudioTrackInfo;						// Indicates the number of audio track information filled.
+   SMvMovAudioTrackInfo sMovAudioTrackInfo[MAX_MOV_AUDIOTRACKINFO];     // Indicates the audio track information.
 };
 
 //
 // Summary:
-//    Contains element unit size information of MXF file. 
+//    Specifies the element unit size information of an MXF file. 
 //
 struct SMvMXFSpecificFileInfo
 {
-   uint32_t				size;
-   uint32_t				ui32ElementUnitSize;		   // size of one element unit. Only set this value for the file with constant frame size;
+   uint32_t				size;                      // Structure size in bytes.
+   uint32_t				ui32ElementUnitSize;		   // Indicates the size of one element unit. Set this value only for a file with a constant frame size.
 };
 
 //
 // Summary:
-//    The start timecode structure
+//    Specifies the start time code.
 //
 struct SMvTimecodeData
 {
-   uint32_t    ui32Size;
-   uint64_t    ui64StartTimecode;         // converted integer frame count from (00:00:00:00)
-   uint32_t    ui32RoundedTimecodeBase;   // Nearest integer frames per sec e.g. 24, 25. 30, 60
-   bool        bDropFrame;                // True = Drop frame timecode in use.
+   uint32_t    ui32Size;                  // Structure size in bytes.
+   uint64_t    ui64StartTimecode;         // Indicates the converted integer frame count from (00:00:00:00).
+   uint32_t    ui32RoundedTimecodeBase;   // Indicates the nearest integer frames per second. For example, 24, 25, 30, or 60 fps.
+   bool        bDropFrame;                // If true, indicates that drop frame time code used.
 };
 
 //
 // Summary:
-//    Timecode data packet format
+//     Specifies the time code data packet format.
 //
 struct SMvTimecodeDataPacket
 {
-   uint32_t ui32sizeOfPayload;      // large endian size
-   uint8_t  ui8Code;                // must be 0x81
-   UMvSMPTE331TimeCode uSMPTE331TC; // timecode in SMPTE331 format
+   uint32_t ui32sizeOfPayload;      // Indicates the large endian size.
+   uint8_t  ui8Code;                // The size must be 0x81.
+   UMvSMPTE331TimeCode uSMPTE331TC; // Indicates the time code conforming to SMPTE ST 331.
 };
 
 //
@@ -1360,7 +1369,7 @@ struct SMvAudioVideoFileInfo
    uint32_t             size;                   // Structure size in bytes.
    unsigned long        ulVersion;              // Specifies the version information.
    unsigned long        ulNumVideoStreams;      // Specifies the number of video streams.
-   unsigned long        ulAudioStreams;         // Specifies the number of audio streams. If a file contains multiple audio channel types, This value will be set to the total number of audio channels in the file, and the sWaveInfo.eChannelType will be set to keChannelTypeMono.
+   unsigned long        ulAudioStreams;         // Specifies the number of audio streams. If a file contains multiple audio channel types, this value will be set to the total number of audio channels in the file, and the sWaveInfo.eChannelType will be set to keChannelTypeMono.
    EMvSurfaceFormat     eSurfaceFormat;         // Specifies the surface format enumerator. 
    SMvResolutionInfo    sResInfo;               // Specifies the resolution information. 
    EMvPolarity          ePolarity;              // Specifies the polarity. 
@@ -1378,54 +1387,54 @@ struct SMvAudioVideoFileInfo
    unsigned long        ulDataRate;             // Specifies the data rate in bits-per-second.
    uint64_t             ui64FileSize;           // Specifies the file size in bytes. 
    unsigned long        ulPitch;                // Specifies the pitch size of the surface. 
-   bool                 bIsAligned;             // Specifies whether or not the start address of the data in the file is aligned to a boundary of 128 bytes.
+   bool                 bIsAligned;             // If true, indicates that the start address of the data in the file is aligned to a boundary of 128 bytes.
    uint64_t             ui64ActualVideoFrameCount;    // Specifies the actual number of frames in the file. This value is greater than or equal to 
-                                                // ui64VideoFrameCount because it takes into account broken Open GOPs at the beginning of 
+                                                // ui64VideoFrameCount because it takes into account broken open GOPs at the beginning of 
                                                 // the file, or is offset to the highest time code suggested in the file.
    uint64_t             ui64ActualAudioSampleCount;   // Specifies the actual number of audio samples in the file. This value is greater than or equal 
-                                                // to ui64AudioSampleCount because it takes into account broken Open GOPs at the beginning of 
+                                                // to ui64AudioSampleCount because it takes into account broken open GOPs at the beginning of 
                                                 // the file, or is offset to the highest time code suggested in the file.
    uint64_t             ui64OffsetFromActualStart;    // Specifies the amount that the read positions can be safely offset from the beginning (zero). 
-                                                // This FrontOffset value, if specified, means that the ui64ActualVideoFrameCount value is 
+                                                // This value, if specified, means that the ui64ActualVideoFrameCount value is 
                                                 // larger than the ui64VideoFrameCount.
-   bool                 bEmbeddedAudio;         // Specifies whether or not the audio is embedded.
+   bool                 bEmbeddedAudio;         // If true, indicates that the audio is embedded.
    EMvColorimetry       eColorimetry;           // Specifies the colorimetry standard of the surface. Audio duration is in the unit of frames.
 
-   EMvdEncoderID        eEncoderID;             // Enumerator used for reporting the maker of the encoded codec of the file.  
+   EMvdEncoderID        eEncoderID;             // Specifies the enumerator used for reporting the maker of the encoded codec of the file.  
 
-   EMvdPulldownType     ePullDownType;          // Type of pull down can be applied (ie material is 24 over 60).
+   EMvdPulldownType     ePullDownType;          // Specifies the type of pull down can be applied.
 
-   EMvdFileCreatorID    eFileCreatorID;         // Enumerator used for reporting the file origin for MP4, but it can also be used for other files (for example <I>.mxf</I>) if needed.
+   EMvdFileCreatorID    eFileCreatorID;         // Specifies the enumerator used for reporting the MP4 file origin, but it can also be used for other files (for example <I>.mxf</I>) if needed.
 
-   bool                 bIsMpegFileInfoValid;   // Specifies if data in sMpegFileInfo is valid.
+   bool                 bIsMpegFileInfoValid;   // If true, indicates that the data in sMpegFileInfo is valid.
 
    SMvMpegFileInfo      sMpegFileInfo;          // File information specific to MPEG file types.
 
-   bool                 bIsAVCFileInfoValid;    // Specifies if data in sAVCFileInfo is valid.
+   bool                 bIsAVCFileInfoValid;    // If true, indicates that the data in sAVCFileInfo is valid.
 
    SMvAVCFileInfo       sAVCFileInfo;           // File information specific to AVC file types.
 
-   bool                 bIsProResFileInfoValid; // Specifies if data in sProResFileInfo is valid.
-   SMvProResFileInfo    sProResFileInfo;        // 
+   bool                 bIsProResFileInfoValid; // If true, indicates that the in sProResFileInfo is valid.
+   SMvProResFileInfo    sProResFileInfo;        // File information specific to ProRes file types.
 
-   bool                 bIsDNxHDFileInfoValid;  // Specifies if data in sDNxHDFileInfo is valid.
+   bool                 bIsDNxHDFileInfoValid;  // If true, indicates that the in sDNxHDFileInfo is valid.
    SMvDNxHDFileInfo     sDNxHDFileInfo;         // File information specific to VC-3 or DNxHD file types.
 
-   bool                 bIsMPEG4SStPFileInfoValid;  // Specifies if data in sMPEG4SStPFileInfo is valid.
+   bool                 bIsMPEG4SStPFileInfoValid;  // If true, indicates that the data in sMPEG4SStPFileInfo is valid.
    SMvMPEG4SStPFileInfo sMPEG4SStPFileInfo;         // File information specific to MPEG-4 SStP file types.
 
-   bool                 bIsXAVCFileInfoValid;   // Specifies if data in sXAVCFileInfo is valid.
+   bool                 bIsXAVCFileInfoValid;   // If true, indicates that the data in sXAVCFileInfo is valid.
    SMvXAVCFileInfo      sXAVCFileInfo;          // File information specific to XAVC file types.
 
-   bool                 bHasFileStartTimeCode;  // The file contains a start timecode in the header metadata
-   SMvTimecodeData      sStartTimecode;         // The start timecode from the header
+   bool                 bHasFileStartTimeCode;  // If true, indicates that the file contains a start time code in the header metadata.
+   SMvTimecodeData      sStartTimecode;         // Specifies the start time code from the header.
 
    EMvMXFFileType       eMXFFileType;           // Specifies the MXF file types.
    unsigned long        ulVbiStreams;           // Specifies the number of VBI streams.
-   unsigned long        ulANCStreams;           // Specifies the number of ANC streams.
+   unsigned long        ulANCStreams;           // Specifies the number of ancillary data streams.
    unsigned long        ulTCStreams;            // Specifies the number of TC streams.
    
-   bool                 bSequentialAccess;      // Indicates whether or not a file is accessed sequentially. 
+   bool                 bSequentialAccess;      // If true, indicates that the file is accessed sequentially. <p>
                                                 // Due to the sequential nature of these files, seeking and trimming 
                                                 // is much slower than random accessing. The time it takes to sequentially 
                                                 // seek/trim-in is proportional to how much data needs to be parsed linearly in the file. 
@@ -1436,13 +1445,13 @@ struct SMvAudioVideoFileInfo
 
    uint32_t             ui32NumberOfAudioTypes;       // The number of audio types found in the file.
    
-   SMvMOVSpecificFileInfo sMOVSpecificFileInfo;    //Specific file information for MOV file.
+   SMvMOVSpecificFileInfo sMOVSpecificFileInfo;    // Specific file information for MOV file types.
 
-   SMvMXFSpecificFileInfo sMXFSpecificFileInfo;    //Specific file information for MXF file.
+   SMvMXFSpecificFileInfo sMXFSpecificFileInfo;    // Specific file information for MXF file types.
 
-   double               dAlternateFrameRate;       // contains 0.0 by default, but for files that use non-broadcast standard frame rates, it's original framerate is reported here.
+   double               dAlternateFrameRate;       // Indicates the frame rate for files that use non-broadcast standard frame rates. Default value is 0.0.
 
-   EMvFileFormatTypes   eFileFormatType;
+   EMvFileFormatTypes   eFileFormatType;           // Specifies the type of file format.
 
 };
 
@@ -2248,7 +2257,7 @@ struct SMvMGF2FileInfo
 
 //
 // Summary:
-//    Super structure that contains information for various file types, including audio and/or video files, MGF files, and GFX files. 
+//    Structure that contains information for various file types, including audio and/or video files, MGF files, and GFX files. 
 //
 struct SMvFileInfo
 {

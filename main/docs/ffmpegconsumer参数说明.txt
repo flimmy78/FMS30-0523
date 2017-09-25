@@ -1,0 +1,84 @@
+﻿参数说明：
+1>rtype未配置，则默认用ffmpeg打包出流或写文件
+2>rtype=mcfile/mcnet/dtnet  分别对应mainconcept写文件/mainconcept出流/dektec卡出流，对应的打包格式format应为mcmpegts
+  eg: 
+	C:/FMSTest/zibj/mcfile.ts?rtype=mcfile
+	udp://236.0.0.2:10002?rtype=mcnet&localaddr=172.16.3.233&ttl=128
+    	localaddr：指定出流网卡ip
+		ttl：指定time to live的值
+	udp://236.0.0.2:10002?rtype=dtnet&devtype=2162&devport=1&delaytime=1000&bitrate=50000000&ttl=255&pkt_size=1316
+    	devtype：dektec板卡型号
+        devport：dektec板卡出流端口
+        delaytime：指定缓存时间
+ 	bitrate：dektec板卡输出码率;与mcmpegts复用参数rbitrate相同，且enpaddings须为1
+		pkt_size: 设定udp包大小
+		ttl：指定time to live的值
+
+3>mcmpegts打包参数形如：-enpaddings 1 -rbitrate 50000000 -pcr 30 -psi 50 -vpid 1234 -apids 1235,1236
+	enpaddings：是否加空包，1加空包，0不加空包
+	rbitrate：打包码率，恒定码流，即enpaddings为1时用。
+	pcr： pcr间隔时间，单位ms
+	psi： psi间隔时间，单位ms  
+	vdelay：视频时间戳相对延迟,单位ms,默认为0
+	adelay：音频时间戳相对延迟,单位ms,默认为0
+        vpid：视频pid
+        apids：音频pid，若是多音轨，则以逗号间隔各pid
+
+
+1.ffmpeg出流：
+add 1 stream udp://236.0.0.2:10002?pkt_size=1316 -format mpegts -c:v hevc_nvenc -preset fast -b:v 40M -bufsize 20M -level 5.2 -tier high -rc cbr -cbr true -g 50 -c:a aac -profile:a aac_low  -ac 2 -ar 48000
+remove 1 stream udp://236.0.0.2:10002?pkt_size=1316
+对应配置文件中consumer配置如下：
+	<ffmpeg>
+		<path>udp://236.0.0.2:10002?pkt_size=1316</path>
+		<args>-format mpegts -c:v hevc_nvenc -preset fast -b:v 40M -bufsize 20M -level 5.2 -tier high -rc cbr -cbr true -g 50 -c:a aac -profile:a aac_low  -ac 2 -ar 48000</args>
+    </ffmpeg>
+
+2.ffmpeg写文件
+add 1 file C:/FMSTest/zibj/ffmpegstd.ts -format mpegts -c:v hevc_nvenc -preset fast -b:v 40M -bufsize 20M -level 5.2 -tier high -rc cbr -cbr true -g 50 -c:a aac -profile:a aac_low  -ac 2 -ar 48000
+remove 1 file C:/FMSTest/zibj/ffmpegstd.ts
+对应配置文件中consumer配置如下：
+	<ffmpeg>
+		<path>C:/FMSTest/zibj/ffmpegstd.ts</path>
+		<args>-format mpegts -c:v hevc_nvenc -preset fast -b:v 40M -bufsize 20M -level 5.2 -tier high -rc cbr -cbr true -g 50 -c:a aac -profile:a aac_low  -ac 2 -ar 48000</args>
+    </ffmpeg>
+
+3.mainconcept写文件
+add 1 file C:/FMSTest/zibj/mcfile.ts?rtype=mcfile -format mcmpegts -enpaddings 1 -rbitrate 50000000 -c:v hevc_nvenc -preset fast -b:v 40M -bufsize 20M -level 5.2 -tier high -rc cbr -cbr true -g 50 -c:a aac -profile:a aac_low  -ac 2 -ar 48000
+remove 1 file C:/FMSTest/zibj/mcfile.ts?rtype=mcfile
+对应配置文件中consumer配置如下：
+	<ffmpeg>
+		<path>C:/FMSTest/zibj/mcfile.ts?rtype=mcfile</path>
+		<args>-format mcmpegts -enpaddings 1 -rbitrate 50000000 -c:v hevc_nvenc -preset fast -b:v 40M -bufsize 20M -level 5.2 -tier high -rc cbr -cbr true -g 50 -c:a aac -profile:a aac_low  -ac 2 -ar 48000</args>
+    </ffmpeg>
+
+4.mainconcept出流
+add 1 stream udp://236.0.0.2:10002?rtype=mcnet -format mcmpegts -enpaddings 1 -rbitrate 50000000 -c:v hevc_nvenc -preset fast -b:v 40M -bufsize 20M -level 5.2 -tier high -rc cbr -cbr true -g 50 -c:a aac -profile:a aac_low  -ac 2 -ar 48000
+remove 1 stream udp://236.0.0.2:10002?rtype=mcnet
+对应配置文件中consumer配置如下：
+	<ffmpeg>
+		<path>udp://236.0.0.2:10002?rtype=mcnet</path>
+		<args>-format mcmpegts -enpaddings 1 -rbitrate 50000000 -c:v hevc_nvenc -preset fast -b:v 40M -bufsize 20M -level 5.2 -tier high -rc cbr -cbr true -g 50 -c:a aac -profile:a aac_low  -ac 2 -ar 48000</args>
+    </ffmpeg>
+
+指定出流网卡ip
+add 1 stream udp://236.0.0.2:10002?rtype=mcnet&localaddr=172.16.3.233 -format mcmpegts -enpaddings 1 -rbitrate 50000000 -c:v hevc_nvenc -preset fast -b:v 40M -bufsize 20M -level 5.2 -tier high -rc cbr -cbr true -g 50 -c:a aac -profile:a aac_low  -ac 2 -ar 48000
+remove 1 stream udp://236.0.0.2:10002?rtype=mcnet&localaddr=172.16.3.233
+对应配置文件中consumer配置如下：
+	<ffmpeg>
+		<path>udp://236.0.0.2:10002?rtype=mcnet&localaddr=172.16.3.233</path>
+		<args>-format mcmpegts -enpaddings 1 -rbitrate 50000000 -c:v hevc_nvenc -preset fast -b:v 40M -bufsize 20M -level 5.2 -tier high -rc cbr -cbr true -g 50 -c:a aac -profile:a aac_low  -ac 2 -ar 48000</args>
+    </ffmpeg>
+
+5.dektec出流
+add 1 stream udp://236.0.0.2:10002?rtype=dtnet&devtype=2162&devport=1&delaytime=1000&bitrate=50000000 -format mcmpegts -enpaddings 1 -rbitrate 50000000 -c:v hevc_nvenc -preset fast -b:v 40M -bufsize 20M -level 5.2 -tier high -rc cbr -cbr true -g 50 -c:a aac -profile:a aac_low  -ac 2 -ar 48000
+remove 1 stream udp://236.0.0.2:10002?rtype=dtnet&devtype=2162&devport=1&delaytime=1000&bitrate=50000000
+对应配置文件中consumer配置如下：
+	<ffmpeg>
+		<path>udp://236.0.0.2:10002?rtype=dtnet&devtype=2162&devport=1&delaytime=1000&bitrate=50000000</path>
+		<args>-format mcmpegts -enpaddings 1 -rbitrate 50000000 -c:v hevc_nvenc -preset fast -b:v 40M -bufsize 20M -level 5.2 -tier high -rc cbr -cbr true -g 50 -c:a aac -profile:a aac_low  -ac 2 -ar 48000</args>
+    </ffmpeg>
+   
+            
+
+

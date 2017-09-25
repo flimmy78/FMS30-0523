@@ -119,7 +119,7 @@ struct input::impl : boost::noncopyable
 				enable_quiet_logging_for_thread();
 			});
 
-		in_			    = in;
+		in_				= in;
 		out_			= out;
 		if (out_ != std::numeric_limits<uint32_t>::max())
 		{
@@ -127,7 +127,7 @@ struct input::impl : boost::noncopyable
 			int64_t durationLen = static_cast<int64_t>(format_context_->duration*fps / 1000000 + 1);
 			if ((durationLen - out_) > 50)
 			{
-				out_ = out + 50;
+				out_ = out_ + 50;
 			}
 			else
 			{
@@ -512,7 +512,7 @@ struct input::impl : boost::noncopyable
 		auto path					= parts.at(1);
 		AVInputFormat* input_format	= nullptr;
 
-		static const std::set<std::wstring> PROTOCOLS_TREATED_AS_FORMATS = { L"dshow", L"v4l2", L"iec61883" };
+		static const std::set<std::wstring> PROTOCOLS_TREATED_AS_FORMATS = { L"dshow", L"v4l2" , L"iec61883" };
 
 		if (protocol.empty())
 			resource_name = path;
@@ -613,7 +613,7 @@ struct input::impl : boost::noncopyable
 			std::numeric_limits<int64_t>::max(),			
 			0), print());
 
-		file_frame_number_  = target;
+		file_frame_number_ = target;
 		auto flush_packet	= create_packet();
 		flush_packet->data	= nullptr;
 		flush_packet->size	= 0;
@@ -746,7 +746,7 @@ struct input::impl : boost::noncopyable
 		}
 		else
 		{
-			return ret == AVERROR_EOF || ret == AVERROR(EIO) || file_frame_number_ >= ((out_ + length_diff) * (length_time == 0 ? 1 : length_time)); // av_read_frame doesn't always correctly return AVERROR_EOF;
+			return ret == AVERROR_EOF || ret == AVERROR(EIO) || file_frame_number_ >= (out_ + length_diff) * (length_time == 0 ? 1 : length_time); // av_read_frame doesn't always correctly return AVERROR_EOF;
 		}
 	}
 
@@ -785,9 +785,9 @@ bool input::try_pop(std::shared_ptr<AVPacket>& packet){return impl_->try_pop(pac
 spl::shared_ptr<AVFormatContext> input::context(){return impl_->format_context_;}
 void input::in(uint32_t value){impl_->in_ = value;}
 uint32_t input::in() const{return impl_->in_;}
-void input::out(uint32_t value){impl_->out_ = value;}
-uint32_t input::out() const{return impl_->out_;}
-void input::length(uint32_t value) { impl_->out_ = impl_->in_ + value; }
+void input::out(uint32_t value) { impl_->out_ = value; }
+uint32_t input::out() const { return impl_->out_; }
+void input::length(uint32_t value){impl_->out_ = impl_->in_ + value;}
 uint32_t input::length() const { return impl_->out_ - impl_->in_; }
 void input::loop(bool value){impl_->loop_ = value;}
 bool input::loop() const{return impl_->loop_;}

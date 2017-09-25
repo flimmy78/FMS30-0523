@@ -70,7 +70,8 @@ public:
 	bool is_paused() const;
 	bool is_arrive_eom() const;
 	//------------------
-
+	int getTimecode();
+	double getFramerate();
 	// monitor::observable
 
 	monitor::subject& monitor_output();

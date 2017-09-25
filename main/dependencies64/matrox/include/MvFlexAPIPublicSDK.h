@@ -1,6 +1,6 @@
 //==============================================================================
 //
-// (c) Copyright Matrox Electronic Systems Ltd., 2003-2015. All rights reserved. 
+// (c) Copyright Matrox Electronic Systems Ltd., 2003-2017. All rights reserved. 
 //
 // This code and information is provided "as is" without warranty of any kind, 
 // either expressed or implied, including but not limited to the implied 
@@ -1040,7 +1040,7 @@ interface IMvSurface : public IMvAVContent
    //    - The new surface description needs to be in the same memory location.
    //    - The new surface description must describe a buffer that is less than, or equal to the 
    //      size of the old buffer. For example, a 32x32 surface cannot be changed to accomodate a
-   //      64x64 surface. But, a 64x64 surface can be changed to accomodate a 128x16 surface.
+   //      64x64 surface. However, a 64x64 surface can be changed to accomodate a 128x16 surface.
    //    - Only surfaces originally allocated in host memory or in the IO onboard memory, as well as
    //      user buffers can have their description changed. 
    // Return value:
@@ -1058,7 +1058,7 @@ interface IMvSurface : public IMvAVContent
    //    - This method will return an error if called on an alias.
    virtual HRESULT __stdcall ChangeSurfaceDescription
       (
-      SMvCreateSurfaceDescription * in_psDescription  // 
+      SMvCreateSurfaceDescription * in_psDescription  // Pointer to the SMvCreateSurfaceDescription structure that specifies the new surface description.
       ) = 0;
 
    //

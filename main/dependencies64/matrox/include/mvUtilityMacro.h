@@ -29,10 +29,8 @@
 
 #pragma once
 
-#ifndef _MVUTILITYMACRO_H_F50A1DD5_EF57_4bce_ADB1_D50DD7A35B3D_H31D1_
-#define _MVUTILITYMACRO_H_F50A1DD5_EF57_4bce_ADB1_D50DD7A35B3D_H31D1_
-
 #include <stdio.h>
+#include <stdint.h>
 
 #define MvSafeRelease(OBJ_) \
    { if(OBJ_) {(OBJ_)->Release(); (OBJ_) = NULL; } }
@@ -83,4 +81,23 @@ namespace MvUtilityMacro
 	// MvLog
 }
 
-#endif
+//////////////////////////////////////////////////////////////////////////
+// IP MACROS
+//////////////////////////////////////////////////////////////////////////
+inline bool mvIsIPv4Multicast(uint32_t in_ui32IPv4)
+{
+   uint32_t ui32HighAdr = ((in_ui32IPv4 >> 24) & 0x000000FF);
+
+   return ui32HighAdr >= 224 && ui32HighAdr <= 239 ? true : false;
+}
+
+inline void mvIPv4ToString(uint32_t in_ui32IPv4, uint32_t in_ui32StringCount, char out_szString[])
+{
+   sprintf_s(out_szString, in_ui32StringCount, "%d.%d.%d.%d", 
+             (in_ui32IPv4 >> 24) & 0x000000FF,
+             (in_ui32IPv4 >> 16) & 0x000000FF,
+             (in_ui32IPv4 >>  8) & 0x000000FF,
+              in_ui32IPv4        & 0x000000FF);
+}
+
+

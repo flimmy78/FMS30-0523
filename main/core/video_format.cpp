@@ -28,9 +28,9 @@
 namespace caspar { namespace core {
 	
 	const std::vector<video_format_desc> format_descs = {
-		{ video_format::pal,          720,  576,  1024, 576,  field_mode::upper,       25000, 1000, L"PAL",          { 1920                         } ,L"stretch" },
+		{ video_format::pal,          720,  576,  768, 576,   field_mode::upper,       25000, 1000, L"PAL",          { 1920                         } ,L"stretch" },
 		{ video_format::ntsc,         720,  486,  720,  540,  field_mode::lower,       30000, 1001, L"NTSC",         { 1602, 1601, 1602, 1601, 1602 } ,L"stretch" },
-		{ video_format::x576p2500,    720,  576,  1024, 576,  field_mode::progressive, 25000, 1000, L"576p2500",     { 1920                         } ,L"stretch" },
+		{ video_format::x576p2500,    720,  576,  768, 576,  field_mode::progressive, 25000, 1000, L"576p2500",     { 1920                         } ,L"stretch" },
 		{ video_format::x720p2398,    1280, 720,  1280, 720,  field_mode::progressive, 24000, 1001, L"720p2398",     { 2002                         } ,L"stretch" },
 		{ video_format::x720p2400,    1280, 720,  1280, 720,  field_mode::progressive, 24000, 1000, L"720p2400",     { 2000                         } ,L"stretch" },
 		{ video_format::x720p2500,    1280, 720,  1280, 720,  field_mode::progressive, 25000, 1000, L"720p2500",     { 1920                         } ,L"stretch" },

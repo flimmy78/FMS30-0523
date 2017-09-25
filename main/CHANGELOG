@@ -603,4 +603,20 @@ Removed
 				<channel-layout>stereo</channel-layout> //matrox 输出的格式，不配置默认为channl下的声音格式
 			</matrox>
 			
-			
+2017年9月1日13:16:50   wxg
+			增加串口的配置方法
+		<serial>
+			<protocol>vdcp</protocol>
+			<port>1</port>
+			<channel>1</channel>
+			<layer>10</layer>
+	  </serial>
+	  
+2017年9月4日13:17:25 wxg
+	  增加了录制命令：包括以下三个
+		RECORD channel-layer INIT xxxx.mxf DECKLINK DEVICE 1 录制初始化命令
+		返回 202 RECORD OK 或者 404 RECORD ERROR
+		RECORD channel-layer START
+		返回 202 RECORD OK 或者 404 RECORD ERROR
+		RECORD channel-layer STOP
+		返回 202 RECORD OK 或者 404 RECORD ERROR

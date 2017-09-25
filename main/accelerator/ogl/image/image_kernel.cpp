@@ -440,7 +440,7 @@ struct image_kernel::impl
 
 				glVertexPointer(2, GL_DOUBLE, stride, vertex_coord_ptr);
 				glTexCoordPointer(4, GL_DOUBLE, stride, texture_coord_ptr);
-				
+
 				if (blend_modes_)
 				{
 					for (int i = 0; i < coords.size(); i += 4)

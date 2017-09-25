@@ -41,6 +41,11 @@ public:
 	boost::property_tree::wptree info() const;
 	int64_t presentation_frame_age_millis() const;
 	spl::shared_ptr<const frame_consumer> consumer() const;
+	bool record_init(std::wstring strFileName) const;
+	bool record_start() const;
+	bool record_stop() const;
+	bool is_recording() const;
+	uint32_t getRecordFrames(std::wstring& fileName) const;
 private:
 	struct impl;
 	std::unique_ptr<impl> impl_;
