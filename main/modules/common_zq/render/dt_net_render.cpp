@@ -280,9 +280,10 @@ void dt_net_render::Adjust()
 			
 			//一般情况下的调整
 			if (m_bCanAdjust)
-			{
+			{				
 				int bitrate = (nTsRate + m_nAdjustBitRate) / 2;
-				m_tsOutPort.SetTsRateBps(bitrate);
+				m_tsOutPort.SetTsRateBps(bitrate+100);
+				m_bCanAdjust = false;
 				CASPAR_LOG(info) << L"Adjust GetFifoLoad: " << nFifoLoad;
 			}
 
