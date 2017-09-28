@@ -4,9 +4,13 @@
 #include <boost/thread.hpp>
 #include <DTAPI.h>
 
-#define CHECK_FIFO_INTERVAL         2000  //ms
-#define ADJUST_BITRATE_RATIO		0.999 
-#define FIFO_LOAD_CACHE_RATIO       0.5
+#include <../../../common/timer.h>
+
+#define CHECK_FIFO_INTERVAL         60000  //ms
+
+#define FIFOSIZE_OFFSET     100000*16    //byte 
+#define COMPUTE_TIME			60*5         //s
+#define ADJUST_TIME             60*30         //s
 
 struct dt_net_render_params
 {
@@ -119,4 +123,12 @@ private:
 	int32_t m_nCurLoad;
 	int32_t m_nFifoSize;
 	int32_t m_nTsBitRate;
+
+	int64_t m_nComputeBitRate;
+	int64_t m_nsendBytes;
+	int64_t m_nlastSendBytes;
+	int64_t m_nAdjustBitRate;
+	caspar::timer         cptBitrate_timer_;
+	caspar::timer         adjust_timer_;
+	bool				  m_bCanAdjust;
 };

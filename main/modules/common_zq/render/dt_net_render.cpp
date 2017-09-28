@@ -6,7 +6,11 @@ dt_net_render::dt_net_render()
 	, m_nCurLoad(0)
 	, net_fifo(nullptr)
 {
-
+	m_nComputeBitRate = 0;
+	m_nsendBytes = 0;
+	m_nlastSendBytes = 0;
+	m_nAdjustBitRate = 0;
+	m_bCanAdjust = false;
 }
 
 dt_net_render::~dt_net_render()
@@ -150,6 +154,7 @@ bool dt_net_render::init(dt_net_render_params dtparams)
 		return bret;
 	}
 
+	m_nTsBitRate = dtparams.tsbitrate;
 
 	m_tsOutPort.ClearFifo();          // Clear FIFO (i.e. start with zero load)
 
@@ -174,7 +179,7 @@ void dt_net_render::senddata(uint8_t* pbuffer, int32_t nbufferLen)
 	DTAPI_RESULT dr;
 	if (!m_bStartSend)
 	{
-		if (m_nCurLoad < m_nFifoSize*FIFO_LOAD_CACHE_RATIO)
+		if (m_nCurLoad < m_nFifoSize)
 		{
 			dr = m_tsOutPort.Write((char*)pbuffer, nbufferLen);
 			if (dr != DTAPI_OK)
@@ -193,6 +198,8 @@ void dt_net_render::senddata(uint8_t* pbuffer, int32_t nbufferLen)
 			{
 				CASPAR_LOG(error) << L"SetTxControl failed,ERROR:" << DtapiResult2Str(dr);
 			}
+			cptBitrate_timer_.restart();
+			adjust_timer_.restart();
 		}
 	}
 
@@ -201,6 +208,27 @@ void dt_net_render::senddata(uint8_t* pbuffer, int32_t nbufferLen)
 	{
 		CASPAR_LOG(error) << L"Write failed, ERROR:" << DtapiResult2Str(dr);
 	}
+
+	m_nsendBytes += nbufferLen;
+
+	if (cptBitrate_timer_.elapsed() > COMPUTE_TIME)
+	{
+		int64_t newRate = (m_nsendBytes - m_nlastSendBytes) * 8 / cptBitrate_timer_.elapsed();
+		CASPAR_LOG(info) << L"COMPUTE_TIME  " << COMPUTE_TIME << L" Computebitrate  " << newRate;
+		m_nlastSendBytes = m_nsendBytes;
+		cptBitrate_timer_.restart();
+	}
+
+	if (adjust_timer_.elapsed() > ADJUST_TIME)
+	{
+		adjust_timer_.restart();
+		cptBitrate_timer_.restart();
+		m_nAdjustBitRate = m_nsendBytes * 8 / adjust_timer_.elapsed();
+		m_nsendBytes = 0;
+		m_nlastSendBytes = 0;
+		m_bCanAdjust = true;
+		CASPAR_LOG(info) << L"ADJUST_TIME  " << ADJUST_TIME << L" Computebitrate  " << m_nAdjustBitRate;
+	}
 }
 
 void dt_net_render::Adjust()
@@ -208,6 +236,7 @@ void dt_net_render::Adjust()
 	int nFifoLoad = 0;
 	int nFifoSize = 0;
 	int nTsRate = 0;
+	int64_t adjustSafetyPeriod = 0;
 	while (is_adjust_running_)
 	{
 		if (m_bStartSend)
@@ -215,22 +244,49 @@ void dt_net_render::Adjust()
 			m_tsOutPort.GetFifoLoad(nFifoLoad);
 			m_tsOutPort.GetFifoSize(nFifoSize);
 			m_tsOutPort.GetTsRateBps(nTsRate);
-			if (nFifoLoad <= nFifoSize*FIFO_LOAD_CACHE_RATIO)
+
+			if (m_nAdjustBitRate == 0 || m_nAdjustBitRate > m_nTsBitRate)
+				m_nAdjustBitRate = m_nTsBitRate;
+			adjustSafetyPeriod++;
+			if (nFifoLoad >= nFifoSize)
 			{
-				if (nTsRate == m_nTsBitRate)
+				//码流太小
+				int bitrate = (m_nTsBitRate + m_nAdjustBitRate) / 2;
+				if (bitrate < nTsRate)
+					bitrate = nTsRate + nTsRate*0.0001;
+				if (adjustSafetyPeriod > 10)
 				{
-					m_tsOutPort.SetTsRateBps(static_cast<int>(m_nTsBitRate * ADJUST_BITRATE_RATIO));
-					CASPAR_LOG(debug) << L"Adjust GetFifoLoad: " << nFifoLoad;
+					m_tsOutPort.SetTsRateBps(bitrate);
+					adjustSafetyPeriod = 0;
+					adjust_timer_.restart();
+					m_bCanAdjust = false;
+					CASPAR_LOG(info) << L"adjust up : " << bitrate;
+				}
+			}else if (nFifoLoad < m_nFifoSize/2)
+			{
+				//码流过大
+				int bitrate = (nTsRate + m_nAdjustBitRate) / 2;
+				if (bitrate > nTsRate)
+					bitrate = nTsRate*0.9999;
+				if (adjustSafetyPeriod > 10)
+				{
+					m_tsOutPort.SetTsRateBps(bitrate);
+					adjustSafetyPeriod = 0;
+					adjust_timer_.restart();
+					m_bCanAdjust = false;
+					CASPAR_LOG(info) << L"adjust down : " << bitrate;
 				}
 			}
-			else
+			
+			//一般情况下的调整
+			if (m_bCanAdjust)
 			{
-				if ((nTsRate != m_nTsBitRate) && (nFifoLoad > nFifoSize*FIFO_LOAD_CACHE_RATIO))
-				{
-					m_tsOutPort.SetTsRateBps(m_nTsBitRate);
-					CASPAR_LOG(debug) << L"Adjust GetFifoLoad: " << nFifoLoad;
-				}
+				int bitrate = (nTsRate + m_nAdjustBitRate) / 2;
+				m_tsOutPort.SetTsRateBps(bitrate);
+				CASPAR_LOG(info) << L"Adjust GetFifoLoad: " << nFifoLoad;
 			}
+
+			CASPAR_LOG(info) << L"GetTsRateBps:  " << nTsRate << L" GetFifoLoad: " << nFifoLoad << L" m_nAdjustBitRate: " << m_nAdjustBitRate;
 		}
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(CHECK_FIFO_INTERVAL));
 	}
@@ -325,7 +381,6 @@ bool dt_net_render::SetTsRateBps(int32_t tsbitrate)
 		CASPAR_LOG(error) << L"SetTsrateBps failed, ERROR:" << DtapiResult2Str(dr);
 		return false;
 	}
-	m_nTsBitRate = tsbitrate;
 	return true;
 }
 
@@ -333,9 +388,16 @@ bool dt_net_render::SetFifoSize(int32_t delaytime, int32_t tsbitrate)
 {
 	DTAPI_RESULT dr;
 	m_nFifoSize = static_cast<int32_t>(double(delaytime) / 1000 * tsbitrate / 8);
-	m_nFifoSize = static_cast<int32_t>(m_nFifoSize / FIFO_LOAD_CACHE_RATIO);
+	int maxFifosize;
+	m_tsOutPort.GetMaxFifoSize(maxFifosize);
+	if (maxFifosize < (m_nFifoSize + FIFOSIZE_OFFSET))
+		m_nFifoSize = maxFifosize - FIFOSIZE_OFFSET;
+
+	m_nFifoSize = static_cast<int32_t>(m_nFifoSize+FIFOSIZE_OFFSET);
 	m_nFifoSize = m_nFifoSize / 16 * 16; //16的倍数
 	dr = m_tsOutPort.SetFifoSize(m_nFifoSize);
+	m_nFifoSize -= FIFOSIZE_OFFSET;                   //我们要缓存的字节数
+	CASPAR_LOG(info) << L"SetFifoSize : " << m_nFifoSize;
 	if (dr != DTAPI_OK)
 	{
 		CASPAR_LOG(error) << L"Failed to set Fifo size, ERROR:" << DtapiResult2Str(dr);
