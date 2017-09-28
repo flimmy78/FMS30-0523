@@ -221,9 +221,9 @@ void dt_net_render::senddata(uint8_t* pbuffer, int32_t nbufferLen)
 
 	if (adjust_timer_.elapsed() > ADJUST_TIME)
 	{
+		m_nAdjustBitRate = m_nsendBytes * 8 / adjust_timer_.elapsed();
 		adjust_timer_.restart();
 		cptBitrate_timer_.restart();
-		m_nAdjustBitRate = m_nsendBytes * 8 / adjust_timer_.elapsed();
 		m_nsendBytes = 0;
 		m_nlastSendBytes = 0;
 		m_bCanAdjust = true;
@@ -248,7 +248,7 @@ void dt_net_render::Adjust()
 			if (m_nAdjustBitRate == 0 || m_nAdjustBitRate > m_nTsBitRate)
 				m_nAdjustBitRate = m_nTsBitRate;
 			adjustSafetyPeriod++;
-			if (nFifoLoad >= nFifoSize)
+			if (nFifoLoad >= m_nFifoSize)
 			{
 				//ÂëÁ÷Ì«Ğ¡
 				int bitrate = (m_nTsBitRate + m_nAdjustBitRate) / 2;
