@@ -105,6 +105,7 @@ private:
 	tbb::atomic<bool>						is_adjust_running_;
 	boost::thread							adjust_thread_;
 	void Adjust();
+	void ResetTimer();
 private:
 	bool SetDektecType(int32_t devtype);
 	bool SetDevOutPort(int32_t devport);

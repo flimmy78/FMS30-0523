@@ -211,7 +211,7 @@ void dt_net_render::senddata(uint8_t* pbuffer, int32_t nbufferLen)
 
 	m_nsendBytes += nbufferLen;
 
-	if (cptBitrate_timer_.elapsed() > COMPUTE_TIME)
+	if (cptBitrate_timer_.elapsed() >= COMPUTE_TIME)
 	{
 		int64_t newRate = (m_nsendBytes - m_nlastSendBytes) * 8 / cptBitrate_timer_.elapsed();
 		CASPAR_LOG(info) << L"COMPUTE_TIME  " << COMPUTE_TIME << L" Computebitrate  " << newRate;
@@ -219,13 +219,10 @@ void dt_net_render::senddata(uint8_t* pbuffer, int32_t nbufferLen)
 		cptBitrate_timer_.restart();
 	}
 
-	if (adjust_timer_.elapsed() > ADJUST_TIME)
+	if (adjust_timer_.elapsed() >= ADJUST_TIME)
 	{
 		m_nAdjustBitRate = m_nsendBytes * 8 / adjust_timer_.elapsed();
-		adjust_timer_.restart();
-		cptBitrate_timer_.restart();
-		m_nsendBytes = 0;
-		m_nlastSendBytes = 0;
+		ResetTimer();
 		m_bCanAdjust = true;
 		CASPAR_LOG(info) << L"ADJUST_TIME  " << ADJUST_TIME << L" Computebitrate  " << m_nAdjustBitRate;
 	}
@@ -252,27 +249,27 @@ void dt_net_render::Adjust()
 			{
 				//码流太小
 				int bitrate = (m_nTsBitRate + m_nAdjustBitRate) / 2;
-				if (bitrate < nTsRate)
+				if (bitrate <= nTsRate)
 					bitrate = nTsRate + nTsRate*0.0001;
 				if (adjustSafetyPeriod > 10)
 				{
 					m_tsOutPort.SetTsRateBps(bitrate);
 					adjustSafetyPeriod = 0;
-					adjust_timer_.restart();
+					ResetTimer();
 					m_bCanAdjust = false;
 					CASPAR_LOG(info) << L"adjust up : " << bitrate;
 				}
-			}else if (nFifoLoad < m_nFifoSize/2)
+			}else if (nFifoLoad < m_nFifoSize*0.7)
 			{
 				//码流过大
 				int bitrate = (nTsRate + m_nAdjustBitRate) / 2;
-				if (bitrate > nTsRate)
+				if (bitrate >= nTsRate)
 					bitrate = nTsRate*0.9999;
 				if (adjustSafetyPeriod > 10)
 				{
 					m_tsOutPort.SetTsRateBps(bitrate);
 					adjustSafetyPeriod = 0;
-					adjust_timer_.restart();
+					ResetTimer();
 					m_bCanAdjust = false;
 					CASPAR_LOG(info) << L"adjust down : " << bitrate;
 				}
@@ -293,6 +290,14 @@ void dt_net_render::Adjust()
 	}
 }
 
+
+void dt_net_render::ResetTimer()
+{
+	adjust_timer_.restart();
+	cptBitrate_timer_.restart();
+	m_nsendBytes = 0;
+	m_nlastSendBytes = 0;
+}
 
 bool dt_net_render::SetDektecType(int32_t devtype)
 {
