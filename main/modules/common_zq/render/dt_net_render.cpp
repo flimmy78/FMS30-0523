@@ -213,7 +213,7 @@ void dt_net_render::senddata(uint8_t* pbuffer, int32_t nbufferLen)
 
 	if (cptBitrate_timer_.elapsed() >= COMPUTE_TIME)
 	{
-		int64_t newRate = (m_nsendBytes - m_nlastSendBytes) * 8 / cptBitrate_timer_.elapsed();
+		m_nAdjustBitRate = (m_nsendBytes - m_nlastSendBytes) * 8 / cptBitrate_timer_.elapsed();
 		CASPAR_LOG(info) << L"COMPUTE_TIME  " << COMPUTE_TIME << L" Computebitrate  " << newRate;
 		m_nlastSendBytes = m_nsendBytes;
 		cptBitrate_timer_.restart();
@@ -253,6 +253,8 @@ void dt_net_render::Adjust()
 					bitrate = nTsRate + nTsRate*0.0001;
 				if (adjustSafetyPeriod > 10)
 				{
+					bitrate = bitrate <= m_nTsBitRate ? bitrate : m_nTsBitRate;
+					nTsRate = bitrate;
 					m_tsOutPort.SetTsRateBps(bitrate);
 					adjustSafetyPeriod = 0;
 					ResetTimer();
@@ -267,6 +269,7 @@ void dt_net_render::Adjust()
 					bitrate = nTsRate*0.9999;
 				if (adjustSafetyPeriod > 10)
 				{
+					nTsRate = bitrate;
 					m_tsOutPort.SetTsRateBps(bitrate);
 					adjustSafetyPeriod = 0;
 					ResetTimer();
@@ -284,7 +287,7 @@ void dt_net_render::Adjust()
 				CASPAR_LOG(info) << L"Adjust GetFifoLoad: " << nFifoLoad;
 			}
 
-			CASPAR_LOG(info) << L"GetTsRateBps:  " << nTsRate << L" GetFifoLoad: " << nFifoLoad << L" m_nAdjustBitRate: " << m_nAdjustBitRate;
+			CASPAR_LOG(trace) << L"GetTsRateBps:  " << nTsRate << L" GetFifoLoad: " << nFifoLoad << L" m_nAdjustBitRate: " << m_nAdjustBitRate;
 		}
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(CHECK_FIFO_INTERVAL));
 	}

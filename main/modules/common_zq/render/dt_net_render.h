@@ -10,7 +10,7 @@
 
 #define FIFOSIZE_OFFSET     100000*16    //byte 
 #define COMPUTE_TIME			60*5         //s
-#define ADJUST_TIME             60*30         //s
+#define ADJUST_TIME             60*20         //s
 
 struct dt_net_render_params
 {
