@@ -203,6 +203,16 @@ void dt_net_render::senddata(uint8_t* pbuffer, int32_t nbufferLen)
 		}
 	}
 
+	//判断当前缓存
+	int nFifoLoad = 0;
+	m_tsOutPort.GetFifoLoad(nFifoLoad);
+	while ((nFifoLoad + nbufferLen) >= (m_nFifoSize + FIFOSIZE_OFFSET / 2))
+	{
+		boost::this_thread::sleep_for(boost::chrono::milliseconds(40));
+		CASPAR_LOG(info) << L"Wait for  nFifoLoad have space current nFifoLoad " << nFifoLoad;
+		m_tsOutPort.GetFifoLoad(nFifoLoad);		
+	}
+
 	dr = m_tsOutPort.Write((char*)pbuffer, nbufferLen);
 	if (dr != DTAPI_OK)
 	{
@@ -214,7 +224,7 @@ void dt_net_render::senddata(uint8_t* pbuffer, int32_t nbufferLen)
 	if (cptBitrate_timer_.elapsed() >= COMPUTE_TIME)
 	{
 		m_nAdjustBitRate = (m_nsendBytes - m_nlastSendBytes) * 8 / cptBitrate_timer_.elapsed();
-		CASPAR_LOG(info) << L"COMPUTE_TIME  " << COMPUTE_TIME << L" Computebitrate  " << newRate;
+		CASPAR_LOG(debug) << L"COMPUTE_TIME  " << COMPUTE_TIME << L" Computebitrate  " << m_nAdjustBitRate;
 		m_nlastSendBytes = m_nsendBytes;
 		cptBitrate_timer_.restart();
 	}
@@ -224,7 +234,7 @@ void dt_net_render::senddata(uint8_t* pbuffer, int32_t nbufferLen)
 		m_nAdjustBitRate = m_nsendBytes * 8 / adjust_timer_.elapsed();
 		ResetTimer();
 		m_bCanAdjust = true;
-		CASPAR_LOG(info) << L"ADJUST_TIME  " << ADJUST_TIME << L" Computebitrate  " << m_nAdjustBitRate;
+		CASPAR_LOG(debug) << L"ADJUST_TIME  " << ADJUST_TIME << L" Computebitrate  " << m_nAdjustBitRate;
 	}
 }
 
@@ -247,19 +257,29 @@ void dt_net_render::Adjust()
 			adjustSafetyPeriod++;
 			if (nFifoLoad >= m_nFifoSize)
 			{
-				//码流太小
-				int bitrate = (m_nTsBitRate + m_nAdjustBitRate) / 2;
-				if (bitrate <= nTsRate)
-					bitrate = nTsRate + nTsRate*0.0001;
-				if (adjustSafetyPeriod > 10)
+				if (nFifoLoad >= (m_nFifoSize+FIFOSIZE_OFFSET/4))
 				{
-					bitrate = bitrate <= m_nTsBitRate ? bitrate : m_nTsBitRate;
-					nTsRate = bitrate;
-					m_tsOutPort.SetTsRateBps(bitrate);
-					adjustSafetyPeriod = 0;
-					ResetTimer();
-					m_bCanAdjust = false;
-					CASPAR_LOG(info) << L"adjust up : " << bitrate;
+					m_tsOutPort.SetTsRateBps(m_nTsBitRate);
+					CASPAR_LOG(debug) << L"adjust up : " << m_nTsBitRate;
+					CASPAR_LOG(debug) << L"After adjust GetFifoLoad: " << nFifoLoad;
+				}
+				else
+				{
+					//码流太小
+					int bitrate = (m_nTsBitRate + m_nAdjustBitRate) / 2;
+					if (bitrate <= nTsRate)
+						bitrate = nTsRate + nTsRate*0.0001;
+					if (adjustSafetyPeriod > PROTECT_PERIOD)
+					{
+						bitrate = bitrate <= m_nTsBitRate ? bitrate : m_nTsBitRate;
+						nTsRate = bitrate;
+						m_tsOutPort.SetTsRateBps(bitrate);
+						adjustSafetyPeriod = 0;
+						ResetTimer();
+						m_bCanAdjust = false;
+						CASPAR_LOG(debug) << L"adjust up : " << bitrate;
+						CASPAR_LOG(debug) << L"After adjust GetFifoLoad: " << nFifoLoad;
+					}
 				}
 			}else if (nFifoLoad < m_nFifoSize*0.7)
 			{
@@ -267,14 +287,15 @@ void dt_net_render::Adjust()
 				int bitrate = (nTsRate + m_nAdjustBitRate) / 2;
 				if (bitrate >= nTsRate)
 					bitrate = nTsRate*0.9999;
-				if (adjustSafetyPeriod > 10)
+				if (adjustSafetyPeriod > PROTECT_PERIOD)
 				{
 					nTsRate = bitrate;
 					m_tsOutPort.SetTsRateBps(bitrate);
 					adjustSafetyPeriod = 0;
 					ResetTimer();
 					m_bCanAdjust = false;
-					CASPAR_LOG(info) << L"adjust down : " << bitrate;
+					CASPAR_LOG(debug) << L"adjust down : " << bitrate;
+					CASPAR_LOG(debug) << L"After adjust GetFifoLoad: " << nFifoLoad;
 				}
 			}
 			
@@ -282,12 +303,13 @@ void dt_net_render::Adjust()
 			if (m_bCanAdjust)
 			{				
 				int bitrate = (nTsRate + m_nAdjustBitRate) / 2;
-				m_tsOutPort.SetTsRateBps(bitrate+100);
+				nTsRate = bitrate;
+				m_tsOutPort.SetTsRateBps(bitrate);
 				m_bCanAdjust = false;
-				CASPAR_LOG(info) << L"Adjust GetFifoLoad: " << nFifoLoad;
+				CASPAR_LOG(debug) << L" After adjust GetFifoLoad: " << nFifoLoad;
 			}
 
-			CASPAR_LOG(trace) << L"GetTsRateBps:  " << nTsRate << L" GetFifoLoad: " << nFifoLoad << L" m_nAdjustBitRate: " << m_nAdjustBitRate;
+			CASPAR_LOG(debug) << L"GetTsRateBps:  " << nTsRate << L" GetFifoLoad: " << nFifoLoad << L" m_nAdjustBitRate: " << m_nAdjustBitRate;
 		}
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(CHECK_FIFO_INTERVAL));
 	}

@@ -6,11 +6,13 @@
 
 #include <../../../common/timer.h>
 
-#define CHECK_FIFO_INTERVAL         60000  //ms
+#define CHECK_FIFO_INTERVAL         6000  //ms
+#define PROTECT_PERIOD             (10*5)
+#define FIFOSIZE_OFFSET         (100000*16*2)    //byte 
+#define COMPUTE_TIME			(60*3)         //s
+#define ADJUST_TIME             (60*10)        //s
 
-#define FIFOSIZE_OFFSET     100000*16    //byte 
-#define COMPUTE_TIME			60*5         //s
-#define ADJUST_TIME             60*20         //s
+#define BYTES_BASED188          (188*8)     //bit
 
 struct dt_net_render_params
 {
@@ -20,7 +22,7 @@ struct dt_net_render_params
 
 	int32_t  devtype;
 	int32_t  devport;
-	int32_t  tsbitrate;
+	int64_t  tsbitrate;
 	int64_t  txmode;
 	int32_t  delaytime;//1000 ms
 	int32_t  ttl;
@@ -54,6 +56,7 @@ struct dt_net_render_params
 			else if (it->first == "bitrate")
 			{
 				tsbitrate = atoi((it->second).c_str());
+				tsbitrate = (tsbitrate / BYTES_BASED188)*BYTES_BASED188;
 				it = ops.erase(it);
 			}
 			else if (it->first == "txmode")
