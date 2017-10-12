@@ -262,11 +262,14 @@ void dt_net_render::Adjust()
 			{
 				if (nFifoLoad >= (m_nFifoSize+m_fifoSizeAdded/4))
 				{
-					m_tsOutPort.SetTsRateBps(m_nTsBitRate);
-					ResetTimer();
-					m_bCanAdjust = false;
-					CASPAR_LOG(info) << L"adjust up : " << m_nTsBitRate;
-					CASPAR_LOG(info) << L"After adjust GetFifoLoad: " << nFifoLoad;
+					if (nTsRate != (m_nTsBitRate + 188 * 8))
+					{
+						m_tsOutPort.SetTsRateBps(m_nTsBitRate + 188 * 8);
+						ResetTimer();
+						m_bCanAdjust = false;
+						CASPAR_LOG(info) << L"adjust up max: " << m_nTsBitRate;
+						CASPAR_LOG(info) << L"After adjust GetFifoLoad: " << nFifoLoad;
+					}
 				}
 				else
 				{
@@ -282,7 +285,7 @@ void dt_net_render::Adjust()
 						adjustSafetyPeriod = 0;
 						ResetTimer();
 						m_bCanAdjust = false;
-						CASPAR_LOG(info) << L"adjust up : " << bitrate;
+						CASPAR_LOG(info) << L"adjust up common: " << bitrate;
 						CASPAR_LOG(info) << L"After adjust GetFifoLoad: " << nFifoLoad;
 					}
 				}
