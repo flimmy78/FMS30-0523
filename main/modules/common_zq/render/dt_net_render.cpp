@@ -260,6 +260,8 @@ void dt_net_render::Adjust()
 				if (nFifoLoad >= (m_nFifoSize+FIFOSIZE_OFFSET/4))
 				{
 					m_tsOutPort.SetTsRateBps(m_nTsBitRate);
+					ResetTimer();
+					m_bCanAdjust = false;
 					CASPAR_LOG(debug) << L"adjust up : " << m_nTsBitRate;
 					CASPAR_LOG(debug) << L"After adjust GetFifoLoad: " << nFifoLoad;
 				}
