@@ -8,7 +8,6 @@
 
 #define CHECK_FIFO_INTERVAL         6000  //ms
 #define PROTECT_PERIOD             (10*5)
-#define FIFOSIZE_OFFSET         (100000*16*2)    //byte 
 #define COMPUTE_TIME			(60*3)         //s
 #define ADJUST_TIME             (60*10)        //s
 
@@ -135,4 +134,5 @@ private:
 	caspar::timer         cptBitrate_timer_;
 	caspar::timer         adjust_timer_;
 	bool				  m_bCanAdjust;
+	int                   m_fifoSizeAdded;
 };
