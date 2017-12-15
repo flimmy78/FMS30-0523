@@ -26,6 +26,7 @@
 
 #include <common/forward.h>
 #include <common/memory.h>
+#include <common/env.h>
 
 #include <core/frame/frame.h>
 #include <core/mixer/audio/audio_mixer.h>
@@ -51,7 +52,8 @@ public:
 			const core::audio_channel_layout& channel_layout,
 			unsigned source_afd_mode,
 			const std::wstring& filter,
-			bool multithreaded_filter);
+			bool multithreaded_filter,
+		    bool force_deinterlacing = false);
 	frame_muxer(
 		boost::rational<int> in_framerate,
 		std::vector<audio_input_pad> audio_input_pads,
@@ -59,7 +61,8 @@ public:
 		const core::video_format_desc& format_desc,
 		const core::audio_channel_layout& channel_layout,
 		const std::wstring& filter,
-		bool multithreaded_filter);
+		bool multithreaded_filter,
+		bool force_deinterlacing = false/*env::properties().get(L"configuration.force-deinterlace", false)*/);
 	void push(const std::shared_ptr<AVFrame>& video_frame);
 	void push(const std::vector<std::shared_ptr<core::mutable_audio_buffer>>& audio_samples_per_stream);
 

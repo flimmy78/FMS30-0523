@@ -79,7 +79,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalOptions> /Zm192 /bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\..\..\..\main\modules\reroute\..;..\..\..\..\main\modules\reroute\..\..;..\..\..\..\main\dependencies64\boost;..\..\..\..\main\dependencies64\RxCpp\include;..\..\..\..\main\dependencies64\tbb\include;..\..\..\..\main\dependencies64\asmlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\main\modules\reroute\..;..\..\..\..\main\modules\reroute\..\..;..\..\..\..\main\dependencies64\boost;..\..\..\..\main\dependencies64\RxCpp\include;..\..\..\..\main\dependencies64\tbb\include;..\..\..\..\main\dependencies64\asmlib;..\..\..\..\main\dependencies64\ffmpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -117,7 +117,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalOptions> /Zm192 /bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\..\..\..\main\modules\reroute\..;..\..\..\..\main\modules\reroute\..\..;..\..\..\..\main\dependencies64\boost;..\..\..\..\main\dependencies64\RxCpp\include;..\..\..\..\main\dependencies64\tbb\include;..\..\..\..\main\dependencies64\asmlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\main\modules\reroute\..;..\..\..\..\main\modules\reroute\..\..;..\..\..\..\main\dependencies64\boost;..\..\..\..\main\dependencies64\RxCpp\include;..\..\..\..\main\dependencies64\tbb\include;..\..\..\..\main\dependencies64\asmlib;..\..\..\..\main\dependencies64\ffmpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>

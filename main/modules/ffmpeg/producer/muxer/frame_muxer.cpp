@@ -148,7 +148,7 @@ struct frame_muxer::impl : boost::noncopyable
 	const std::wstring								filter_str_;
 	std::unique_ptr<audio_filter>					audio_filter_;
 	const bool										multithreaded_filter_;
-	bool											force_deinterlacing_		= env::properties().get(L"configuration.force-deinterlace", false);
+	bool											force_deinterlacing_;// = env::properties().get(L"configuration.force-deinterlace", false);
 
 	mutable boost::mutex							out_framerate_mutex_;
 	boost::rational<int>							out_framerate_;
@@ -161,7 +161,8 @@ struct frame_muxer::impl : boost::noncopyable
 		const core::audio_channel_layout& channel_layout,
 		unsigned source_afd_mode,
 		const std::wstring& filter_str,
-		bool multithreaded_filter)
+		bool multithreaded_filter,
+		bool force_deinterlacing)
 		: in_framerate_(in_framerate)
 		, format_desc_(format_desc)
 		, audio_channel_layout_(channel_layout)
@@ -169,6 +170,7 @@ struct frame_muxer::impl : boost::noncopyable
 		, frame_factory_(frame_factory)
 		, filter_str_(filter_str)
 		, multithreaded_filter_(multithreaded_filter)
+		, force_deinterlacing_(force_deinterlacing)
 		,m_p_video_channel(NULL)
 	{
 		video_streams_.push(std::queue<core::mutable_frame>());
@@ -188,13 +190,15 @@ struct frame_muxer::impl : boost::noncopyable
 		const core::video_format_desc& format_desc,
 		const core::audio_channel_layout& channel_layout,
 		const std::wstring& filter_str,
-		bool multithreaded_filter)
+		bool multithreaded_filter,
+		bool force_deinterlacing)
 		: in_framerate_(in_framerate)
 		, format_desc_(format_desc)
 		, audio_channel_layout_(channel_layout)
 		, frame_factory_(frame_factory)
 		, filter_str_(filter_str)
 		, multithreaded_filter_(multithreaded_filter)
+		, force_deinterlacing_(force_deinterlacing)
 	{
 		video_streams_.push(std::queue<core::mutable_frame>());
 		audio_streams_.push(core::mutable_audio_buffer());
@@ -450,7 +454,20 @@ private:
 
 		if (display_mode_ == display_mode::deinterlace_bob)
 			filter_str = append_filter(filter_str, L"YADIF=1:-1");
-
+		else
+		{
+			if (mode == core::field_mode::lower && format_desc_.field_mode == core::field_mode::upper)
+			{
+				filter_str = append_filter(filter_str, L"CROP=h=" + boost::lexical_cast<std::wstring>(frame->height - 1) + L":y=0");
+				filter_str = append_filter(filter_str, L"PAD=0:" + boost::lexical_cast<std::wstring>(frame->height) + L":0:1:black");
+				filter_str = append_filter(filter_str, L"SETFIELD=tff");
+			}
+			else if (mode == core::field_mode::upper && format_desc_.field_mode == core::field_mode::lower)
+			{
+				filter_str = append_filter(filter_str, L"PAD=0:0:0:-1:black");
+				filter_str = append_filter(filter_str, L"SETFIELD=bff");
+			}
+		}
 		auto out_framerate = in_framerate_;
 
 		if (filter::is_double_rate(filter_str))
@@ -520,8 +537,9 @@ frame_muxer::frame_muxer(
 	const core::video_format_desc& format_desc,
 	const core::audio_channel_layout& channel_layout,
 	const std::wstring& filter,
-	bool multithreaded_filter)
-	: impl_(new impl(std::move(in_framerate), std::move(audio_input_pads), frame_factory, format_desc, channel_layout, filter, multithreaded_filter)) {}
+	bool multithreaded_filter,
+	bool force_deinterlacing)
+	: impl_(new impl(std::move(in_framerate), std::move(audio_input_pads), frame_factory, format_desc, channel_layout, filter, multithreaded_filter, force_deinterlacing)) {}
 
 frame_muxer::frame_muxer(
 	boost::rational<int> in_framerate,
@@ -531,8 +549,9 @@ frame_muxer::frame_muxer(
 	const core::audio_channel_layout& channel_layout,
 	unsigned source_afd_mode,
 	const std::wstring& filter,
-	bool multithreaded_filter)
-	: impl_(new impl(std::move(in_framerate), std::move(audio_input_pads), frame_factory, format_desc, channel_layout, source_afd_mode, filter, multithreaded_filter)){}
+	bool multithreaded_filter,
+	bool force_deinterlacing)
+	: impl_(new impl(std::move(in_framerate), std::move(audio_input_pads), frame_factory, format_desc, channel_layout, source_afd_mode, filter, multithreaded_filter, force_deinterlacing)){}
 void frame_muxer::push(const std::shared_ptr<AVFrame>& video){impl_->push(video);}
 void frame_muxer::push(const std::vector<std::shared_ptr<core::mutable_audio_buffer>>& audio_samples_per_stream){impl_->push(audio_samples_per_stream);}
 core::draw_frame frame_muxer::poll(){return impl_->poll();}

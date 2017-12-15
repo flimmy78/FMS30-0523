@@ -38,7 +38,7 @@ const std::wstring& thumbnail_folder();
 const std::wstring& font_folder();
 const std::wstring& version();
 //wxg20170104去掉const属性，以便能够保存
-boost::property_tree::wptree& properties();
+const boost::property_tree::wptree& properties();
 void log_configuration_warnings();
 
 } }

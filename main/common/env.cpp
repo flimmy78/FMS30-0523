@@ -203,7 +203,7 @@ const std::wstring& version()
 	return ver;
 }
 
-boost::property_tree::wptree& properties()
+const boost::property_tree::wptree& properties()
 {
 	check_is_configured();
 	return pt;
