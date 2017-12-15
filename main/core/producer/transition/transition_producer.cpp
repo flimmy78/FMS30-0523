@@ -193,6 +193,10 @@ public:
 		auto d_frame1 = dest_frame;
 		auto d_frame2 = dest_frame;
 		
+		// Don't submit double amount of audio samples for interlaced modes.
+		d_frame1.transform().audio_transform.volume = 0.0;
+		s_frame1.transform().audio_transform.volume = 0.0;
+
 		if(info_.type == transition_type::mix)
 		{
 			d_frame1.transform().image_transform.opacity = delta1;	
