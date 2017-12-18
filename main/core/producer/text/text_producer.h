@@ -54,8 +54,6 @@ public:
 	variable& get_variable(const std::wstring& name) override;
 	const std::vector<std::wstring>& get_variables() const override;
 
-	text::string_metrics measure_string(const std::wstring& str);
-
 	constraints& pixel_constraints() override;
 	std::wstring print() const override;
 	std::wstring name() const override;
