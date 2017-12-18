@@ -274,8 +274,6 @@ private:
 			if(!pool.try_pop(sws_device))
 			{
 				double param;
-//2.0			sws_device.reset(sws_getContext(input_av_frame->width, input_av_frame->height, static_cast<PixelFormat>(input_av_frame->format), width, height, PIX_FMT_BGRA, SWS_BILINEAR, nullptr, nullptr, &param), sws_freeContext);
-//3.0
 				sws_device.reset(sws_getContext(input_av_frame->width, input_av_frame->height, static_cast<AVPixelFormat>(input_av_frame->format), width, height, AV_PIX_FMT_BGRA, SWS_BILINEAR, nullptr, nullptr, &param), sws_freeContext);
 			}
 			

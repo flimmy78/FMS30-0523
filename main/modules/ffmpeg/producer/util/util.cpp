@@ -121,23 +121,6 @@ core::pixel_format get_pixel_format(AVPixelFormat pix_fmt)
 	case AV_PIX_FMT_YUV410P:		return core::pixel_format::ycbcr;
 	case AV_PIX_FMT_YUVA420P:		return core::pixel_format::ycbcra;
 ///////////////////////
-//2.0
-/*
-
-	case PIX_FMT_GRAY8:			return core::pixel_format::gray;
-	case PIX_FMT_RGB24:			return core::pixel_format::rgb;
-	case PIX_FMT_BGR24:			return core::pixel_format::bgr;
-	case PIX_FMT_BGRA:			return core::pixel_format::bgra;
-	case PIX_FMT_ARGB:			return core::pixel_format::argb;
-	case PIX_FMT_RGBA:			return core::pixel_format::rgba;
-	case PIX_FMT_ABGR:			return core::pixel_format::abgr;
-	case PIX_FMT_YUV444P:		return core::pixel_format::ycbcr;
-	case PIX_FMT_YUV422P:		return core::pixel_format::ycbcr;
-	case PIX_FMT_YUV420P:		return core::pixel_format::ycbcr;
-	case PIX_FMT_YUV411P:		return core::pixel_format::ycbcr;
-	case PIX_FMT_YUV410P:		return core::pixel_format::ycbcr;
-	case PIX_FMT_YUVA420P:		return core::pixel_format::ycbcra;*/
-///////////////////////
 	default:					return core::pixel_format::invalid;
 	}
 }
@@ -465,23 +448,6 @@ core::mutable_frame make_frame_auto_afd(const void* tag, const spl::shared_ptr<A
 		else if (pix_fmt == AV_PIX_FMT_YUV444P10)
 			target_pix_fmt = AV_PIX_FMT_YUV444P;
 ////////////
-//2.0
-/*
-		auto target_pix_fmt = PIX_FMT_BGRA;
-
-		if (pix_fmt == PIX_FMT_UYVY422)
-			target_pix_fmt = PIX_FMT_YUV422P;
-		else if (pix_fmt == PIX_FMT_YUYV422)
-			target_pix_fmt = PIX_FMT_YUV422P;
-		else if (pix_fmt == PIX_FMT_UYYVYY411)
-			target_pix_fmt = PIX_FMT_YUV411P;
-		else if (pix_fmt == PIX_FMT_YUV420P10)
-			target_pix_fmt = PIX_FMT_YUV420P;
-		else if (pix_fmt == PIX_FMT_YUV422P10)
-			target_pix_fmt = PIX_FMT_YUV422P;
-		else if (pix_fmt == PIX_FMT_YUV444P10)
-			target_pix_fmt = PIX_FMT_YUV444P;
-*/
 		auto target_desc = pixel_format_desc(target_pix_fmt, width, height);		
 		auto write = frame_factory.create_frame(tag, target_desc, channel_layout);
 		//////////////////////////////////////////////////////////////////////////
@@ -836,23 +802,6 @@ core::mutable_frame make_frame_afd(const void* tag, const spl::shared_ptr<AVFram
 		else if (pix_fmt == AV_PIX_FMT_YUV444P10)
 			target_pix_fmt = AV_PIX_FMT_YUV444P;
 ////////////////////
-//2.0
-/*
-		auto target_pix_fmt = PIX_FMT_BGRA;
-
-		if (pix_fmt == PIX_FMT_UYVY422)
-			target_pix_fmt = PIX_FMT_YUV422P;
-		else if (pix_fmt == PIX_FMT_YUYV422)
-			target_pix_fmt = PIX_FMT_YUV422P;
-		else if (pix_fmt == PIX_FMT_UYYVYY411)
-			target_pix_fmt = PIX_FMT_YUV411P;
-		else if (pix_fmt == PIX_FMT_YUV420P10)
-			target_pix_fmt = PIX_FMT_YUV420P;
-		else if (pix_fmt == PIX_FMT_YUV422P10)
-			target_pix_fmt = PIX_FMT_YUV422P;
-		else if (pix_fmt == PIX_FMT_YUV444P10)
-			target_pix_fmt = PIX_FMT_YUV444P;
-*/
 		auto target_desc = pixel_format_desc(target_pix_fmt, width, height);
 		auto write = frame_factory.create_frame(tag, target_desc, channel_layout);
 		//////////////////////////////////////////////////////////////////////////
@@ -1003,23 +952,6 @@ core::mutable_frame make_frame(const void* tag, const spl::shared_ptr<AVFrame>& 
 		else if (pix_fmt == AV_PIX_FMT_YUV444P10)
 			target_pix_fmt = AV_PIX_FMT_YUV444P;
 ///////////////////
-//2.0
-/*
-		auto target_pix_fmt = PIX_FMT_BGRA;
-
-		if(pix_fmt == PIX_FMT_UYVY422)
-			target_pix_fmt = PIX_FMT_YUV422P;
-		else if(pix_fmt == PIX_FMT_YUYV422)
-			target_pix_fmt = PIX_FMT_YUV422P;
-		else if(pix_fmt == PIX_FMT_UYYVYY411)
-			target_pix_fmt = PIX_FMT_YUV411P;
-		else if(pix_fmt == PIX_FMT_YUV420P10)
-			target_pix_fmt = PIX_FMT_YUV420P;
-		else if(pix_fmt == PIX_FMT_YUV422P10)
-			target_pix_fmt = PIX_FMT_YUV422P;
-		else if(pix_fmt == PIX_FMT_YUV444P10)
-			target_pix_fmt = PIX_FMT_YUV444P;
-*/
 		auto target_desc = pixel_format_desc(target_pix_fmt, width, height);
 
 		auto write = frame_factory.create_frame(tag, target_desc, channel_layout);
@@ -1048,13 +980,9 @@ core::mutable_frame make_frame(const void* tag, const spl::shared_ptr<AVFrame>& 
 		}
 
 		auto av_frame = create_frame();
-//3.0
 		if (target_pix_fmt == AV_PIX_FMT_BGRA)
-//2.0		if(target_pix_fmt == PIX_FMT_BGRA)
 		{
-//3.0
 			auto size = avpicture_fill(reinterpret_cast<AVPicture*>(av_frame.get()), write.image_data(0).begin(), AV_PIX_FMT_BGRA, width, height);
-//2.0		auto size = avpicture_fill(reinterpret_cast<AVPicture*>(av_frame.get()), write.image_data(0).begin(), PIX_FMT_BGRA, width, height);
 			CASPAR_VERIFY(size == write.image_data(0).size());
 		}
 		else
@@ -1178,57 +1106,6 @@ spl::shared_ptr<AVFrame> make_av_frame(std::array<uint8_t*, 4> data, const core:
 		av_frame->format = AV_PIX_FMT_YUVA420P;
 		break;
 	}
-////////////////
-//2.0
-/*
-	switch(format)
-	{
-	case core::pixel_format::rgb:
-		av_frame->format = PIX_FMT_RGB24;
-		break;
-	case core::pixel_format::bgr:
-		av_frame->format = PIX_FMT_BGR24;
-		break;
-	case core::pixel_format::rgba:
-		av_frame->format = PIX_FMT_RGBA;
-		break;
-	case core::pixel_format::argb:
-		av_frame->format = PIX_FMT_ARGB;
-		break;
-	case core::pixel_format::bgra:
-		av_frame->format = PIX_FMT_BGRA;
-		break;
-	case core::pixel_format::abgr:
-		av_frame->format = PIX_FMT_ABGR;
-		break;
-	case core::pixel_format::gray:
-		av_frame->format = PIX_FMT_GRAY8;
-		break;
-	case core::pixel_format::ycbcr:
-	{
-		int y_w = planes[0].width;
-		int y_h = planes[0].height;
-		int c_w = planes[1].width;
-		int c_h = planes[1].height;
-
-		if(c_h == y_h && c_w == y_w)
-			av_frame->format = PIX_FMT_YUV444P;
-		else if(c_h == y_h && c_w*2 == y_w)
-			av_frame->format = PIX_FMT_YUV422P;
-		else if(c_h == y_h && c_w*4 == y_w)
-			av_frame->format = PIX_FMT_YUV411P;
-		else if(c_h*2 == y_h && c_w*2 == y_w)
-			av_frame->format = PIX_FMT_YUV420P;
-		else if(c_h*2 == y_h && c_w*4 == y_w)
-			av_frame->format = PIX_FMT_YUV410P;
-
-		break;
-	}
-	case core::pixel_format::ycbcra:
-		av_frame->format = PIX_FMT_YUVA420P;
-		break;
-	}
-	*/
 	return av_frame;
 }
 

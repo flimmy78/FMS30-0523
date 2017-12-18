@@ -50,8 +50,6 @@ extern "C"
 #include <libavutil/imgutils.h>
 #include <libavutil/opt.h>
 #include <libavfilter/avfilter.h>
-	//2.0	#include <libavfilter/avcodec.h> 
-	//3.0 不存在这个头文件
 #include <libavfilter/buffersink.h>
 #include <libavfilter/buffersrc.h>
 }
