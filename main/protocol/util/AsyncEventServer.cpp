@@ -209,15 +209,9 @@ private:
 
 		CASPAR_LOG(info) << print() << L" Client " << ipv4_address() << L" disconnected (" << connection_set_->size() << L" connections).";
 
-		try
-		{
-			socket_->cancel();
-			socket_->close();
-		}
-		catch(...)
-		{
-			CASPAR_LOG_CURRENT_EXCEPTION();
-		}
+		boost::system::error_code ec;
+		socket_->shutdown(boost::asio::socket_base::shutdown_type::shutdown_both, ec);
+		socket_->close(ec);
 	}
 
     connection(const std::shared_ptr<boost::asio::io_service>& service, const spl::shared_ptr<tcp::socket>& socket, const protocol_strategy_factory<char>::ptr& protocol_factory, const spl::shared_ptr<connection_set>& connection_set) 
