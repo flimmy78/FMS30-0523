@@ -65,9 +65,8 @@ namespace caspar { namespace log {
 using namespace boost;
 
 template<typename Stream>
-void append_timestamp(Stream& stream)
+void append_timestamp(Stream& stream, boost::posix_time::ptime timestamp)
 {
-	auto timestamp = boost::posix_time::microsec_clock::local_time();
 	auto date = timestamp.date();
 	auto time = timestamp.time_of_day();
 	auto milliseconds = time.fractional_seconds() / 1000; // microseconds to milliseconds
@@ -121,7 +120,7 @@ void my_formatter(bool print_all_characters, const boost::log::record_view& rec,
 	namespace expr = boost::log::expressions;
 
 	std::wstringstream pre_message_stream;
-	append_timestamp(pre_message_stream);
+	append_timestamp(pre_message_stream, boost::log::extract<boost::posix_time::ptime>("TimestampMillis", rec).get());
 	thread_id_column.write(pre_message_stream, boost::log::extract<std::int64_t>("NativeThreadId", rec));
 	severity_column.write(pre_message_stream, boost::log::extract<boost::log::trivial::severity_level>("Severity", rec));
 
