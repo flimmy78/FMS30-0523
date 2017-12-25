@@ -146,6 +146,10 @@ void init()
 {	
 	boost::log::add_common_attributes();
 	boost::log::core::get()->add_global_attribute("NativeThreadId", boost::log::attributes::make_function(&get_current_thread_id));
+	boost::log::core::get()->add_global_attribute("TimestampMillis", boost::log::attributes::make_function([]
+	{
+		return boost::posix_time::microsec_clock::local_time();
+	}));
 	typedef boost::log::sinks::asynchronous_sink<boost::log::sinks::wtext_ostream_backend> stream_sink_type;
 
 	auto stream_backend = boost::make_shared<boost::log::sinks::wtext_ostream_backend>();
