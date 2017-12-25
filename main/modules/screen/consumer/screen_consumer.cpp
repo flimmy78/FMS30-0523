@@ -30,7 +30,6 @@
 #include <common/memory.h>
 #include <common/array.h>
 #include <common/memshfl.h>
-#include <common/memcpy.h>
 #include <common/utf.h>
 #include <common/prec_timer.h>
 #include <common/future.h>
@@ -60,8 +59,6 @@
 #include <tbb/atomic.h>
 #include <tbb/concurrent_queue.h>
 #include <tbb/parallel_for.h>
-
-#include <asmlib.h>
 
 #include <algorithm>
 #include <vector>

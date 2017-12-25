@@ -3,8 +3,6 @@
 #include <assert.h>
 #include <time.h>
 
-#include <common/memcpy.h>
-
 #include <common/future.h>
 #include <common/except.h>
 #include <common/param.h>

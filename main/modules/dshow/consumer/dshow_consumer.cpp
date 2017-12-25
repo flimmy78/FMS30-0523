@@ -10,7 +10,6 @@
 // #include <common/memory.h>
 // #include <common/array.h>
 // #include <common/memshfl.h>
-#include <common/memcpy.h>
 // #include <common/utf.h>
 // #include <common/prec_timer.h>
 #include <common/future.h>

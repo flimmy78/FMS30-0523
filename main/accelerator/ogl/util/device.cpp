@@ -51,7 +51,6 @@
 #include <array>
 #include <unordered_map>
 
-#include <asmlib.h>
 #include <tbb/parallel_for.h>
 
 namespace caspar { namespace accelerator { namespace ogl {

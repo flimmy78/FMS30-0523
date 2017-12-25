@@ -9,7 +9,6 @@
 #include <render/render_base.h>
 #include <encoder/enc_base.h>
 
-#include <common/memcpy.h>
 #include <common/future.h>
 #include <common/param.h>
 #include <common/ptree.h>

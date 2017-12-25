@@ -22,7 +22,6 @@
 #include <common/ptree.h>
 #include <common/param.h>
 #include <common/semaphore.h>
-#include <common/memcpy.h>
 #include <common/prec_timer.h>
 
 #include <core/consumer/frame_consumer.h>

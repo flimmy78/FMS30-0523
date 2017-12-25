@@ -49,8 +49,6 @@
 #include <common/diagnostics/graph.h>
 #include <common/prec_timer.h>
 #include <common/array.h>
-#include <common/memset.h>
-#include <common/memcpy.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree.hpp>

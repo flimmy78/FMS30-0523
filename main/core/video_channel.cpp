@@ -54,7 +54,6 @@
 //wxg20170222
 #include <core/frame/pixel_format.h>
 #include <core/frame/frame.h>
-#include <common/memcpy.h>
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/exceptions.hpp>

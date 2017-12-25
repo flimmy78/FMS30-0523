@@ -30,7 +30,6 @@
 #include <common/log.h>
 #include <common/param.h>
 #include <common/timer.h>
-#include <common/memcpy.h>
 //
 #include <core/frame/audio_channel_layout.h>
 #include <core/frame/frame.h>

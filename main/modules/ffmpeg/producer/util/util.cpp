@@ -41,7 +41,6 @@
 #include <common/except.h>
 #include <common/array.h>
 #include <common/os/filesystem.h>
-#include <common/memcpy.h>
 
 #include <tbb/parallel_for.h>
 
@@ -51,8 +50,6 @@
 #include <boost/rational.hpp>
 
 #include <fstream>
-
-#include <asmlib.h>
 
 #include <modules/ffmpeg/producer/input/input.h>
 

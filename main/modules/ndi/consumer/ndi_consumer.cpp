@@ -5,7 +5,6 @@
 #include <Processing.NDI.Lib.h>
 
 #include <common/diagnostics/graph.h>
-#include <common/memcpy.h>
 #include <common/future.h>
 #include <common/param.h>
 

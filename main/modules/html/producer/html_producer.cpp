@@ -44,7 +44,6 @@
 #include <common/prec_timer.h>
 #include <common/linq.h>
 #include <common/os/filesystem.h>
-#include <common/memcpy.h>
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
@@ -62,8 +61,6 @@
 #include <cef_client.h>
 #include <cef_render_handler.h>
 #pragma warning(pop)
-
-#include <asmlib.h>
 
 #include <queue>
 

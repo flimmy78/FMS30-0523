@@ -385,6 +385,8 @@ public:
 			if (port.second.consumer()->index() > 100000)
 				return port.second.getRecordFrames(fileName);
 		}
+
+		return 0;
 	}
 };
 

@@ -41,8 +41,6 @@
 
 #include <tbb/concurrent_queue.h>
 
-#include <asmlib.h>
-
 #include <FreeImage.h>
 
 #include <vector>
